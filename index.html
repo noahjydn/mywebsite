@@ -420,6 +420,22 @@
 
       document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => document.getElementById(button.dataset.close).close()));
       renderWorkspace(); renderAnnouncements(); renderTimetable(); renderUpcoming(); renderCalendar();
+
+      if ($('#generateExamBtn')) $('#generateExamBtn').addEventListener('click', () => {
+      const bank = $('#questionBank').value.split('\n').filter(q => q.trim() !== '');
+      const count = parseInt($('#questionCount').value) || 1;
+  
+      if (bank.length === 0) { toast('Eh, letaklah soalan dulu Haziq!'); return; }
+      if (count > bank.length) { toast('Jumlah soalan tak cukup dalam bank soalan.'); return; }
+
+      const shuffled = [...bank].sort(() => 0.5 - Math.random());
+      const selected = shuffled.slice(0, count);
+
+      const paper = $('#examPaper');
+      paper.innerHTML = '<ol style="padding-left: 20px; margin: 0;">' + selected.map(q => `<li style="margin-bottom: 8px;">${escapeHTML(q)}</li>`).join('') + '</ol>';
+      $('#examOutput').style.display = 'block';
+      toast('Kertas exam berjaya di-generate!');
+      });
     })();
   </script>
 </body>
