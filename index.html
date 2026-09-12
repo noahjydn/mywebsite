@@ -144,8 +144,8 @@
     #examOutput, #examOutput * { visibility: visible; }
     #examOutput { position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0; background: white; }
     .page-break { page-break-before: always; }
-    .cover-page { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-family: 'Times New Roman', serif; }
-    .exam-content { font-family: 'Times New Roman', serif; font-size: 12pt; padding: 20px; }
+    .cover-page { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-family: 'Times New Roman', serif; color: black; }
+    .exam-content { font-family: 'Times New Roman', serif; font-size: 12pt; padding: 20px; color: black; }
     .btn { display: none !important; }
   }
     
@@ -229,22 +229,24 @@
           <div class="week-grid-wrap"><div id="weekGrid" class="week-grid"></div></div>
         </section>
 
-      <section id="examGen" class="section">
-        <div class="section-heading">
-        <div><h2>Exam Paper Generator</h2><p class="section-subtitle">Customomize Your Exam Paper Easily.</p></div>
+        <section id="examGen" class="section">
+          <div class="section-heading">
+          <div><h2>Exam Paper Generator Pro</h2><p class="section-subtitle">Janaan rawak kertas peperiksaan format penuh (100 Markah).</p></div>
+        </div>
+          <div class="panel task-form">
+          <div class="form-grid">
+            <label>Kod Kursus<input id="examCode" placeholder="Cth: CEA1344" /></label>
+              <label>Nama Kursus<input id="examName" placeholder="Cth: Introduction to Literature" /></label>
+                <label class="full">Bahagian A: Soalan Struktur / Objektif<textarea id="qBankA" placeholder="Masukkan senarai soalan..."></textarea></label>
+                <label class="full">Bahagian B: Soalan Subjektif (Guna [img: url_gambar] untuk selit imej)<textarea id="qBankB" placeholder="1. Jelaskan konsep check and balance... [img: https://linkgambar.com/pic.jpg]"></textarea></label>
+                  <label class="full">Bahagian C: Soalan Esei<textarea id="qBankC" placeholder="Masukkan soalan esei panjang..."></textarea></label>
+                </div>
+              <button id="generateExamBtn" class="btn" style="margin-top: 15px;">Generate Kertas Ujian (100 Markah)</button>
+            <div id="examOutput" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line); display: none;">
+          <div id="examPaper" style="font-size: 13px; line-height: 1.6; color: black; background: white;"></div>
+          <button class="btn ghost small" onclick="window.print()" style="margin-top: 15px;">Print / Save PDF</button>
+        </div>
       </div>
-    <div class="panel task-form">
-    <div class="form-grid">
-        <label class="full">List of Question Bank (One Question, One Row)<textarea id="questionBank" placeholder="Write your question here"></textarea></label>
-        <label>Jumlah Soalan Nak Keluar<input id="questionCount" type="number" min="1" value="5" /></label>
-      </div>
-        <button id="generateExamBtn" class="btn" style="margin-top: 15px;">Generate Exam Paper</button>
-          <div id="examOutput" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line); display: none;">
-          <h3 style="margin: 0 0 10px; font-size: 15px;">Exam Paper User</h3>
-        <div id="examPaper" style="font-size: 13px; line-height: 1.6;"></div>
-      <button class="btn ghost small" onclick="window.print()" style="margin-top: 15px;">Print / Save PDF</button>
-     </div>
-    </div>
     </section>
         
         <section id="tracker" class="section">
@@ -476,20 +478,78 @@
     });
       
       if ($('#generateExamBtn')) $('#generateExamBtn').addEventListener('click', () => {
-      const bank = $('#questionBank').value.split('\n').filter(q => q.trim() !== '');
-      const count = parseInt($('#questionCount').value) || 1;
+  const parseQuestions = (text) => text.split('\n').filter(q => q.trim() !== '').map(q => {
+    let weight = 10; 
+    const lower = q.toLowerCase();
+    if (lower.includes('jelaskan') || lower.includes('huraikan') || lower.includes('bincangkan')) weight += 5;
+    if (lower.includes('mengapa') || lower.includes('pada pendapat anda')) weight += 10;
+    
+    let imgHtml = '';
+    const imgMatch = q.match(/\[img:\s*(.*?)\]/);
+    if (imgMatch) {
+      imgHtml = `<br><img src="${imgMatch[1]}" style="max-width: 60%; margin-top: 10px; border: 1px solid #333;">`;
+      q = q.replace(imgMatch[0], '');
+    }
+    return { text: escapeHTML(q), weight, imgHtml, mark: 0 };
+  });
+
+  const distributeMarks = (questions, totalMarks) => {
+    if (!questions.length) return [];
+    const totalWeight = questions.reduce((sum, q) => sum + q.weight, 0);
+    let accumulated = 0;
+    questions.forEach((q, i) => {
+      if (i === questions.length - 1) q.mark = totalMarks - accumulated;
+      else { q.mark = Math.round((q.weight / totalWeight) * totalMarks); accumulated += q.mark; }
+    });
+    return questions;
+  };
+
+  const partA = distributeMarks(parseQuestions($('#qBankA').value), 30);
+  const partB = distributeMarks(parseQuestions($('#qBankB').value), 30);
+  const partC = distributeMarks(parseQuestions($('#qBankC').value), 40);
+
+  if (!partA.length && !partB.length && !partC.length) { toast('Sila masukkan sekurang-kurangnya satu soalan.'); return; }
+
+  const renderSection = (title, data, startIndex) => {
+    if (!data.length) return '';
+    return `<h3 style="font-weight: bold; margin: 20px 0 10px; font-size: 14pt;">${title}</h3>
+            <ol style="padding-left: 20px; margin-bottom: 20px;" start="${startIndex}">
+              ${data.map(q => `<li style="margin-bottom: 15px;">${q.text} <span style="float: right; font-weight: bold;">[${q.mark} Markah]</span>${q.imgHtml}</li>`).join('')}
+            </ol>`;
+  };
+
+  const cCode = escapeHTML($('#examCode').value || 'KOD KURSUS');
+  const cName = escapeHTML($('#examName').value || 'NAMA KURSUS');
+
+  $('#examPaper').innerHTML = `
+    <div class="cover-page">
+      <h1 style="font-size: 26px; margin-bottom: 10px; font-weight: bold;">UNIVERSITI SELANGOR (UNISEL)</h1>
+      <h2 style="font-size: 22px; margin-bottom: 40px;">PEPERIKSAAN AKHIR ASASI</h2>
+      <table style="text-align: left; font-size: 16px; margin: 0 auto;">
+        <tr><td style="padding: 5px 15px; font-weight: bold;">KOD KURSUS</td><td>: ${cCode}</td></tr>
+        <tr><td style="padding: 5px 15px; font-weight: bold;">NAMA KURSUS</td><td>: ${cName}</td></tr>
+      </table>
+      <br><br><br>
+      <div style="border: 2px solid black; padding: 20px; max-width: 600px;">
+        <h3 style="margin-top: 0;">ARAHAN KEPADA CALON</h3>
+        <p style="font-size: 14px; text-align: left; margin: 5px 0;">Kertas soalan ini mengandungi bahagian berikut:</p>
+        <p style="font-size: 14px; text-align: left; margin: 5px 0;">Bahagian A - Soalan Struktur / Objektif (30 Markah)</p>
+        <p style="font-size: 14px; text-align: left; margin: 5px 0;">Bahagian B - Soalan Subjektif (30 Markah)</p>
+        <p style="font-size: 14px; text-align: left; margin: 5px 0;">Bahagian C - Soalan Esei (40 Markah)</p>
+        <br>
+        <p style="font-size: 14px; font-weight: bold;">JANGAN BUKA KERTAS SOALAN INI SEHINGGA DIBERITAHU.</p>
+      </div>
+    </div>
+    <div class="page-break exam-content">
+      ${renderSection('BAHAGIAN A: SOALAN STRUKTUR', partA, 1)}
+      ${renderSection('BAHAGIAN B: SOALAN SUBJEKTIF', partB, partA.length + 1)}
+      ${renderSection('BAHAGIAN C: SOALAN ESEI', partC, partA.length + partB.length + 1)}
+    </div>
+  `;
   
-      if (bank.length === 0) { toast('Eh, letaklah soalan dulu Haziq!'); return; }
-      if (count > bank.length) { toast('Jumlah soalan tak cukup dalam bank soalan.'); return; }
-
-      const shuffled = [...bank].sort(() => 0.5 - Math.random());
-      const selected = shuffled.slice(0, count);
-
-      const paper = $('#examPaper');
-      paper.innerHTML = '<ol style="padding-left: 20px; margin: 0;">' + selected.map(q => `<li style="margin-bottom: 8px;">${escapeHTML(q)}</li>`).join('') + '</ol>';
-      $('#examOutput').style.display = 'block';
-      toast('Kertas exam berjaya di-generate!');
-      });
+  $('#examOutput').style.display = 'block';
+  toast('Kertas peperiksaan piawai berjaya di-generate!');
+});
     })();
   </script>
 </body>
