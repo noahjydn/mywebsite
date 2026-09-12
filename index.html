@@ -144,11 +144,10 @@
     body * { visibility: hidden; }
     #examOutput, #examOutput * { visibility: visible; }
     #examOutput { position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0; background: white; display: block !important; }
-    .page-break { page-break-before: always; }
-    .cover-page { height: 100vh; display: flex; flex-direction: column; justify-content: flex-start; padding-top: 40px; font-family: 'Times New Roman', serif; color: black; }
-    .exam-content { font-family: 'Times New Roman', serif; font-size: 12pt; padding: 20px; color: black; }
-    .print-footer { position: fixed; bottom: 0; left: 0; font-weight: bold; font-family: 'Times New Roman', serif; font-size: 11pt; }
-    @page { margin: 20mm; @bottom-right { content: counter(page); } }
+    .cover-page { page-break-after: always; padding: 10px 40px; font-family: 'Times New Roman', serif; color: black; display: block; }
+    .exam-content { font-family: 'Times New Roman', serif; font-size: 12pt; padding: 20px 40px; color: black; display: block; }
+    .print-footer { position: fixed; bottom: 15px; left: 40px; right: 40px; font-weight: bold; font-family: 'Times New Roman', serif; font-size: 10pt; text-align: center; border-top: 1px solid black; padding-top: 5px; }
+    @page { margin: 15mm; }
   }
     
     /* Dialog */
@@ -233,20 +232,29 @@
 
         <section id="examGen" class="section">
   <div class="section-heading">
-    <div><h2>Exam Paper Generator Pro</h2><p class="section-subtitle">Janaan rawak kertas peperiksaan format rasmi UNISEL.</p></div>
+    <div><h2>Exam Paper Generator Pro</h2><p class="section-subtitle">Janaan rawak kertas peperiksaan format standard.</p></div>
   </div>
   <div class="panel task-form">
     <div class="form-grid">
-      <label>Bahasa Kertas<select id="examLang"><option value="BM">Bahasa Melayu</option><option value="EN">English</option><option value="DWI">Dwi-Bahasa (EN/BM)</option></select></label>
-      <label>Kod Kursus<input id="examCode" placeholder="Cth: CEA1344" /></label>
-      <label class="full">Nama Kursus<input id="examName" placeholder="Cth: Introduction to Literature in English" /></label>
-      <label>Fakulti<input id="examFac" placeholder="Cth: Education and Social Sciences" /></label>
-      <label>Program<input id="examProg" placeholder="Cth: Foundation / Degree" /></label>
-      <label class="full">Bahagian A: Struktur / Objektif<textarea id="qBankA" placeholder="Masukkan senarai soalan..."></textarea></label>
-      <label class="full">Bahagian B: Subjektif (Guna [img: url_gambar] untuk selit imej)<textarea id="qBankB" placeholder="1. Jelaskan konsep... [img: https://linkgambar.com/pic.jpg]"></textarea></label>
-      <label class="full">Bahagian C: Esei<textarea id="qBankC" placeholder="Masukkan soalan esei panjang..."></textarea></label>
+      <label>Language<select id="examLang"><option value="BM">Malay</option><option value="EN">English</option><option value="DWI">Dwi-Language</option></select></label>
+      <label>Course Code<input id="examCode" placeholder="Cth: CEA1344" /></label>
+      <label class="full">Course Name<input id="examName" placeholder="Cth: Introduction to Literature" /></label>
+      <label>Time<input id="examDuration" placeholder="Cth: 3 HOURS / 3 JAM" /></label>
+      <label>Faculty<input id="examFac" placeholder="Cth: Education and Social Sciences" /></label>
+      <label>Department<input id="examDept" placeholder="Cth: Language Education" /></label>
+      <label>Programme<input id="examProg" placeholder="Cth: Foundation" /></label>
+      <label class="full">Lecturer<input id="examLecturer" placeholder="Cth: Mdm Sofea" /></label>
+      
+      <label class="full">Section A: Strukture / Objective<textarea id="qBankA" placeholder="Insert your question here..."></textarea></label>
+      <label class="full">Section B: Subjective (use [img: url_picture] for image)<textarea id="qBankB" placeholder="1. Explain the concept... [img: https://link.jpg]"></textarea></label>
+      <label class="full">Section C: Essay<textarea id="qBankC" placeholder="Insert your question here..."></textarea></label>
     </div>
-    <button id="generateExamBtn" class="btn" style="margin-top: 15px;">Generate & Terus Print PDF</button>
+    <button id="generateExamBtn" class="btn" style="margin-top: 15px;">Generate PDF</button>
+    <div id="examOutput" style="display: none;">
+      <div id="examPaper" style="font-size: 13px; line-height: 1.6; color: black; background: white;"></div>
+    </div>
+  </div>
+</section>
     
     <!-- Preview disembunyikan sepenuhnya -->
     <div id="examOutput" style="display: none;">
@@ -453,107 +461,115 @@
       
       // 8. Exam Paper Generator Pro
       if ($('#generateExamBtn')) {
-        $('#generateExamBtn').addEventListener('click', () => {
-          const lang = $('#examLang')?.value || 'BM';
-          const t = {
-            title: lang === 'EN' ? 'FINAL EXAMINATION' : lang === 'DWI' ? 'PEPERIKSAAN AKHIR / FINAL EXAMINATION' : 'PEPERIKSAAN AKHIR',
-            course: lang === 'BM' ? 'KURSUS' : 'COURSE',
-            code: lang === 'BM' ? 'KOD KURSUS' : 'COURSE CODE',
-            fac: lang === 'BM' ? 'FAKULTI' : 'FACULTY',
-            prog: lang === 'BM' ? 'PROGRAM' : 'PROGRAMME',
-            instruct: lang === 'EN' ? 'INSTRUCTIONS TO CANDIDATES' : lang === 'DWI' ? 'ARAHAN KEPADA CALON / INSTRUCTIONS TO CANDIDATES' : 'ARAHAN KEPADA CALON',
-            warning: lang === 'EN' ? 'DO NOT OPEN THE QUESTION PAPER UNTIL INSTRUCTED.' : lang === 'DWI' ? 'DILARANG MEMBUKA KERTAS SOALAN SEHINGGA DIBENARKAN. / DO NOT OPEN THE QUESTION PAPER UNTIL INSTRUCTED.' : 'DILARANG MEMBUKA KERTAS SOALAN SEHINGGA DIBENARKAN.',
-            confidential: lang === 'BM' ? 'SULIT' : 'CONFIDENTIAL',
-            secA: lang === 'EN' ? 'SECTION A: STRUCTURED QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN A / SECTION A' : 'BAHAGIAN A: SOALAN STRUKTUR',
-            secB: lang === 'EN' ? 'SECTION B: SUBJECTIVE QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN B / SECTION B' : 'BAHAGIAN B: SOALAN SUBJEKTIF',
-            secC: lang === 'EN' ? 'SECTION C: ESSAY QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN C / SECTION C' : 'BAHAGIAN C: SOALAN ESEI',
-            marks: lang === 'BM' ? 'Markah' : 'Marks'
-          };
+  $('#generateExamBtn').addEventListener('click', () => {
+    const lang = $('#examLang')?.value || 'BM';
+    const t = {
+      title: lang === 'EN' ? 'FINAL EXAMINATION' : lang === 'DWI' ? 'PEPERIKSAAN AKHIR / FINAL EXAMINATION' : 'PEPERIKSAAN AKHIR',
+      course: lang === 'BM' ? 'KURSUS' : 'COURSE',
+      code: lang === 'BM' ? 'KOD KURSUS' : 'COURSE CODE',
+      duration: lang === 'BM' ? 'MASA' : 'DURATION',
+      fac: lang === 'BM' ? 'FAKULTI' : 'FACULTY',
+      dept: lang === 'BM' ? 'JABATAN' : 'DEPARTMENT',
+      prog: lang === 'BM' ? 'PROGRAM' : 'PROGRAMME',
+      lect: lang === 'BM' ? 'PENSYARAH' : 'LECTURER',
+      instruct: lang === 'EN' ? 'INSTRUCTIONS TO CANDIDATES' : lang === 'DWI' ? 'ARAHAN KEPADA CALON / INSTRUCTIONS TO CANDIDATES' : 'ARAHAN KEPADA CALON',
+      warning: lang === 'EN' ? 'DO NOT OPEN THE QUESTION PAPER UNTIL INSTRUCTED.' : lang === 'DWI' ? 'DILARANG MEMBUKA KERTAS SOALAN SEHINGGA DIBENARKAN. / DO NOT OPEN THE QUESTION PAPER UNTIL INSTRUCTED.' : 'DILARANG MEMBUKA KERTAS SOALAN SEHINGGA DIBENARKAN.',
+      confidential: lang === 'BM' ? 'SULIT' : 'CONFIDENTIAL',
+      secA: lang === 'EN' ? 'SECTION A: STRUCTURED QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN A / SECTION A' : 'BAHAGIAN A: SOALAN STRUKTUR',
+      secB: lang === 'EN' ? 'SECTION B: SUBJECTIVE QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN B / SECTION B' : 'BAHAGIAN B: SOALAN SUBJEKTIF',
+      secC: lang === 'EN' ? 'SECTION C: ESSAY QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN C / SECTION C' : 'BAHAGIAN C: SOALAN ESEI',
+      marks: lang === 'BM' ? 'Markah' : 'Marks',
+      ansAll: lang === 'EN' ? 'ANSWER ALL QUESTIONS.' : lang === 'DWI' ? 'JAWAB SEMUA SOALAN. / ANSWER ALL QUESTIONS.' : 'JAWAB SEMUA SOALAN.'
+    };
 
-          const parseQuestions = (text) => text.split('\n').filter(q => q.trim() !== '').map(q => {
-            let weight = 10; 
-            const lower = q.toLowerCase();
-            if (lower.match(/jelaskan|huraikan|bincangkan|explain|discuss|describe/)) weight += 5;
-            if (lower.match(/mengapa|pendapat|why|analyze/)) weight += 10;
-            
-            let imgHtml = '';
-            const imgMatch = q.match(/\[img:\s*(.*?)\]/);
-            if (imgMatch) {
-              imgHtml = `<br><img src="${imgMatch[1]}" style="max-width: 60%; margin-top: 10px; border: 1px solid #333;">`;
-              q = q.replace(imgMatch[0], '');
-            }
-            return { text: escapeHTML(q), weight, imgHtml, mark: 0 };
-          });
-
-          const distributeMarks = (questions, totalMarks) => {
-            if (!questions.length) return [];
-            const totalWeight = questions.reduce((sum, q) => sum + q.weight, 0);
-            let accumulated = 0;
-            questions.forEach((q, i) => {
-              if (i === questions.length - 1) q.mark = totalMarks - accumulated;
-              else { q.mark = Math.round((q.weight / totalWeight) * totalMarks); accumulated += q.mark; }
-            });
-            return questions;
-          };
-
-          const partA = distributeMarks(parseQuestions($('#qBankA')?.value || ''), 30);
-          const partB = distributeMarks(parseQuestions($('#qBankB')?.value || ''), 30);
-          const partC = distributeMarks(parseQuestions($('#qBankC')?.value || ''), 40);
-
-          if (!partA.length && !partB.length && !partC.length) { toast('Sila masukkan soalan dulu Haziq.'); return; }
-
-          const renderSection = (title, data, startIndex) => {
-            if (!data.length) return '';
-            return `<h3 style="font-weight: bold; margin: 20px 0 10px; font-size: 14pt; text-transform: uppercase;">${title}</h3>
-                    <ol style="padding-left: 20px; margin-bottom: 20px;" start="${startIndex}">
-                      ${data.map(q => `<li style="margin-bottom: 15px; text-align: justify;">${q.text} <span style="float: right; font-weight: bold;">[${q.mark} ${t.marks}]</span>${q.imgHtml}</li>`).join('')}
-                    </ol>`;
-          };
-
-          const cCode = escapeHTML($('#examCode')?.value || '-');
-          const cName = escapeHTML($('#examName')?.value || '-');
-          const cFac = escapeHTML($('#examFac')?.value || '-');
-          const cProg = escapeHTML($('#examProg')?.value || '-');
-
-          if($('#examPaper')) {
-            $('#examPaper').innerHTML = `
-              <div class="print-footer">${t.confidential}</div>
-              <div class="cover-page">
-                <div style="text-align: center; margin-bottom: 30px;">
-                  <h1 style="font-size: 45px; margin: 0; font-weight: 900; color: #f28b20; font-family: Arial, sans-serif; letter-spacing: -2px;">unisel</h1>
-                  <h2 style="font-size: 14px; margin: 0; font-weight: normal; font-family: Arial, sans-serif; letter-spacing: 3px; color: #555;">UNIVERSITI SELANGOR</h2>
-                </div>
-                <h2 style="font-size: 22px; font-weight: bold; text-align: center; margin-bottom: 30px;">${t.title}</h2>
-                
-                <table style="text-align: left; font-size: 14pt; margin: 0 auto 40px auto; width: 85%; line-height: 1.8;">
-                  <tr><td style="width: 35%; font-weight: bold;">${t.course}</td><td>: ${cName}</td></tr>
-                  <tr><td style="font-weight: bold;">${t.code}</td><td>: ${cCode}</td></tr>
-                  <tr><td style="font-weight: bold;">${t.fac}</td><td>: ${cFac}</td></tr>
-                  <tr><td style="font-weight: bold;">${t.prog}</td><td>: ${cProg}</td></tr>
-                </table>
-                
-                <div style="margin: 0 auto; width: 85%; text-align: left;">
-                  <h3 style="font-weight: bold; font-size: 14pt; text-decoration: underline;">${t.instruct}</h3>
-                  <ul style="font-size: 12pt; line-height: 1.8; padding-left: 20px;">
-                    <li>Kertas soalan ini mengandungi TIGA (3) bahagian utama.</li>
-                    <li>Jawab kesemua soalan yang diberikan.</li>
-                    <li style="margin-top: 10px;"><strong>${t.warning}</strong></li>
-                  </ul>
-                </div>
-              </div>
-              <div class="page-break exam-content">
-                ${renderSection(t.secA, partA, 1)}
-                ${renderSection(t.secB, partB, partA.length + 1)}
-                ${renderSection(t.secC, partC, partA.length + partB.length + 1)}
-              </div>
-            `;
-          }
-          setTimeout(() => window.print(), 300);
-        });
+    const parseQuestions = (text) => text.split('\n').filter(q => q.trim() !== '').map(q => {
+      let weight = 10; 
+      const lower = q.toLowerCase();
+      if (lower.match(/jelaskan|huraikan|bincangkan|explain|discuss|describe/)) weight += 5;
+      if (lower.match(/mengapa|pendapat|why|analyze/)) weight += 10;
+      
+      let imgHtml = '';
+      const imgMatch = q.match(/\[img:\s*(.*?)\]/);
+      if (imgMatch) {
+        imgHtml = `<br><img src="${imgMatch[1]}" style="max-width: 60%; margin-top: 10px; border: 1px solid #333;">`;
+        q = q.replace(imgMatch[0], '');
       }
+      return { text: escapeHTML(q), weight, imgHtml, mark: 0 };
+    });
 
-      // Initialize Dashboard
-      renderWorkspace(); renderAnnouncements(); renderTimetable(); renderUpcoming(); renderCalendar();
+    const distributeMarks = (questions, totalMarks) => {
+      if (!questions.length) return [];
+      const totalWeight = questions.reduce((sum, q) => sum + q.weight, 0);
+      let accumulated = 0;
+      questions.forEach((q, i) => {
+        if (i === questions.length - 1) q.mark = totalMarks - accumulated;
+        else { q.mark = Math.round((q.weight / totalWeight) * totalMarks); accumulated += q.mark; }
+      });
+      return questions;
+    };
+
+    const partA = distributeMarks(parseQuestions($('#qBankA')?.value || ''), 30);
+    const partB = distributeMarks(parseQuestions($('#qBankB')?.value || ''), 30);
+    const partC = distributeMarks(parseQuestions($('#qBankC')?.value || ''), 40);
+
+    if (!partA.length && !partB.length && !partC.length) { toast('Sila masukkan soalan dulu Haziq.'); return; }
+
+    const renderSection = (title, data, startIndex) => {
+      if (!data.length) return '';
+      return `<h3 style="font-weight: bold; margin: 20px 0 5px; font-size: 13pt; text-transform: uppercase;">${title}</h3>
+              <h4 style="margin: 0 0 15px; font-size: 12pt; font-weight: normal; text-transform: uppercase;">${t.ansAll}</h4>
+              <ol style="padding-left: 20px; margin-bottom: 30px;" start="${startIndex}">
+                ${data.map(q => `<li style="margin-bottom: 15px; text-align: justify;">${q.text} <span style="float: right; font-weight: bold;">[${q.mark} ${t.marks}]</span>${q.imgHtml}</li>`).join('')}
+              </ol>`;
+    };
+
+    const cCode = escapeHTML($('#examCode')?.value || '-');
+    const cName = escapeHTML($('#examName')?.value || '-');
+    const cDur = escapeHTML($('#examDuration')?.value || '-');
+    const cFac = escapeHTML($('#examFac')?.value || '-');
+    const cDept = escapeHTML($('#examDept')?.value || '-');
+    const cProg = escapeHTML($('#examProg')?.value || '-');
+    const cLect = escapeHTML($('#examLecturer')?.value || '-');
+
+    if($('#examPaper')) {
+      $('#examPaper').innerHTML = `
+        <div class="print-footer">${t.confidential}</div>
+        <div class="cover-page">
+          <h2 style="font-size: 26px; font-weight: bold; text-align: center; margin-bottom: 5px;">EXAM PAPER GENERATOR</h2>
+          <h3 style="font-size: 18px; text-align: center; margin-bottom: 40px; text-transform: uppercase;">${t.title}</h3>
+          
+          <table style="text-align: left; font-size: 12pt; font-weight: bold; margin: 0 auto 40px auto; width: 90%; line-height: 1.8; text-transform: uppercase;">
+            <tr><td style="width: 25%;">${t.course}</td><td>: ${cName}</td></tr>
+            <tr><td>${t.code}</td><td>: ${cCode}</td></tr>
+            <tr><td>${t.duration}</td><td>: ${cDur}</td></tr>
+            <tr><td>${t.fac}</td><td>: ${cFac}</td></tr>
+            <tr><td>${t.dept}</td><td>: ${cDept}</td></tr>
+            <tr><td>${t.prog}</td><td>: ${cProg}</td></tr>
+            <tr><td>${t.lect}</td><td>: ${cLect}</td></tr>
+          </table>
+          
+          <div style="margin: 0 auto; width: 90%; text-align: left; border-top: 1.5px solid black; border-bottom: 1.5px solid black; padding: 20px 0;">
+            <h3 style="font-weight: bold; font-size: 13pt; text-align: center; margin-top: 0; text-decoration: underline;">${t.instruct}</h3>
+            <p style="font-size: 12pt; margin: 15px 0 5px 0;">This paper consists of the following sections:</p>
+            <ul style="font-size: 12pt; line-height: 1.6; padding-left: 20px; margin-top: 5px;">
+              <li>Section A - Structured / Objective Questions</li>
+              <li>Section B - Subjective Questions</li>
+              <li>Section C - Essay Questions</li>
+            </ul>
+            <p style="font-size: 12pt; margin: 15px 0;">Read CAREFULLY the instructions for each section.</p>
+            <p style="font-size: 12pt; font-weight: bold; text-align: center; margin-top: 30px;">${t.warning}</p>
+          </div>
+        </div>
+        <div class="exam-content">
+          ${renderSection(t.secA, partA, 1)}
+          ${renderSection(t.secB, partB, partA.length + 1)}
+          ${renderSection(t.secC, partC, partA.length + partB.length + 1)}
+        </div>
+      `;
+    }
+    setTimeout(() => window.print(), 300);
+  });
+}
     })();
   </script>
 </body>
