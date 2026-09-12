@@ -278,6 +278,16 @@
 
   <script>
     (() => {
+      // Ummi dah pindahkan fungsi asas ke atas supaya tak crash
+      const $ = (s) => document.querySelector(s);
+      const id = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+      const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c]));
+      const toDateKey = (date) => { const offset = date.getTimezoneOffset(); return new Date(date.getTime() - offset * 60000).toISOString().slice(0, 10); };
+      const dateFromKey = (key) => new Date(key + 'T12:00:00');
+      const formatDate = (date, opts) => new Intl.DateTimeFormat(undefined, opts).format(date);
+      const todayKey = toDateKey(new Date());
+      const toast = (message) => { const el = $('#toast'); el.textContent = message; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => el.classList.remove('show'), 2400); };
+
       const KEY = 'studentDashboard.v1';
       const defaultState = {
         settings: { semester: '', week: '', appUrl: '' },
@@ -286,18 +296,9 @@
       let state;
       try { state = { ...defaultState, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { state = defaultState; }
       state.settings ||= {}; state.announcements ||= []; state.classes ||= []; state.assignments ||= [];
+      
       let calendarCursor = new Date(); calendarCursor.setDate(1);
-      let selectedDate = toDateKey(new Date());
-
-      const $ = (s) => document.querySelector(s);
-      const save = () => localStorage.setItem(KEY, JSON.stringify(state));
-      const id = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
-      const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c]));
-      const toDateKey = (date) => { const offset = date.getTimezoneOffset(); return new Date(date.getTime() - offset * 60000).toISOString().slice(0, 10); };
-      const dateFromKey = (key) => new Date(key + 'T12:00:00');
-      const formatDate = (date, opts) => new Intl.DateTimeFormat(undefined, opts).format(date);
-      const todayKey = toDateKey(new Date());
-      const toast = (message) => { const el = $('#toast'); el.textContent = message; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => el.classList.remove('show'), 2400); };
+      let selectedDate = todayKey;
 
       $('#todayLabel').textContent = formatDate(new Date(), { weekday:'short', day:'numeric', month:'short' });
 
@@ -333,9 +334,10 @@
         const title = $('#noticeTitle').value.trim(), body = $('#noticeBody').value.trim();
         if (!title || !body) return;
         state.announcements.push({ id:id(), title, body, source:$('#noticeSource').value.trim(), color:document.querySelector('input[name="noticeColor"]:checked').value, createdAt:Date.now() });
-        save(); renderAnnouncements(); e.target.reset(); $('#noticeDialog').close(); toast('Announcement saved');
+        const save = () => localStorage.setItem(KEY, JSON.stringify(state)); save(); 
+        renderAnnouncements(); e.target.reset(); $('#noticeDialog').close(); toast('Announcement saved');
       });
-      $('#announcementList').addEventListener('click', e => { const button = e.target.closest('[data-delete-notice]'); if (!button) return; state.announcements = state.announcements.filter(n => n.id !== button.dataset.deleteNotice); save(); renderAnnouncements(); toast('Announcement removed'); });
+      $('#announcementList').addEventListener('click', e => { const button = e.target.closest('[data-delete-notice]'); if (!button) return; state.announcements = state.announcements.filter(n => n.id !== button.dataset.deleteNotice); const save = () => localStorage.setItem(KEY, JSON.stringify(state)); save(); renderAnnouncements(); toast('Announcement removed'); });
 
       function timeToMinutes(time) { const [h,m] = time.split(':').map(Number); return h * 60 + m; }
       function renderTimetable() {
@@ -353,6 +355,9 @@
         weekGrid.innerHTML = html;
         $('#semesterInput').value = state.settings.semester || ''; $('#weekInput').value = state.settings.week || '';
       }
+      
+      const save = () => localStorage.setItem(KEY, JSON.stringify(state));
+      
       $('#saveTermBtn').addEventListener('click', () => { state.settings.semester = $('#semesterInput').value.trim(); state.settings.week = $('#weekInput').value.trim(); save(); toast('Semester details saved'); });
       $('#addClassBtn').addEventListener('click', () => $('#classDialog').showModal());
       $('#classForm').addEventListener('submit', e => {
