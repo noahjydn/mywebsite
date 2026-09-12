@@ -315,7 +315,7 @@
 
   <script>
     (() => {
-      // Ummi dah pindahkan fungsi asas ke atas supaya tak crash
+      // 1. Fungsi Asas (Helpers)
       const $ = (s) => document.querySelector(s);
       const id = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
       const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c]));
@@ -323,305 +323,237 @@
       const dateFromKey = (key) => new Date(key + 'T12:00:00');
       const formatDate = (date, opts) => new Intl.DateTimeFormat(undefined, opts).format(date);
       const todayKey = toDateKey(new Date());
-      const toast = (message) => { const el = $('#toast'); el.textContent = message; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => el.classList.remove('show'), 2400); };
-
-      const KEY = 'studentDashboard.v1';
-      const defaultState = {
-        settings: { semester: '', week: '', appUrl: '' },
-        announcements: [], classes: [], assignments: []
+      const toast = (message) => { 
+        const el = $('#toast'); if(!el) return;
+        el.textContent = message; el.classList.add('show'); 
+        clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => el.classList.remove('show'), 2400); 
       };
+
+      // 2. Setup Data (LocalStorage)
+      const KEY = 'studentDashboard.v1';
+      const defaultState = { settings: { semester: '', week: '', appUrl: '' }, announcements: [], classes: [], assignments: [] };
       let state;
       try { state = { ...defaultState, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { state = defaultState; }
       state.settings ||= {}; state.announcements ||= []; state.classes ||= []; state.assignments ||= [];
-      
+      const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} };
+
       let calendarCursor = new Date(); calendarCursor.setDate(1);
       let selectedDate = todayKey;
 
-      $('#todayLabel').textContent = formatDate(new Date(), { weekday:'short', day:'numeric', month:'short' });
+      if($('#todayLabel')) $('#todayLabel').textContent = formatDate(new Date(), { weekday:'short', day:'numeric', month:'short' });
 
+      // 3. Workspace Apps
       function normalizeUrl(url) { if (!url) return ''; return /^https?:\/\//i.test(url) ? url : 'https://' + url; }
       function renderWorkspace() {
         const url = state.settings.appUrl || '';
-        $('#appUrl').value = url;
-        $('#appFrame').src = url;
-        $('#workspaceEmpty').style.display = url ? 'none' : 'flex';
+        if($('#appUrl')) $('#appUrl').value = url;
+        if($('#appFrame')) $('#appFrame').src = url;
+        if($('#workspaceEmpty')) $('#workspaceEmpty').style.display = url ? 'none' : 'flex';
       }
       function loadApp(value) {
-        const url = normalizeUrl(value || $('#appUrl').value.trim());
+        const url = normalizeUrl(value || ($('#appUrl') ? $('#appUrl').value.trim() : ''));
         if (!url) return;
         state.settings.appUrl = url; save(); renderWorkspace(); toast('App opened in your workspace');
       }
-      $('#loadAppBtn').addEventListener('click', () => loadApp());
-      $('#appUrl').addEventListener('keydown', e => { if (e.key === 'Enter') loadApp(); });
-      $('#clearAppBtn').addEventListener('click', () => { state.settings.appUrl = ''; save(); renderWorkspace(); });
+      if($('#loadAppBtn')) $('#loadAppBtn').addEventListener('click', () => loadApp());
+      if($('#appUrl')) $('#appUrl').addEventListener('keydown', e => { if (e.key === 'Enter') loadApp(); });
+      if($('#clearAppBtn')) $('#clearAppBtn').addEventListener('click', () => { state.settings.appUrl = ''; save(); renderWorkspace(); });
       document.querySelectorAll('.app-chip').forEach(button => button.addEventListener('click', () => loadApp(button.dataset.url)));
 
+      // 4. Announcements
       function renderAnnouncements() {
-        const list = $('#announcementList');
+        const list = $('#announcementList'); if(!list) return;
         if (!state.announcements.length) {
           list.innerHTML = '<div class="empty-state"><div class="empty-icon">◌</div><div><strong style="color:#36425b;display:block;margin-bottom:3px">No saved updates yet</strong>Add notices, deadlines, or campus reminders you want to keep.</div></div>';
           return;
         }
         list.innerHTML = [...state.announcements].sort((a,b) => b.createdAt - a.createdAt).map(n => `
-          <article class="announcement" style="--accent:${escapeHTML(n.color)}"><div class="announcement-bar"></div><div><div class="announcement-title">${escapeHTML(n.title)}</div><div class="announcement-body">${escapeHTML(n.body)}</div></div><div class="announcement-meta"><span>${escapeHTML(n.source || formatDate(new Date(n.createdAt), { day:'numeric', month:'short' }))}</span><div class="notice-actions"><button class="icon-btn" data-delete-notice="${n.id}" title="Delete update">×</button></div></div></article>`).join('');
+          <article class="announcement" style="--accent:${escapeHTML(n.color)}"><div class="announcement-bar"></div><div><div class="announcement-title">${escapeHTML(n.title)}</div><div class="announcement-body">${escapeHTML(n.body)}</div></div><div class="announcement-meta"><span>${escapeHTML(n.source || formatDate(new Date(n.createdAt), { day:'numeric', month:'short' }))}</span><div class="notice-actions"><button type="button" class="icon-btn" data-delete-notice="${n.id}" title="Delete update">×</button></div></div></article>`).join('');
       }
-      $('#addNoticeBtn').addEventListener('click', () => $('#noticeDialog').showModal());
-      $('#noticeForm').addEventListener('submit', e => {
+      if($('#addNoticeBtn')) $('#addNoticeBtn').addEventListener('click', () => $('#noticeDialog')?.showModal());
+      if($('#noticeForm')) $('#noticeForm').addEventListener('submit', e => {
         e.preventDefault();
         const title = $('#noticeTitle').value.trim(), body = $('#noticeBody').value.trim();
         if (!title || !body) return;
-        state.announcements.push({ id:id(), title, body, source:$('#noticeSource').value.trim(), color:document.querySelector('input[name="noticeColor"]:checked').value, createdAt:Date.now() });
-        const save = () => localStorage.setItem(KEY, JSON.stringify(state)); save(); 
-        renderAnnouncements(); e.target.reset(); $('#noticeDialog').close(); toast('Announcement saved');
+        const colorInput = document.querySelector('input[name="noticeColor"]:checked');
+        state.announcements.push({ id:id(), title, body, source:$('#noticeSource').value.trim(), color: colorInput ? colorInput.value : '#4c5ce8', createdAt:Date.now() });
+        save(); renderAnnouncements(); e.target.reset(); $('#noticeDialog')?.close(); toast('Announcement saved');
       });
-      $('#announcementList').addEventListener('click', e => { const button = e.target.closest('[data-delete-notice]'); if (!button) return; state.announcements = state.announcements.filter(n => n.id !== button.dataset.deleteNotice); const save = () => localStorage.setItem(KEY, JSON.stringify(state)); save(); renderAnnouncements(); toast('Announcement removed'); });
+      if($('#announcementList')) $('#announcementList').addEventListener('click', e => { const button = e.target.closest('[data-delete-notice]'); if (!button) return; state.announcements = state.announcements.filter(n => n.id !== button.dataset.deleteNotice); save(); renderAnnouncements(); toast('Announcement removed'); });
 
+      // 5. Timetable
       function timeToMinutes(time) { const [h,m] = time.split(':').map(Number); return h * 60 + m; }
       function renderTimetable() {
-        const weekGrid = $('#weekGrid');
+        const weekGrid = $('#weekGrid'); if(!weekGrid) return;
         const days = ['Mon','Tue','Wed','Thu','Fri']; const hours = Array.from({length:12}, (_, i) => i + 8);
         let html = '<div class="day-heading"></div>' + days.map((d, i) => `<div class="day-heading">${d}<span>${['Mon','Tue','Wed','Thu','Fri'][i]}</span></div>`).join('');
         hours.forEach((hour, hourIndex) => { const row = 2 + hourIndex * 2; html += `<div class="time-label" style="grid-column:1;grid-row:${row}/span 2">${String(hour).padStart(2,'0')}:00</div>`; for(let d=0;d<5;d++) html += `<div class="time-cell" style="grid-column:${d + 2};grid-row:${row}/span 2"></div>`; });
         state.classes.forEach(c => {
+          if(!c.start || !c.end) return;
           const start = timeToMinutes(c.start), end = timeToMinutes(c.end), first = 8 * 60, hourHeight = 57;
           if (c.day < 0 || c.day > 4 || end <= first || start >= 20 * 60) return;
           const rowStart = 2 + Math.max(0, Math.round((start - first) / 30)); const span = Math.max(1, Math.round((end - start) / 30));
           const title = escapeHTML(c.name), code = escapeHTML(c.code || ''), room = escapeHTML(c.room || '');
-          html += `<div class="class-card" style="--class-color:${escapeHTML(c.color)};grid-column:${c.day + 2};grid-row:${rowStart} / span ${span};"><button data-delete-class="${c.id}" title="Remove class">×</button><strong>${title}</strong><span>${code}${code && room ? ' · ' : ''}${room}</span><span>${c.start}–${c.end}</span></div>`;
+          html += `<div class="class-card" style="--class-color:${escapeHTML(c.color)};grid-column:${c.day + 2};grid-row:${rowStart} / span ${span};"><button type="button" data-delete-class="${c.id}" title="Remove class">×</button><strong>${title}</strong><span>${code}${code && room ? ' · ' : ''}${room}</span><span>${c.start}–${c.end}</span></div>`;
         });
         weekGrid.innerHTML = html;
-        $('#semesterInput').value = state.settings.semester || ''; $('#weekInput').value = state.settings.week || '';
+        if($('#semesterInput')) $('#semesterInput').value = state.settings.semester || ''; 
+        if($('#weekInput')) $('#weekInput').value = state.settings.week || '';
       }
-      
-      const save = () => localStorage.setItem(KEY, JSON.stringify(state));
-      
-      $('#saveTermBtn').addEventListener('click', () => { state.settings.semester = $('#semesterInput').value.trim(); state.settings.week = $('#weekInput').value.trim(); save(); toast('Semester details saved'); });
-      $('#addClassBtn').addEventListener('click', () => $('#classDialog').showModal());
-      $('#classForm').addEventListener('submit', e => {
+      if($('#saveTermBtn')) $('#saveTermBtn').addEventListener('click', () => { state.settings.semester = $('#semesterInput').value.trim(); state.settings.week = $('#weekInput').value.trim(); save(); toast('Semester details saved'); });
+      if($('#addClassBtn')) $('#addClassBtn').addEventListener('click', () => $('#classDialog')?.showModal());
+      if($('#classForm')) $('#classForm').addEventListener('submit', e => {
         e.preventDefault(); const start = $('#classStart').value, end = $('#classEnd').value;
         if (timeToMinutes(end) <= timeToMinutes(start)) { toast('End time needs to be after start time'); return; }
-        state.classes.push({ id:id(), name:$('#className').value.trim(), code:$('#classCode').value.trim(), day:+$('#classDay').value, room:$('#classRoom').value.trim(), start, end, color:document.querySelector('input[name="classColor"]:checked').value });
-        save(); renderTimetable(); e.target.reset(); $('#classDialog').close(); toast('Class added to timetable');
+        const colorInput = document.querySelector('input[name="classColor"]:checked');
+        state.classes.push({ id:id(), name:$('#className').value.trim(), code:$('#classCode').value.trim(), day:+$('#classDay').value, room:$('#classRoom').value.trim(), start, end, color: colorInput ? colorInput.value : '#4c5ce8' });
+        save(); renderTimetable(); e.target.reset(); $('#classDialog')?.close(); toast('Class added to timetable');
       });
-      $('#weekGrid').addEventListener('click', e => { const button = e.target.closest('[data-delete-class]'); if (!button) return; state.classes = state.classes.filter(c => c.id !== button.dataset.deleteClass); save(); renderTimetable(); toast('Class removed'); });
+      if($('#weekGrid')) $('#weekGrid').addEventListener('click', e => { const button = e.target.closest('[data-delete-class]'); if (!button) return; state.classes = state.classes.filter(c => c.id !== button.dataset.deleteClass); save(); renderTimetable(); toast('Class removed'); });
 
+      // 6. Upcoming Assignments
       function daysUntil(due) { return Math.ceil((dateFromKey(due).getTime() - dateFromKey(todayKey).getTime()) / 86400000); }
       function prettyDaysLeft(n) { return n < 0 ? `${Math.abs(n)}d overdue` : n === 0 ? 'Due today' : n === 1 ? 'Due tomorrow' : `${n} days left`; }
       function renderUpcoming() {
-        const list = $('#upcomingList'); const assignments = [...state.assignments].sort((a,b) => a.due.localeCompare(b.due));
+        const list = $('#upcomingList'); if(!list) return;
+        const assignments = [...state.assignments].sort((a,b) => a.due.localeCompare(b.due));
         if (!assignments.length) { list.innerHTML = '<div class="empty-state"><div class="empty-icon">✓</div><div><strong style="color:#36425b;display:block;margin-bottom:3px">Nothing due yet</strong>Add an assignment and it will appear here automatically.</div></div>'; return; }
-        list.innerHTML = assignments.slice(0, 5).map(a => { const due = dateFromKey(a.due), remaining = daysUntil(a.due); return `<article class="assignment"><div class="date-badge"><b>${due.getDate()}</b><span>${formatDate(due,{month:'short'})}</span></div><div><div class="assignment-title">${escapeHTML(a.name)}</div><div class="assignment-tasks">${escapeHTML(a.course || a.tasks.join(' · ') || 'No task breakdown')}</div></div><div><div class="days-left ${remaining <= 3 ? 'urgent' : ''}">${prettyDaysLeft(remaining)}</div><button class="icon-btn" data-delete-assignment="${a.id}" title="Delete assignment">×</button></div></article>`; }).join('');
+        list.innerHTML = assignments.slice(0, 5).map(a => { const due = dateFromKey(a.due), remaining = daysUntil(a.due); return `<article class="assignment"><div class="date-badge"><b>${due.getDate()}</b><span>${formatDate(due,{month:'short'})}</span></div><div><div class="assignment-title">${escapeHTML(a.name)}</div><div class="assignment-tasks">${escapeHTML(a.course || a.tasks.join(' · ') || 'No task breakdown')}</div></div><div><div class="days-left ${remaining <= 3 ? 'urgent' : ''}">${prettyDaysLeft(remaining)}</div><button type="button" class="icon-btn" data-delete-assignment="${a.id}" title="Delete assignment">×</button></div></article>`; }).join('');
       }
-      $('#assignmentForm').addEventListener('submit', e => {
+      if($('#assignmentForm')) $('#assignmentForm').addEventListener('submit', e => {
         e.preventDefault(); const taskText = $('#assignmentTasks').value.trim();
         state.assignments.push({ id:id(), name:$('#assignmentName').value.trim(), due:$('#assignmentDue').value, course:$('#assignmentCourse').value.trim(), tasks:taskText ? taskText.split(/\n|,/).map(t => t.trim()).filter(Boolean) : [] });
         save(); renderUpcoming(); renderCalendar(); e.target.reset(); toast('Assignment added to your calendar');
       });
-      $('#upcomingList').addEventListener('click', e => { const button = e.target.closest('[data-delete-assignment]'); if (!button) return; state.assignments = state.assignments.filter(a => a.id !== button.dataset.deleteAssignment); save(); renderUpcoming(); renderCalendar(); toast('Assignment removed'); });
+      if($('#upcomingList')) $('#upcomingList').addEventListener('click', e => { const button = e.target.closest('[data-delete-assignment]'); if (!button) return; state.assignments = state.assignments.filter(a => a.id !== button.dataset.deleteAssignment); save(); renderUpcoming(); renderCalendar(); toast('Assignment removed'); });
 
+      // 7. Calendar
       function renderCalendar() {
+        if(!$('#calendarMonth') || !$('#calendar')) return;
         const year = calendarCursor.getFullYear(), month = calendarCursor.getMonth();
         $('#calendarMonth').textContent = formatDate(calendarCursor, { month:'long', year:'numeric' });
         const firstDay = new Date(year, month, 1); const gridStart = new Date(year, month, 1 - firstDay.getDay());
         const dueDays = new Set(state.assignments.map(a => a.due));
         const dayNames = ['S','M','T','W','T','F','S']; let html = dayNames.map(d => `<div class="calendar-day-name">${d}</div>`).join('');
-        for(let i=0; i<42; i++) { const d = new Date(gridStart); d.setDate(gridStart.getDate() + i); const key = toDateKey(d); const classes = ['calendar-day']; if(d.getMonth() !== month) classes.push('muted'); if(key === todayKey) classes.push('today'); if(dueDays.has(key)) classes.push('has-task'); if(key === selectedDate) classes.push('selected'); html += `<button class="${classes.join(' ')}" data-date="${key}" aria-label="${formatDate(d,{day:'numeric',month:'long',year:'numeric'})}">${d.getDate()}</button>`; }
+        for(let i=0; i<42; i++) { const d = new Date(gridStart); d.setDate(gridStart.getDate() + i); const key = toDateKey(d); const classes = ['calendar-day']; if(d.getMonth() !== month) classes.push('muted'); if(key === todayKey) classes.push('today'); if(dueDays.has(key)) classes.push('has-task'); if(key === selectedDate) classes.push('selected'); html += `<button type="button" class="${classes.join(' ')}" data-date="${key}" aria-label="${formatDate(d,{day:'numeric',month:'long',year:'numeric'})}">${d.getDate()}</button>`; }
         $('#calendar').innerHTML = html;
         renderSelectedDateTasks();
       }
       function renderSelectedDateTasks() {
-        const area = $('#selectedDateTasks'); const tasks = state.assignments.filter(a => a.due === selectedDate); $('#selectedDateLabel').textContent = `Tasks due ${formatDate(dateFromKey(selectedDate), { day:'numeric', month:'short' })}`;
+        const area = $('#selectedDateTasks'); if(!area) return;
+        const tasks = state.assignments.filter(a => a.due === selectedDate); 
+        if($('#selectedDateLabel')) $('#selectedDateLabel').textContent = `Tasks due ${formatDate(dateFromKey(selectedDate), { day:'numeric', month:'short' })}`;
         area.innerHTML = tasks.length ? tasks.map(a => `<div class="date-task"><strong>${escapeHTML(a.name)}</strong>${a.course ? ` <span style="color:#8b95a7">· ${escapeHTML(a.course)}</span>` : ''}${a.tasks.length ? `<ul class="task-detail-list">${a.tasks.map(t=>`<li>${escapeHTML(t)}</li>`).join('')}</ul>` : ''}</div>`).join('') : '<span style="font-size:11px;color:#98a2b4">No assignments due on this day.</span>';
       }
-      $('#calendar').addEventListener('click', e => { const button = e.target.closest('[data-date]'); if (!button) return; selectedDate = button.dataset.date; const date = dateFromKey(selectedDate); calendarCursor = new Date(date.getFullYear(), date.getMonth(), 1); renderCalendar(); });
-      $('#previousMonth').addEventListener('click', () => { calendarCursor.setMonth(calendarCursor.getMonth() - 1); renderCalendar(); });
-      $('#nextMonth').addEventListener('click', () => { calendarCursor.setMonth(calendarCursor.getMonth() + 1); renderCalendar(); });
+      if($('#calendar')) $('#calendar').addEventListener('click', e => { const button = e.target.closest('[data-date]'); if (!button) return; selectedDate = button.dataset.date; const date = dateFromKey(selectedDate); calendarCursor = new Date(date.getFullYear(), date.getMonth(), 1); renderCalendar(); });
+      if($('#previousMonth')) $('#previousMonth').addEventListener('click', () => { calendarCursor.setMonth(calendarCursor.getMonth() - 1); renderCalendar(); });
+      if($('#nextMonth')) $('#nextMonth').addEventListener('click', () => { calendarCursor.setMonth(calendarCursor.getMonth() + 1); renderCalendar(); });
 
-      document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => document.getElementById(button.dataset.close).close()));
+      document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => document.getElementById(button.dataset.close)?.close()));
+      
+      // 8. Exam Paper Generator Pro
+      if ($('#generateExamBtn')) {
+        $('#generateExamBtn').addEventListener('click', () => {
+          const lang = $('#examLang')?.value || 'BM';
+          const t = {
+            title: lang === 'EN' ? 'FINAL EXAMINATION' : lang === 'DWI' ? 'PEPERIKSAAN AKHIR / FINAL EXAMINATION' : 'PEPERIKSAAN AKHIR',
+            course: lang === 'BM' ? 'KURSUS' : 'COURSE',
+            code: lang === 'BM' ? 'KOD KURSUS' : 'COURSE CODE',
+            fac: lang === 'BM' ? 'FAKULTI' : 'FACULTY',
+            prog: lang === 'BM' ? 'PROGRAM' : 'PROGRAMME',
+            instruct: lang === 'EN' ? 'INSTRUCTIONS TO CANDIDATES' : lang === 'DWI' ? 'ARAHAN KEPADA CALON / INSTRUCTIONS TO CANDIDATES' : 'ARAHAN KEPADA CALON',
+            warning: lang === 'EN' ? 'DO NOT OPEN THE QUESTION PAPER UNTIL INSTRUCTED.' : lang === 'DWI' ? 'DILARANG MEMBUKA KERTAS SOALAN SEHINGGA DIBENARKAN. / DO NOT OPEN THE QUESTION PAPER UNTIL INSTRUCTED.' : 'DILARANG MEMBUKA KERTAS SOALAN SEHINGGA DIBENARKAN.',
+            confidential: lang === 'BM' ? 'SULIT' : 'CONFIDENTIAL',
+            secA: lang === 'EN' ? 'SECTION A: STRUCTURED QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN A / SECTION A' : 'BAHAGIAN A: SOALAN STRUKTUR',
+            secB: lang === 'EN' ? 'SECTION B: SUBJECTIVE QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN B / SECTION B' : 'BAHAGIAN B: SOALAN SUBJEKTIF',
+            secC: lang === 'EN' ? 'SECTION C: ESSAY QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN C / SECTION C' : 'BAHAGIAN C: SOALAN ESEI',
+            marks: lang === 'BM' ? 'Markah' : 'Marks'
+          };
+
+          const parseQuestions = (text) => text.split('\n').filter(q => q.trim() !== '').map(q => {
+            let weight = 10; 
+            const lower = q.toLowerCase();
+            if (lower.match(/jelaskan|huraikan|bincangkan|explain|discuss|describe/)) weight += 5;
+            if (lower.match(/mengapa|pendapat|why|analyze/)) weight += 10;
+            
+            let imgHtml = '';
+            const imgMatch = q.match(/\[img:\s*(.*?)\]/);
+            if (imgMatch) {
+              imgHtml = `<br><img src="${imgMatch[1]}" style="max-width: 60%; margin-top: 10px; border: 1px solid #333;">`;
+              q = q.replace(imgMatch[0], '');
+            }
+            return { text: escapeHTML(q), weight, imgHtml, mark: 0 };
+          });
+
+          const distributeMarks = (questions, totalMarks) => {
+            if (!questions.length) return [];
+            const totalWeight = questions.reduce((sum, q) => sum + q.weight, 0);
+            let accumulated = 0;
+            questions.forEach((q, i) => {
+              if (i === questions.length - 1) q.mark = totalMarks - accumulated;
+              else { q.mark = Math.round((q.weight / totalWeight) * totalMarks); accumulated += q.mark; }
+            });
+            return questions;
+          };
+
+          const partA = distributeMarks(parseQuestions($('#qBankA')?.value || ''), 30);
+          const partB = distributeMarks(parseQuestions($('#qBankB')?.value || ''), 30);
+          const partC = distributeMarks(parseQuestions($('#qBankC')?.value || ''), 40);
+
+          if (!partA.length && !partB.length && !partC.length) { toast('Sila masukkan soalan dulu Haziq.'); return; }
+
+          const renderSection = (title, data, startIndex) => {
+            if (!data.length) return '';
+            return `<h3 style="font-weight: bold; margin: 20px 0 10px; font-size: 14pt; text-transform: uppercase;">${title}</h3>
+                    <ol style="padding-left: 20px; margin-bottom: 20px;" start="${startIndex}">
+                      ${data.map(q => `<li style="margin-bottom: 15px; text-align: justify;">${q.text} <span style="float: right; font-weight: bold;">[${q.mark} ${t.marks}]</span>${q.imgHtml}</li>`).join('')}
+                    </ol>`;
+          };
+
+          const cCode = escapeHTML($('#examCode')?.value || '-');
+          const cName = escapeHTML($('#examName')?.value || '-');
+          const cFac = escapeHTML($('#examFac')?.value || '-');
+          const cProg = escapeHTML($('#examProg')?.value || '-');
+
+          if($('#examPaper')) {
+            $('#examPaper').innerHTML = `
+              <div class="print-footer">${t.confidential}</div>
+              <div class="cover-page">
+                <div style="text-align: center; margin-bottom: 30px;">
+                  <h1 style="font-size: 45px; margin: 0; font-weight: 900; color: #f28b20; font-family: Arial, sans-serif; letter-spacing: -2px;">unisel</h1>
+                  <h2 style="font-size: 14px; margin: 0; font-weight: normal; font-family: Arial, sans-serif; letter-spacing: 3px; color: #555;">UNIVERSITI SELANGOR</h2>
+                </div>
+                <h2 style="font-size: 22px; font-weight: bold; text-align: center; margin-bottom: 30px;">${t.title}</h2>
+                
+                <table style="text-align: left; font-size: 14pt; margin: 0 auto 40px auto; width: 85%; line-height: 1.8;">
+                  <tr><td style="width: 35%; font-weight: bold;">${t.course}</td><td>: ${cName}</td></tr>
+                  <tr><td style="font-weight: bold;">${t.code}</td><td>: ${cCode}</td></tr>
+                  <tr><td style="font-weight: bold;">${t.fac}</td><td>: ${cFac}</td></tr>
+                  <tr><td style="font-weight: bold;">${t.prog}</td><td>: ${cProg}</td></tr>
+                </table>
+                
+                <div style="margin: 0 auto; width: 85%; text-align: left;">
+                  <h3 style="font-weight: bold; font-size: 14pt; text-decoration: underline;">${t.instruct}</h3>
+                  <ul style="font-size: 12pt; line-height: 1.8; padding-left: 20px;">
+                    <li>Kertas soalan ini mengandungi TIGA (3) bahagian utama.</li>
+                    <li>Jawab kesemua soalan yang diberikan.</li>
+                    <li style="margin-top: 10px;"><strong>${t.warning}</strong></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="page-break exam-content">
+                ${renderSection(t.secA, partA, 1)}
+                ${renderSection(t.secB, partB, partA.length + 1)}
+                ${renderSection(t.secC, partC, partA.length + partB.length + 1)}
+              </div>
+            `;
+          }
+          setTimeout(() => window.print(), 300);
+        });
+      }
+
+      // Initialize Dashboard
       renderWorkspace(); renderAnnouncements(); renderTimetable(); renderUpcoming(); renderCalendar();
-
-      if ($('#generateExamBtn')) $('#generateExamBtn').addEventListener('click', () => {
-      const bank = $('#questionBank').value.split('\n').filter(q => q.trim() !== '');
-      const count = parseInt($('#questionCount').value) || 1;
-  
-      if (bank.length < 3) { toast('Haziq kena letak sekurang-kurangnya 3 soalan untuk pecah 3 bahagian!'); return; }
-      if (count > bank.length) { toast('Jumlah soalan tak cukup dalam bank soalan.'); return; }
-
-      const shuffled = [...bank].sort(() => 0.5 - Math.random());
-      const selected = shuffled.slice(0, count);
-
-      const partA = selected.slice(0, Math.ceil(count / 3));
-      const partB = selected.slice(Math.ceil(count / 3), Math.ceil((count * 2) / 3));
-      const partC = selected.slice(Math.ceil((count * 2) / 3));
-
-      const paper = $('#examPaper');
-      paper.innerHTML = `
-        <div class="cover-page">
-          <h1 style="font-size: 24px; margin-bottom: 10px; font-weight: bold;">UNIVERSITI SELANGOR (UNISEL)</h1>
-          <h2 style="font-size: 20px; margin-bottom: 30px;">PEPERIKSAAN AKHIR ASASI</h2>
-          <p style="font-size: 16px; margin: 5px 0;"><strong>KOD KURSUS:</strong> _______________</p>
-          <p style="font-size: 16px; margin: 5px 0;"><strong>NAMA KURSUS:</strong> _______________</p>
-          <br><br><br>
-          <p style="font-size: 14px;"><em>JANGAN BUKA KERTAS SOALAN INI SEHINGGA DIBERITAHU</em></p>
-        </div>
-        <div class="page-break exam-content">
-          <h3 style="font-weight: bold; margin-bottom: 10px;">BAHAGIAN A</h3>
-          <ol style="padding-left: 20px; margin-bottom: 20px;">
-            ${partA.map(q => `<li style="margin-bottom: 10px;">${escapeHTML(q)}</li>`).join('')}
-          </ol>
-          <h3 style="font-weight: bold; margin-bottom: 10px;">BAHAGIAN B</h3>
-          <ol style="padding-left: 20px; margin-bottom: 20px;" start="${partA.length + 1}">
-            ${partB.map(q => `<li style="margin-bottom: 10px;">${escapeHTML(q)}</li>`).join('')}
-          </ol>
-          <h3 style="font-weight: bold; margin-bottom: 10px;">BAHAGIAN C</h3>
-          <ol style="padding-left: 20px; margin-bottom: 20px;" start="${partA.length + partB.length + 1}">
-            ${partC.map(q => `<li style="margin-bottom: 10px;">${escapeHTML(q)}</li>`).join('')}
-          </ol>
-        </div>
-      `;
-      $('#examOutput').style.display = 'block';
-      toast('Kertas exam pro berjaya di-generate!');
-    });
-      
-      if ($('#generateExamBtn')) $('#generateExamBtn').addEventListener('click', () => {
-  const parseQuestions = (text) => text.split('\n').filter(q => q.trim() !== '').map(q => {
-    let weight = 10; 
-    const lower = q.toLowerCase();
-    if (lower.includes('jelaskan') || lower.includes('huraikan') || lower.includes('bincangkan')) weight += 5;
-    if (lower.includes('mengapa') || lower.includes('pada pendapat anda')) weight += 10;
-    
-    let imgHtml = '';
-    const imgMatch = q.match(/\[img:\s*(.*?)\]/);
-    if (imgMatch) {
-      imgHtml = `<br><img src="${imgMatch[1]}" style="max-width: 60%; margin-top: 10px; border: 1px solid #333;">`;
-      q = q.replace(imgMatch[0], '');
-    }
-    return { text: escapeHTML(q), weight, imgHtml, mark: 0 };
-  });
-
-  const distributeMarks = (questions, totalMarks) => {
-    if (!questions.length) return [];
-    const totalWeight = questions.reduce((sum, q) => sum + q.weight, 0);
-    let accumulated = 0;
-    questions.forEach((q, i) => {
-      if (i === questions.length - 1) q.mark = totalMarks - accumulated;
-      else { q.mark = Math.round((q.weight / totalWeight) * totalMarks); accumulated += q.mark; }
-    });
-    return questions;
-  };
-
-  const partA = distributeMarks(parseQuestions($('#qBankA').value), 30);
-  const partB = distributeMarks(parseQuestions($('#qBankB').value), 30);
-  const partC = distributeMarks(parseQuestions($('#qBankC').value), 40);
-
-  if (!partA.length && !partB.length && !partC.length) { toast('Sila masukkan sekurang-kurangnya satu soalan.'); return; }
-
-  const renderSection = (title, data, startIndex) => {
-    if (!data.length) return '';
-    return `<h3 style="font-weight: bold; margin: 20px 0 10px; font-size: 14pt;">${title}</h3>
-            <ol style="padding-left: 20px; margin-bottom: 20px;" start="${startIndex}">
-              ${data.map(q => `<li style="margin-bottom: 15px;">${q.text} <span style="float: right; font-weight: bold;">[${q.mark} Markah]</span>${q.imgHtml}</li>`).join('')}
-            </ol>`;
-  };
-
-  if ($('#generateExamBtn')) $('#generateExamBtn').addEventListener('click', () => {
-  const lang = $('#examLang').value;
-  
-  const t = {
-    title: lang === 'EN' ? 'FINAL EXAMINATION' : lang === 'DWI' ? 'PEPERIKSAAN AKHIR / FINAL EXAMINATION' : 'PEPERIKSAAN AKHIR',
-    course: lang === 'BM' ? 'KURSUS' : 'COURSE',
-    code: lang === 'BM' ? 'KOD KURSUS' : 'COURSE CODE',
-    fac: lang === 'BM' ? 'FAKULTI' : 'FACULTY',
-    prog: lang === 'BM' ? 'PROGRAM' : 'PROGRAMME',
-    instruct: lang === 'EN' ? 'INSTRUCTIONS TO CANDIDATES' : lang === 'DWI' ? 'ARAHAN KEPADA CALON / INSTRUCTIONS TO CANDIDATES' : 'ARAHAN KEPADA CALON',
-    warning: lang === 'EN' ? 'DO NOT OPEN THE QUESTION PAPER UNTIL INSTRUCTED.' : lang === 'DWI' ? 'DILARANG MEMBUKA KERTAS SOALAN SEHINGGA DIBENARKAN. / DO NOT OPEN THE QUESTION PAPER UNTIL INSTRUCTED.' : 'DILARANG MEMBUKA KERTAS SOALAN SEHINGGA DIBENARKAN.',
-    confidential: lang === 'BM' ? 'SULIT' : 'CONFIDENTIAL',
-    secA: lang === 'EN' ? 'SECTION A: STRUCTURED QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN A / SECTION A' : 'BAHAGIAN A: SOALAN STRUKTUR',
-    secB: lang === 'EN' ? 'SECTION B: SUBJECTIVE QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN B / SECTION B' : 'BAHAGIAN B: SOALAN SUBJEKTIF',
-    secC: lang === 'EN' ? 'SECTION C: ESSAY QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN C / SECTION C' : 'BAHAGIAN C: SOALAN ESEI',
-    marks: lang === 'BM' ? 'Markah' : 'Marks'
-  };
-
-  const parseQuestions = (text) => text.split('\n').filter(q => q.trim() !== '').map(q => {
-    let weight = 10; 
-    const lower = q.toLowerCase();
-    if (lower.match(/jelaskan|huraikan|bincangkan|explain|discuss|describe/)) weight += 5;
-    if (lower.match(/mengapa|pendapat|why|analyze/)) weight += 10;
-    
-    let imgHtml = '';
-    const imgMatch = q.match(/\[img:\s*(.*?)\]/);
-    if (imgMatch) {
-      imgHtml = `<br><img src="${imgMatch[1]}" style="max-width: 60%; margin-top: 10px; border: 1px solid #333;">`;
-      q = q.replace(imgMatch[0], '');
-    }
-    return { text: escapeHTML(q), weight, imgHtml, mark: 0 };
-  });
-
-  const distributeMarks = (questions, totalMarks) => {
-    if (!questions.length) return [];
-    const totalWeight = questions.reduce((sum, q) => sum + q.weight, 0);
-    let accumulated = 0;
-    questions.forEach((q, i) => {
-      if (i === questions.length - 1) q.mark = totalMarks - accumulated;
-      else { q.mark = Math.round((q.weight / totalWeight) * totalMarks); accumulated += q.mark; }
-    });
-    return questions;
-  };
-
-  const partA = distributeMarks(parseQuestions($('#qBankA').value), 30);
-  const partB = distributeMarks(parseQuestions($('#qBankB').value), 30);
-  const partC = distributeMarks(parseQuestions($('#qBankC').value), 40);
-
-  if (!partA.length && !partB.length && !partC.length) { toast('Sila masukkan soalan dulu Haziq.'); return; }
-
-  const renderSection = (title, data, startIndex) => {
-    if (!data.length) return '';
-    return `<h3 style="font-weight: bold; margin: 20px 0 10px; font-size: 14pt; text-transform: uppercase;">${title}</h3>
-            <ol style="padding-left: 20px; margin-bottom: 20px;" start="${startIndex}">
-              ${data.map(q => `<li style="margin-bottom: 15px; text-align: justify;">${q.text} <span style="float: right; font-weight: bold;">[${q.mark} ${t.marks}]</span>${q.imgHtml}</li>`).join('')}
-            </ol>`;
-  };
-
-  const cCode = escapeHTML($('#examCode').value || '-');
-  const cName = escapeHTML($('#examName').value || '-');
-  const cFac = escapeHTML($('#examFac').value || '-');
-  const cProg = escapeHTML($('#examProg').value || '-');
-
-  $('#examPaper').innerHTML = `
-    <div class="print-footer">${t.confidential}</div>
-    <div class="cover-page">
-      <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="font-size: 45px; margin: 0; font-weight: 900; color: #f28b20; font-family: Arial, sans-serif; letter-spacing: -2px;">unisel</h1>
-        <h2 style="font-size: 14px; margin: 0; font-weight: normal; font-family: Arial, sans-serif; letter-spacing: 3px; color: #555;">UNIVERSITI SELANGOR</h2>
-      </div>
-      <h2 style="font-size: 22px; font-weight: bold; text-align: center; margin-bottom: 30px;">${t.title}</h2>
-      
-      <table style="text-align: left; font-size: 14pt; margin: 0 auto 40px auto; width: 85%; line-height: 1.8;">
-        <tr><td style="width: 35%; font-weight: bold;">${t.course}</td><td>: ${cName}</td></tr>
-        <tr><td style="font-weight: bold;">${t.code}</td><td>: ${cCode}</td></tr>
-        <tr><td style="font-weight: bold;">${t.fac}</td><td>: ${cFac}</td></tr>
-        <tr><td style="font-weight: bold;">${t.prog}</td><td>: ${cProg}</td></tr>
-      </table>
-      
-      <div style="margin: 0 auto; width: 85%; text-align: left;">
-        <h3 style="font-weight: bold; font-size: 14pt; text-decoration: underline;">${t.instruct}</h3>
-        <ul style="font-size: 12pt; line-height: 1.8; padding-left: 20px;">
-          <li>Kertas soalan ini mengandungi TIGA (3) bahagian utama.</li>
-          <li>Jawab kesemua soalan yang diberikan.</li>
-          <li style="margin-top: 10px;"><strong>${t.warning}</strong></li>
-        </ul>
-      </div>
-    </div>
-    <div class="page-break exam-content">
-      ${renderSection(t.secA, partA, 1)}
-      ${renderSection(t.secB, partB, partA.length + 1)}
-      ${renderSection(t.secC, partC, partA.length + partB.length + 1)}
-    </div>
-  `;
-  
-  // Terus buka dialog print tanpa tunjuk preview di web
-  setTimeout(() => window.print(), 300);
-});
     })();
   </script>
 </body>
