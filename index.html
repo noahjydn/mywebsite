@@ -139,6 +139,16 @@
     .form-help { color: #8b95a7; font-size: 11px; margin: 7px 0 13px; }
     .task-detail-list { margin: 4px 0 0; padding-left: 16px; color: var(--muted); font-size: 11px; line-height: 1.45; }
 
+    @media print {
+    body * { visibility: hidden; }
+    #examOutput, #examOutput * { visibility: visible; }
+    #examOutput { position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0; background: white; }
+    .page-break { page-break-before: always; }
+    .cover-page { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-family: 'Times New Roman', serif; }
+    .exam-content { font-family: 'Times New Roman', serif; font-size: 12pt; padding: 20px; }
+    .btn { display: none !important; }
+  }
+    
     /* Dialog */
     dialog { width: min(94vw, 500px); border: 0; padding: 0; border-radius: 17px; box-shadow: 0 20px 65px rgba(18, 29, 59, .24); }
     dialog::backdrop { background: rgba(22, 33, 61, .42); backdrop-filter: blur(2px); }
@@ -421,6 +431,49 @@
       document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => document.getElementById(button.dataset.close).close()));
       renderWorkspace(); renderAnnouncements(); renderTimetable(); renderUpcoming(); renderCalendar();
 
+      if ($('#generateExamBtn')) $('#generateExamBtn').addEventListener('click', () => {
+      const bank = $('#questionBank').value.split('\n').filter(q => q.trim() !== '');
+      const count = parseInt($('#questionCount').value) || 1;
+  
+      if (bank.length < 3) { toast('Haziq kena letak sekurang-kurangnya 3 soalan untuk pecah 3 bahagian!'); return; }
+      if (count > bank.length) { toast('Jumlah soalan tak cukup dalam bank soalan.'); return; }
+
+      const shuffled = [...bank].sort(() => 0.5 - Math.random());
+      const selected = shuffled.slice(0, count);
+
+      const partA = selected.slice(0, Math.ceil(count / 3));
+      const partB = selected.slice(Math.ceil(count / 3), Math.ceil((count * 2) / 3));
+      const partC = selected.slice(Math.ceil((count * 2) / 3));
+
+      const paper = $('#examPaper');
+      paper.innerHTML = `
+        <div class="cover-page">
+          <h1 style="font-size: 24px; margin-bottom: 10px; font-weight: bold;">UNIVERSITI SELANGOR (UNISEL)</h1>
+          <h2 style="font-size: 20px; margin-bottom: 30px;">PEPERIKSAAN AKHIR ASASI</h2>
+          <p style="font-size: 16px; margin: 5px 0;"><strong>KOD KURSUS:</strong> _______________</p>
+          <p style="font-size: 16px; margin: 5px 0;"><strong>NAMA KURSUS:</strong> _______________</p>
+          <br><br><br>
+          <p style="font-size: 14px;"><em>JANGAN BUKA KERTAS SOALAN INI SEHINGGA DIBERITAHU</em></p>
+        </div>
+        <div class="page-break exam-content">
+          <h3 style="font-weight: bold; margin-bottom: 10px;">BAHAGIAN A</h3>
+          <ol style="padding-left: 20px; margin-bottom: 20px;">
+            ${partA.map(q => `<li style="margin-bottom: 10px;">${escapeHTML(q)}</li>`).join('')}
+          </ol>
+          <h3 style="font-weight: bold; margin-bottom: 10px;">BAHAGIAN B</h3>
+          <ol style="padding-left: 20px; margin-bottom: 20px;" start="${partA.length + 1}">
+            ${partB.map(q => `<li style="margin-bottom: 10px;">${escapeHTML(q)}</li>`).join('')}
+          </ol>
+          <h3 style="font-weight: bold; margin-bottom: 10px;">BAHAGIAN C</h3>
+          <ol style="padding-left: 20px; margin-bottom: 20px;" start="${partA.length + partB.length + 1}">
+            ${partC.map(q => `<li style="margin-bottom: 10px;">${escapeHTML(q)}</li>`).join('')}
+          </ol>
+        </div>
+      `;
+      $('#examOutput').style.display = 'block';
+      toast('Kertas exam pro berjaya di-generate!');
+    });
+      
       if ($('#generateExamBtn')) $('#generateExamBtn').addEventListener('click', () => {
       const bank = $('#questionBank').value.split('\n').filter(q => q.trim() !== '');
       const count = parseInt($('#questionCount').value) || 1;
