@@ -3,152 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Dashboard</title>
+  <title>Student Dashboard Pro</title>
   <style>
     :root {
-      --ink: #16213d;
-      --muted: #64718a;
-      --line: #e6eaf1;
-      --canvas: #f6f8fc;
-      --panel: #ffffff;
-      --indigo: #4c5ce8;
-      --indigo-soft: #eef0ff;
-      --teal: #23a7a2;
-      --coral: #ef766a;
-      --yellow: #f4b844;
-      --shadow: 0 10px 32px rgba(26, 45, 89, .07);
+      --ink: #16213d; --muted: #64718a; --line: #e6eaf1; --canvas: #f6f8fc;
+      --panel: #ffffff; --indigo: #4c5ce8; --indigo-soft: #eef0ff;
+      --teal: #23a7a2; --coral: #ef766a; --shadow: 0 10px 32px rgba(26, 45, 89, .07);
     }
-
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body { margin: 0; background: var(--canvas); color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; overflow-x: hidden; }
+    body { margin: 0; background: var(--canvas); color: var(--ink); font-family: 'Segoe UI', system-ui, sans-serif; padding-bottom: 60px; }
     button, input, select, textarea { font: inherit; }
     button { cursor: pointer; }
     
-    .app-shell { display: grid; grid-template-columns: 238px minmax(0, 1fr); min-height: 100vh; transition: grid-template-columns 0.3s ease; }
-    .app-shell.hide-sidebar { grid-template-columns: 0 minmax(0, 1fr); }
-    .app-shell.hide-sidebar .sidebar { opacity: 0; padding: 0; overflow: hidden; pointer-events: none; }
-
-    .sidebar { position: sticky; top: 0; height: 100vh; padding: 25px 16px; background: #17213b; color: #fff; display: flex; flex-direction: column; transition: all 0.3s ease; white-space: nowrap; }
-    .brand { display: flex; align-items: center; gap: 11px; padding: 0 10px 30px; font-weight: 750; letter-spacing: -.02em; font-size: 18px; }
-    .brand-mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, #7181ff, #a9b3ff); color: #17213b; font-size: 17px; }
-    .nav-label { color: #8e9ab5; text-transform: uppercase; letter-spacing: .12em; font-size: 10px; font-weight: 700; padding: 0 11px 10px; }
+    .app-shell { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+    .sidebar { position: sticky; top: 0; height: 100vh; padding: 25px 16px; background: #17213b; color: #fff; display: flex; flex-direction: column; overflow-y: auto; }
+    .brand { display: flex; align-items: center; gap: 10px; padding: 0 5px 30px; font-weight: bold; font-size: 18px; }
+    .brand-mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, #7181ff, #a9b3ff); color: #17213b; }
     .nav { display: grid; gap: 5px; }
-    .nav a { text-decoration: none; color: #bfc8dd; display: flex; align-items: center; gap: 12px; padding: 11px; border-radius: 9px; font-size: 14px; transition: .18s ease; }
+    .nav a { text-decoration: none; color: #bfc8dd; display: flex; align-items: center; gap: 12px; padding: 11px; border-radius: 9px; font-size: 14px; transition: 0.2s; }
     .nav a:hover, .nav a.active { background: rgba(255,255,255,.10); color: #fff; }
-    .nav-icon { width: 20px; text-align: center; font-size: 16px; }
-    .sidebar-note { margin-top: auto; padding: 15px; border-radius: 12px; background: rgba(124, 143, 255, .14); color: #cdd4ff; font-size: 12px; line-height: 1.55; white-space: normal; }
-    .sidebar-note strong { color: #fff; display: block; margin-bottom: 4px; font-size: 13px; }
-
-    main { padding: 30px clamp(15px, 3.4vw, 54px) 48px; overflow-x: hidden; display: flex; flex-direction: column; min-width: 0; }
     
-    .beta-banner { background: #fdf0d5; border: 1px solid #f4b844; color: #9c6c0a; padding: 12px 18px; border-radius: 10px; margin-bottom: 25px; display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; font-size: 13px; line-height: 1.5; font-weight: 500; }
-    .beta-banner strong { color: #7a5303; }
-    .beta-banner button { background: transparent; border: none; color: #9c6c0a; font-size: 18px; padding: 0; line-height: 1; opacity: 0.7; }
-    .beta-banner button:hover { opacity: 1; }
-
-    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 0 auto 28px; width: 100%; max-width: 1440px; flex-wrap: wrap; }
-    .topbar-left { display: flex; align-items: center; gap: 15px; }
-    .eyebrow { margin: 0 0 5px; color: var(--indigo); font-weight: 700; letter-spacing: .09em; text-transform: uppercase; font-size: 10px; }
-    h1 { font-size: clamp(22px, 3vw, 34px); letter-spacing: -.045em; margin: 0; line-height: 1.1; }
-    .today { display: flex; align-items: center; gap: 9px; color: var(--muted); background: #fff; padding: 10px 13px; border-radius: 11px; box-shadow: var(--shadow); font-size: 13px; white-space: nowrap; }
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #41ba83; box-shadow: 0 0 0 4px #e3f7ec; }
-    .content { width: 100%; max-width: 1440px; margin: 0 auto; display: grid; gap: 24px; }
-    .section { scroll-margin-top: 18px; }
-    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 14px; margin: 0 0 13px; flex-wrap: wrap; }
-    h2 { margin: 0; font-size: 18px; letter-spacing: -.025em; }
-    .section-subtitle { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
-    .section-actions { display: flex; gap: 8px; }
-    .panel { background: var(--panel); border: 1px solid rgba(226,230,239,.9); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+    main { padding: 25px 30px; overflow-x: hidden; }
+    .topbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 25px; }
+    .quote-box { background: #fff; padding: 12px 18px; border-radius: 12px; box-shadow: var(--shadow); flex: 1; min-width: 280px; border-left: 4px solid var(--teal); font-size: 13px; font-style: italic; color: #444; }
     
-    .btn { border: 0; background: var(--indigo); color: #fff; padding: 10px 13px; border-radius: 9px; font-weight: 650; font-size: 13px; transition: transform .15s, background .15s; white-space: nowrap; }
-    .btn:hover { transform: translateY(-1px); background: #3f50d6; }
+    .content { display: grid; gap: 24px; }
+    .panel { background: var(--panel); border: 1px solid #e2e6ef; border-radius: 16px; box-shadow: var(--shadow); padding: 20px; }
+    .btn { border: 0; background: var(--indigo); color: #fff; padding: 10px 15px; border-radius: 8px; font-weight: bold; font-size: 13px; transition: 0.2s; }
+    .btn:hover { background: #3f50d6; }
     .btn.ghost { background: #f0f2f8; color: #47546e; }
-    .btn.ghost:hover { background: #e6e9f1; }
-    .btn.small { padding: 7px 10px; font-size: 12px; }
-    .icon-btn { border: 0; color: #66738b; background: #f3f5f9; border-radius: 8px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; font-size: 18px; transition: 0.2s; }
-    .icon-btn:hover { background: #e7eaf1; color: #e15959; }
-    #menuBtn:hover { color: var(--indigo); }
+    .section-heading h2 { margin: 0 0 15px 0; font-size: 18px; }
 
-    .workspace { padding: 0; }
-    .workspace-toolbar { display: flex; align-items: center; padding: 12px; gap: 9px; border-bottom: 1px solid var(--line); background: #fbfcfe; flex-wrap: wrap; }
-    .url-field { flex: 1; min-width: 120px; border: 1px solid #dfe4ee; border-radius: 9px; background: #fff; padding: 9px 11px; color: var(--ink); font-size: 13px; outline-color: var(--indigo); }
-    .workspace-view { height: 410px; position: relative; background: #fafbff; }
-    .workspace-view iframe { position: absolute; width: 100%; height: 100%; border: 0; background: #fff; }
-    .workspace-empty { display: none; width: 100%; height: 100%; align-items: center; justify-content: center; flex-direction: column; text-align: center; color: var(--muted); gap: 9px; padding: 20px; }
-    .workspace-empty .empty-icon { color: var(--indigo); background: var(--indigo-soft); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-size: 20px; font-weight: bold; }
-    .quick-apps { display: flex; align-items: center; padding: 11px 14px; gap: 8px; overflow-x: auto; scrollbar-width: none; }
-    .quick-apps::-webkit-scrollbar { display: none; }
-    .quick-apps .caption { color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; padding-right: 3px; white-space: nowrap; }
-    .app-chip { border: 1px solid #e5e9f0; background: #fff; border-radius: 20px; padding: 6px 10px; font-size: 12px; color: #4d5b74; white-space: nowrap; }
-    .app-chip:hover { color: var(--indigo); border-color: #bec6ff; background: #f8f8ff; }
-
-    .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(310px, .82fr); gap: 24px; align-items: start; }
-    .notice-board { padding: 20px; }
-    .announcement-list { display: grid; gap: 10px; }
-    .announcement { display: grid; grid-template-columns: 4px minmax(0, 1fr) auto; gap: 12px; padding: 12px 0; border-bottom: 1px solid #eef0f5; }
-    .announcement:last-child { border-bottom: 0; padding-bottom: 0; }
-    .announcement-bar { width: 4px; border-radius: 8px; background: var(--accent, var(--indigo)); }
-    .announcement-title { font-size: 14px; font-weight: 720; line-height: 1.35; word-break: break-word; }
-    .announcement-body { color: var(--muted); font-size: 12px; line-height: 1.45; margin-top: 4px; word-break: break-word; }
-    .announcement-meta { display: flex; gap: 8px; align-items: flex-start; color: #8b96aa; font-size: 11px; white-space: nowrap; }
-    .notice-actions { display: flex; gap: 5px; }
-    .notice-actions .icon-btn { width: 24px; height: 24px; font-size: 14px; background: transparent; }
-
-    .assignments-panel { padding: 20px; }
-    .assignment-list { display: grid; gap: 10px; }
-    .assignment { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 11px; align-items: center; border: 1px solid #e8ebf1; padding: 10px; border-radius: 11px; }
-    .date-badge { width: 39px; height: 42px; background: #fff2ee; color: #c85548; border-radius: 8px; display: grid; place-content: center; text-align: center; line-height: 1; flex-shrink: 0; }
-    .date-badge b { font-size: 15px; }
-    .date-badge span { font-size: 9px; text-transform: uppercase; margin-top: 3px; font-weight: 700; }
-    .assignment-title { font-weight: 700; font-size: 13px; line-height: 1.3; word-break: break-word; }
-    .assignment-tasks { color: var(--muted); font-size: 11px; margin-top: 3px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
-    .days-left { color: #68758c; font-size: 11px; font-weight: 700; text-align: right; }
-    .days-left.urgent { color: #d7574d; }
-    .empty-state { padding: 22px 12px; display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 13px; }
-    .empty-icon { width: 37px; height: 37px; flex: 0 0 auto; border-radius: 10px; background: #f0f2f7; display: grid; place-items: center; font-size: 17px; }
-
-    .timetable-controls { padding: 15px 17px; margin-bottom: 14px; display: flex; align-items: flex-end; justify-content: space-between; gap: 15px; flex-wrap: wrap; }
-    .field-row { display: flex; gap: 10px; flex-wrap: wrap; width: 100%; }
-    label { color: #6c7890; font-size: 11px; font-weight: 700; letter-spacing: .03em; display: grid; gap: 5px; flex: 1; min-width: 130px; }
-    input, select, textarea { border: 1px solid #dfe4ed; border-radius: 8px; padding: 8px 10px; background: #fff; color: var(--ink); outline-color: var(--indigo); width: 100%; }
-    .field-row input { width: 100%; }
+    /* New Apps Grid */
+    .apps-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 20px; justify-items: center; }
+    .app-item { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; cursor: pointer; transition: transform 0.2s; text-decoration: none; color: inherit; width: 100%; }
+    .app-item:hover { transform: translateY(-3px); }
+    .app-icon { width: 56px; height: 56px; background: #fff; border-radius: 50%; display: grid; place-items: center; font-size: 26px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #f0f0f0; }
+    .app-label { font-size: 11px; font-weight: 600; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px; }
     
-    .week-grid-wrap { overflow-x: auto; max-width: 100%; }
-    .week-grid { --hour-height: 57px; min-width: 750px; display: grid; grid-template-columns: 54px repeat(5, 1fr); grid-template-rows: 35px repeat(24, calc(var(--hour-height) / 2)); background: #fff; position: relative; border-radius: 15px; overflow: hidden; border: 1px solid #e4e8f0; }
-    .day-heading { padding: 10px 8px; text-align: center; color: #6d7990; font-size: 11px; font-weight: 750; background: #fbfcfe; border-bottom: 1px solid #e6eaf1; border-left: 1px solid #e6eaf1; }
-    .day-heading span { color: #a1aabb; font-weight: 600; padding-left: 3px; }
-    .time-label { color: #98a2b4; font-size: 10px; padding: 7px 7px 0 0; text-align: right; border-bottom: 1px solid #edf0f5; }
-    .time-cell { border-left: 1px solid #edf0f5; border-bottom: 1px solid #edf0f5; }
-    .class-card { z-index: 2; margin: 3px 4px; padding: 7px 8px; overflow: hidden; color: #fff; background: var(--class-color, var(--indigo)); border-radius: 7px; box-shadow: 0 3px 8px rgba(36, 54, 92, .13); font-size: 10px; line-height: 1.3; }
-    .class-card strong { display: block; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .class-card span { opacity: .89; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-    .class-card button { float: right; margin: -3px -4px 0 3px; padding: 0; color: inherit; opacity: .85; background: transparent; border: 0; font-size: 13px; }
-
-    .tracker-grid { display: grid; grid-template-columns: minmax(280px, .72fr) minmax(0, 1.28fr); gap: 24px; }
-    .calendar-panel { padding: 17px; }
-    .calendar-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 13px; }
-    .month-name { font-size: 14px; font-weight: 760; }
-    .calendar-nav { display: flex; gap: 4px; }
-    .calendar-nav button { width: 27px; height: 27px; border: 0; background: #f2f4f8; color: #657087; border-radius: 7px; }
-    .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
-    .calendar-day-name { font-size: 9px; color: #9ba5b6; text-align: center; padding: 3px 0; font-weight: 700; }
-    .calendar-day { position: relative; min-height: 34px; padding: 5px 6px; color: #5e6a80; border-radius: 7px; font-size: 11px; }
-    .calendar-day.muted { color: #bec6d1; }
-    .calendar-day.today { background: var(--indigo-soft); color: var(--indigo); font-weight: 800; }
-    .calendar-day.has-task::after { content: ""; position: absolute; left: 50%; bottom: 4px; width: 4px; height: 4px; transform: translateX(-50%); border-radius: 50%; background: var(--coral); }
-    .calendar-day.selected { box-shadow: inset 0 0 0 1px #aeb7ff; }
-    .selected-date-tasks { border-top: 1px solid #eef0f4; margin-top: 14px; padding-top: 12px; }
-    .selected-date-tasks h3 { font-size: 12px; margin: 0 0 8px; color: #536078; }
-    .date-task { font-size: 11px; padding: 6px 0; border-bottom: 1px solid #f0f2f5; word-break: break-word; }
-    .date-task:last-child { border: 0; }
+    /* Layouts */
+    .two-col { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; align-items: start; }
+    .patch-notes { font-size: 12px; color: var(--muted); max-height: 300px; overflow-y: auto; padding-right: 10px; }
+    .patch-item { border-left: 2px solid var(--indigo); padding-left: 12px; margin-bottom: 15px; }
+    .patch-item h4 { margin: 0 0 4px 0; color: var(--ink); font-size: 13px; }
     
-    .task-form { padding: 20px; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .form-grid .full { grid-column: 1 / -1; }
-    textarea { min-height: 76px; resize: vertical; line-height: 1.4; width: 100%; }
-    .form-help { color: #8b95a7; font-size: 11px; margin: 7px 0 13px; }
-    .task-detail-list { margin: 4px 0 0; padding-left: 16px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    input, select, textarea { width: 100%; border: 1px solid #dfe4ed; border-radius: 8px; padding: 10px; font-size: 13px; background: #fafbff; }
+    
+    /* Solat Overlay */
+    #solatOverlay { position: fixed; inset: 0; background: rgba(18, 25, 43, 0.96); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 20px; backdrop-filter: blur(5px); }
+    .solat-box { background: linear-gradient(135deg, #23a7a2, #188682); padding: 40px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-width: 400px; width: 100%; }
+    
+    .tasbih-btn { background: #fff; color: var(--indigo); border: 2px solid var(--indigo); font-weight: bold; border-radius: 20px; padding: 6px 15px; font-size: 13px; margin-left: auto; }
+    
+    /* Mobile Responsive Fixes */
+    @media (max-width: 900px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .app-shell { display: block; }
+      .sidebar { position: fixed; bottom: 0; top: auto; height: 60px; width: 100%; flex-direction: row; padding: 5px 10px; z-index: 100; overflow: visible; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); }
+      .brand, .sidebar-note { display: none; }
+      .nav { display: flex; flex-direction: row; justify-content: space-around; width: 100%; }
+      .nav a { flex-direction: column; padding: 5px; gap: 3px; font-size: 10px; }
+      .nav-icon { font-size: 18px; }
+      main { padding: 15px 15px 80px; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
 
     #examOutput { display: none; }
     @media print {
@@ -157,182 +80,117 @@
       #examOutput { position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0; background: white; display: block !important; }
       .cover-page { page-break-after: always; padding: 10px 40px; font-family: 'Times New Roman', serif; color: black; display: block; }
       .exam-content { font-family: 'Times New Roman', serif; font-size: 12pt; padding: 20px 40px; color: black; display: block; }
-      .print-footer { position: fixed; bottom: 15px; left: 40px; right: 40px; font-weight: bold; font-family: 'Times New Roman', serif; font-size: 10pt; text-align: center; border-top: 1px solid black; padding-top: 5px; }
       @page { margin: 15mm; }
-    }
-    
-    dialog { width: min(94vw, 500px); border: 0; padding: 0; border-radius: 17px; box-shadow: 0 20px 65px rgba(18, 29, 59, .24); max-width: 100%; }
-    dialog::backdrop { background: rgba(22, 33, 61, .42); backdrop-filter: blur(2px); }
-    .dialog-inner { padding: 21px; }
-    .dialog-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 17px; }
-    .dialog-head h3 { margin: 0; font-size: 17px; letter-spacing: -.02em; }
-    .dialog-grid { display: grid; gap: 11px; width: 100%; }
-    .dialog-grid.two { grid-template-columns: 1fr 1fr; }
-    .dialog-grid label input, .dialog-grid label select { width: 100%; }
-    .dialog-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
-    .color-options { display: flex; gap: 8px; padding-top: 3px; }
-    .color-swatch { appearance: none; width: 24px; height: 24px; padding: 0; border: 3px solid #fff; outline: 1px solid #dce1e9; border-radius: 50%; background: var(--swatch); flex-shrink: 0; }
-    .color-swatch:checked { outline: 2px solid var(--swatch); }
-
-    .toast { position: fixed; right: 24px; bottom: 24px; background: #1f2b49; color: #fff; padding: 11px 14px; border-radius: 10px; box-shadow: 0 8px 25px rgba(25,38,70,.2); font-size: 13px; transform: translateY(80px); opacity: 0; transition: .25s; z-index: 1000; }
-    .toast.show { transform: translateY(0); opacity: 1; }
-
-    @media (max-width: 960px) { 
-      .app-shell { grid-template-columns: 70px minmax(0,1fr); } 
-      .sidebar { padding: 20px 9px; align-items: center; } 
-      .brand { justify-content: center; padding: 0 0 28px; } 
-      .brand span, .nav-label, .nav span:not(.nav-icon), .sidebar-note { display: none; } 
-      .nav a { justify-content: center; padding: 11px 0; border-radius: 12px; } 
-      .dashboard-grid, .tracker-grid { grid-template-columns: 1fr; } 
-      .form-grid { grid-template-columns: 1fr; } 
-    }
-    
-    @media (max-width: 600px) { 
-      .app-shell { display: flex; flex-direction: column; }
-      .app-shell.hide-sidebar .sidebar { display: none; }
-      .sidebar { height: auto; min-height: 62px; position: sticky; z-index: 50; padding: 8px 12px; flex-direction: row; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); } 
-      .brand { padding: 0; margin-right: 10px; } 
-      .nav { display: flex; flex: 1; justify-content: space-between; gap: 2px; width: 100%; } 
-      .nav a { padding: 9px; flex: 1; } 
-      main { padding: 20px 15px 36px; } 
-      .topbar { flex-direction: column; align-items: flex-start; gap: 15px; margin-bottom: 20px; } 
-      .today { font-size: 11px; padding: 9px; align-self: flex-start; } 
-      .workspace-toolbar .btn { display: none; } 
-      .workspace-view { height: 350px; } 
-      .timetable-controls { flex-direction: column; align-items: stretch; } 
-      .field-row { flex-direction: column; gap: 10px; }
-      .dialog-grid.two { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
+  
+  <div id="solatOverlay">
+    <div class="solat-box">
+      <h1 style="font-size: 40px; margin: 0 0 10px;">🕌</h1>
+      <h2 id="solatTitle" style="margin: 0 0 10px;">Waktu Solat Dah Masuk!</h2>
+      <p style="font-size: 15px; margin-bottom: 25px;">Berhentilah seketika. "Solat itu tiang agama, barangsiapa mendirikannya maka dia mendirikan agama."</p>
+      <button class="btn" onclick="document.getElementById('solatOverlay').style.display='none'" style="background: #fff; color: #188682; width: 100%; margin-bottom: 10px;">Alhamdulillah, Saya Nak Solat</button>
+      <button class="btn ghost" onclick="document.getElementById('solatOverlay').style.display='none'" style="width: 100%; background: transparent; border: 1px solid #fff; color: #fff;">Tangguh 5 Minit (Kecemasan)</button>
+    </div>
+  </div>
+
   <div class="app-shell">
     <aside class="sidebar">
-      <div class="brand"><div class="brand-mark">⌘</div><span>Student space</span></div>
-      <div class="nav-label">Workspace</div>
+      <div class="brand"><div class="brand-mark">⌘</div><span>Student Space</span></div>
       <nav class="nav">
-        <a class="active" href="#workspace"><span class="nav-icon">◫</span><span>Apps</span></a>
-        <a href="#announcements"><span class="nav-icon">◌</span><span>Notices</span></a>
-        <a href="#timetable"><span class="nav-icon">▦</span><span>Timetable</span></a>
-        <a href="#tracker"><span class="nav-icon">✓</span><span>Assignments</span></a>
+        <a class="active" href="#workspace"><span class="nav-icon">📱</span><span>Apps</span></a>
+        <a href="#timetable"><span class="nav-icon">▦</span><span>Jadual</span></a>
         <a href="#examGen"><span class="nav-icon">📝</span><span>Exam Gen</span></a>
       </nav>
-      <div class="sidebar-note"><strong>Everything stays here</strong>Data is saved in your browser.</div>
+      <div class="sidebar-note"><strong>Data Selamat</strong>Semua info disimpan secara lokal.</div>
     </aside>
 
     <main>
-      <div id="betaNotice" class="beta-banner">
-        <div>🚧 <strong>Beta Edition:</strong> This website is currently under development. Some features may not be perfect, but the developer is giving their best effort to improve the experience!</div>
-        <button aria-label="Close notice" onclick="document.getElementById('betaNotice').style.display='none'">×</button>
-      </div>
-
       <header class="topbar">
-        <div class="topbar-left">
-          <button id="menuBtn" class="icon-btn" aria-label="Toggle Menu">☰</button>
-          <div>
-            <p class="eyebrow">Personal learning hub</p>
-            <h1>Stay in step with your semester.</h1>
-          </div>
-        </div>
-        <div class="today"><span class="status-dot"></span><span id="todayLabel"></span></div>
+        <div><h1 style="font-size: 22px;">Assalamualaikum, Haziq! 👋</h1></div>
+        <button id="tasbihBtn" class="tasbih-btn">📿 Tasbih: 0</button>
+        <div class="quote-box" id="dailyQuote">Memuat turun mutiara kata...</div>
       </header>
 
-      <div class="panel" style="margin-bottom: 24px; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; background: linear-gradient(135deg, #4c5ce8, #7181ff); color: white;">
-        <div>
-          <h3 style="margin: 0 0 5px; font-size: 14px; color: white;">🎯 Goal Countdown</h3>
-          <div id="countdownDisplay" style="font-size: 18px; font-weight: bold; letter-spacing: 1px;">Please set a target date...</div>
-        </div>
-        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
-          <input id="countdownInput" type="date" style="padding: 6px 10px; border-radius: 6px; border: none; outline: none; font-size: 12px; color: black; min-width: 140px;" />
-          <button id="saveCountdownBtn" class="btn" style="background: #23a7a2; padding: 6px 12px; font-size: 12px; color: white;">Set Target</button>
-        </div>
-      </div>
-
       <div class="content">
-        <section id="workspace" class="section">
-          <div class="section-heading"><div><h2>Apps Workspace</h2><p class="section-subtitle">Keep useful study tools close without switching tabs.</p></div></div>
-          <div class="panel workspace">
-            <div class="workspace-toolbar">
-              <input id="appUrl" class="url-field" type="url" placeholder="Paste a website address, e.g. https://..." aria-label="Website address" />
-              <button id="loadAppBtn" class="btn">Open app</button>
-              <button id="clearAppBtn" class="btn ghost">Clear</button>
+        
+        <!-- APPS WORKSPACE & PATCH NOTES -->
+        <div class="two-col" id="workspace">
+          <section class="section">
+            <div class="section-heading" style="display: flex; justify-content: space-between;">
+              <div><h2>Ruang Pembelajaran Saya</h2></div>
+              <button class="btn small" onclick="document.getElementById('addAppForm').style.display='block'">+ Add App</button>
             </div>
-            <div class="workspace-view">
-              <iframe id="appFrame" title="Apps workspace" referrerpolicy="no-referrer"></iframe>
-              <div id="workspaceEmpty" class="workspace-empty"><div class="empty-icon">↗</div><strong>Open a study tool here</strong><span>Paste a web address above or use a suggested app below.</span></div>
+            
+            <div id="addAppForm" class="panel" style="display: none; margin-bottom: 20px; background: #fafbff;">
+              <h4 style="margin: 0 0 10px;">Tambah Aplikasi Baru</h4>
+              <div class="form-grid">
+                <input id="newAppName" placeholder="Nama App (cth: E-Learning)" />
+                <input id="newAppIcon" placeholder="Emoji / Link Gambar (cth: 📚)" />
+                <input id="newAppUrl" class="full" placeholder="Link URL (cth: https://unisel.edu.my)" />
+              </div>
+              <div style="margin-top: 10px; text-align: right;">
+                <button class="btn ghost small" onclick="document.getElementById('addAppForm').style.display='none'">Batal</button>
+                <button class="btn small" id="saveNewAppBtn">Simpan</button>
+              </div>
             </div>
-            <div class="quick-apps"><span class="caption">Quick launch</span><button class="app-chip" data-url="https://www.wikipedia.org/">Wikipedia</button><button class="app-chip" data-url="https://www.youtube.com/">YouTube</button></div>
-          </div>
-        </section>
 
-        <div class="dashboard-grid">
-          <section id="announcements" class="section">
-            <div class="section-heading"><div><h2>Announcement Board</h2><p class="section-subtitle">Your saved campus updates.</p></div><div class="section-actions"><button id="addNoticeBtn" class="btn">+ Add update</button></div></div>
-            <div class="panel notice-board"><div id="announcementList" class="announcement-list"></div></div>
+            <div class="panel">
+              <div id="appsGrid" class="apps-container"></div>
+            </div>
           </section>
 
           <section class="section">
-            <div class="section-heading"><div><h2>Upcoming</h2><p class="section-subtitle">Assignments sorted by due date.</p></div><a class="btn ghost small" href="#tracker">View tracker</a></div>
-            <div class="panel assignments-panel"><div id="upcomingList" class="assignment-list"></div></div>
+            <div class="section-heading"><h2>Dev Patch Notes 🛠️</h2></div>
+            <div class="panel patch-notes">
+              <div class="patch-item">
+                <h4>v1.3 - Waktu Solat & Custom Apps (Terkini)</h4>
+                <p>Tambah sistem Grid Apps (boleh custom letak sendiri), ciri Auto-Shutdown Waktu Solat (Zon Selangor), Tasbih Digital & Petikan Al-Quran Harian. UI dibetulkan untuk skrin POCO C75.</p>
+              </div>
+              <div class="patch-item">
+                <h4>v1.2 - Exam Generator Pro</h4>
+                <p>Integrasi penjana kertas peperiksaan dengan pembahagian wajaran markah automatik & format cetakan rasmi UNISEL tanpa logo.</p>
+              </div>
+              <div class="patch-item">
+                <h4>v1.1 - Jadual & Kalendar</h4>
+                <p>Memasukkan ciri Dynamic Timetable, Assignment Tracker dan storan pangkalan data LocalStorage.</p>
+              </div>
+              <div class="patch-item">
+                <h4>v1.0 - Prototaip Awal</h4>
+                <p>Pelancaran antaramuka asas Student Dashboard dan papan kenyataan statik.</p>
+              </div>
+            </div>
           </section>
         </div>
 
+        <!-- JADUAL & KELAS -->
         <section id="timetable" class="section">
-          <div class="section-heading"><div><h2>Dynamic Timetable</h2><p class="section-subtitle">Map out your teaching week.</p></div><div class="section-actions"><button id="addClassBtn" class="btn">+ Add class</button></div></div>
-          <div class="panel timetable-controls">
-            <div class="field-row"><label>Semester<input id="semesterInput" placeholder="e.g. Semester 2" /></label><label>Academic week<input id="weekInput" placeholder="e.g. Week 7" /></label></div>
-            <button id="saveTermBtn" class="btn ghost">Save details</button>
-          </div>
-          <div class="week-grid-wrap"><div id="weekGrid" class="week-grid"></div></div>
-        </section>
-
-        <section id="tracker" class="section">
-          <div class="section-heading"><div><h2>Assignment Tracker</h2><p class="section-subtitle">Capture work now and see what is coming next.</p></div></div>
-          <div class="tracker-grid">
-            <div class="panel calendar-panel">
-              <div class="calendar-top"><div id="calendarMonth" class="month-name"></div><div class="calendar-nav"><button id="previousMonth" aria-label="Previous month">‹</button><button id="nextMonth" aria-label="Next month">›</button></div></div>
-              <div id="calendar" class="calendar"></div>
-              <div class="selected-date-tasks"><h3 id="selectedDateLabel">Tasks on this day</h3><div id="selectedDateTasks"></div></div>
+          <div class="section-heading"><div><h2>Dynamic Timetable</h2></div></div>
+          <div class="panel">
+            <div class="form-grid" style="margin-bottom: 15px;">
+              <input id="className" placeholder="Nama Kelas" />
+              <select id="classDay"><option value="0">Isnin</option><option value="1">Selasa</option><option value="2">Rabu</option><option value="3">Khamis</option><option value="4">Jumaat</option></select>
+              <input id="classStart" type="time" value="09:00" />
+              <input id="classEnd" type="time" value="11:00" />
             </div>
-            <div class="panel task-form">
-              <h3 style="margin:0 0 15px; font-size:16px; letter-spacing:-.02em;">Add an assignment</h3>
-              <form id="assignmentForm">
-                <div class="form-grid">
-                  <label class="full">Assignment name<input id="assignmentName" required placeholder="e.g. Research report" /></label>
-                  <label>Due date<input id="assignmentDue" type="date" required /></label>
-                  <label>Course<input id="assignmentCourse" placeholder="Optional" /></label>
-                  <label class="full">Tasks to complete<textarea id="assignmentTasks" placeholder="One task per line"></textarea></label>
-                </div>
-                <p class="form-help">Automatically added to the calendar.</p>
-                <button class="btn" type="submit">Save assignment</button>
-              </form>
-            </div>
+            <button id="addClassBtn" class="btn small">Tambah Kelas</button>
+            <div id="weekGrid" style="margin-top: 20px; font-size: 12px; display: grid; gap: 8px;"></div>
           </div>
         </section>
 
+        <!-- EXAM GEN PRO -->
         <section id="examGen" class="section">
-          <div class="section-heading">
-            <div><h2>Exam Paper Generator Pro</h2><p class="section-subtitle">Standard format exam paper generation.</p></div>
-          </div>
-          <div class="panel task-form">
-            <div class="form-grid">
-              <label>Language<select id="examLang"><option value="EN">English</option><option value="BM">Bahasa Melayu</option><option value="DWI">Dwi-Bahasa / Bilingual</option></select></label>
-              <label>Course Code<input id="examCode" placeholder="e.g. CEA1344" /></label>
-              <label class="full">Course Name<input id="examName" placeholder="e.g. Introduction to Literature" /></label>
-              <label>Duration<input id="examDuration" placeholder="e.g. 3 HOURS" /></label>
-              <label>Faculty<input id="examFac" placeholder="e.g. Education and Social Sciences" /></label>
-              <label>Department<input id="examDept" placeholder="e.g. Language Education" /></label>
-              <label>Programme<input id="examProg" placeholder="e.g. Foundation" /></label>
-              <label class="full">Lecturer<input id="examLecturer" placeholder="e.g. Mdm Sofea" /></label>
-              
-              <label class="full">Section A: Structured / Objective<textarea id="qBankA" placeholder="Enter question list..."></textarea></label>
-              <label class="full">Section B: Subjective (Use [img: image_url] for image)<textarea id="qBankB" placeholder="1. Explain the concept of... [img: https://link.jpg]"></textarea></label>
-              <label class="full">Section C: Essay<textarea id="qBankC" placeholder="Enter long essay questions..."></textarea></label>
-            </div>
-            <button id="generateExamBtn" class="btn" style="margin-top: 15px;">Generate & Print PDF</button>
-            <div id="examOutput">
-              <div id="examPaper"></div>
-            </div>
+          <div class="section-heading"><div><h2>Exam Paper Generator Pro</h2></div></div>
+          <div class="panel form-grid">
+            <select id="examLang"><option value="BM">Bahasa Melayu</option><option value="EN">English</option></select>
+            <input id="examCode" placeholder="Kod Kursus" />
+            <input id="examName" class="full" placeholder="Nama Kursus" />
+            <textarea id="qBankA" class="full" placeholder="Soalan Struktur / Objektif (1 soalan 1 baris)"></textarea>
+            <textarea id="qBankB" class="full" placeholder="Soalan Subjektif"></textarea>
+            <textarea id="qBankC" class="full" placeholder="Soalan Esei"></textarea>
+            <button id="generateExamBtn" class="btn full">Generate & Print PDF</button>
           </div>
         </section>
 
@@ -340,212 +198,155 @@
     </main>
   </div>
 
-  <dialog id="noticeDialog">
-    <form id="noticeForm" class="dialog-inner" method="dialog">
-      <div class="dialog-head"><h3>Save an announcement</h3><button type="button" class="icon-btn" data-close="noticeDialog" aria-label="Close">×</button></div>
-      <div class="dialog-grid">
-        <label>Title<input id="noticeTitle" required placeholder="e.g. Library hours update" /></label>
-        <label>Details<textarea id="noticeBody" required placeholder="Add key information."></textarea></label>
-        <label>Source<input id="noticeSource" placeholder="e.g. Faculty office" /></label>
-        <label>Accent color<div class="color-options"><input class="color-swatch" type="radio" name="noticeColor" value="#4c5ce8" style="--swatch:#4c5ce8" checked /><input class="color-swatch" type="radio" name="noticeColor" value="#23a7a2" style="--swatch:#23a7a2" /><input class="color-swatch" type="radio" name="noticeColor" value="#ef766a" style="--swatch:#ef766a" /></div></label>
-      </div>
-      <div class="dialog-footer"><button type="button" class="btn ghost" data-close="noticeDialog">Cancel</button><button class="btn" value="default">Save update</button></div>
-    </form>
-  </dialog>
-
-  <dialog id="classDialog">
-    <form id="classForm" class="dialog-inner" method="dialog">
-      <div class="dialog-head"><h3>Add a class</h3><button type="button" class="icon-btn" data-close="classDialog" aria-label="Close">×</button></div>
-      <div class="dialog-grid two">
-        <label>Class name<input id="className" required placeholder="e.g. Data Structures" /></label>
-        <label>Course code<input id="classCode" placeholder="e.g. CSC204" /></label>
-        <label>Day<select id="classDay"><option value="0">Monday</option><option value="1">Tuesday</option><option value="2">Wednesday</option><option value="3">Thursday</option><option value="4">Friday</option></select></label>
-        <label>Room<input id="classRoom" placeholder="e.g. B-204" /></label>
-        <label>Start time<input id="classStart" type="time" required value="09:00" /></label>
-        <label>End time<input id="classEnd" type="time" required value="10:00" /></label>
-        <label style="grid-column:1/-1">Class color<div class="color-options"><input class="color-swatch" type="radio" name="classColor" value="#4c5ce8" style="--swatch:#4c5ce8" checked /><input class="color-swatch" type="radio" name="classColor" value="#23a7a2" style="--swatch:#23a7a2" /><input class="color-swatch" type="radio" name="classColor" value="#ef766a" style="--swatch:#ef766a" /></div></label>
-      </div>
-      <div class="dialog-footer"><button type="button" class="btn ghost" data-close="classDialog">Cancel</button><button class="btn" value="default">Add to timetable</button></div>
-    </form>
-  </dialog>
-
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="examOutput"><div id="examPaper"></div></div>
+  <div id="toast" style="position:fixed; bottom:20px; right:20px; background:#333; color:white; padding:10px 20px; border-radius:8px; display:none; z-index:1000;">Berjaya!</div>
 
   <script>
     (() => {
       const $ = (s) => document.querySelector(s);
-      const id = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
-      const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c]));
-      const toDateKey = (date) => { const offset = date.getTimezoneOffset(); return new Date(date.getTime() - offset * 60000).toISOString().slice(0, 10); };
-      const dateFromKey = (key) => new Date(key + 'T12:00:00');
-      const formatDate = (date, opts) => new Intl.DateTimeFormat('en-US', opts).format(date);
-      const todayKey = toDateKey(new Date());
-      const toast = (message) => { 
-        const el = $('#toast'); if(!el) return;
-        el.textContent = message; el.classList.add('show'); 
-        clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => el.classList.remove('show'), 2400); 
+      const id = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
+      const toast = (msg) => { const el = $('#toast'); el.textContent = msg; el.style.display = 'block'; setTimeout(() => el.style.display='none', 2500); };
+
+      const KEY = 'studentDashboard.v1.3';
+      const defaultState = { 
+        customApps: [
+          { id: '1', name: 'MyStudent', icon: '🎓', url: 'https://mystudent.unisel.edu.my' },
+          { id: '2', name: 'E-Learning', icon: '📚', url: 'https://elearning.unisel.edu.my' },
+          { id: '3', name: 'MyPTPTN', icon: '💰', url: 'https://myptptn.ptptn.gov.my' },
+          { id: '4', name: 'Canva', icon: '🎨', url: 'https://canva.com' }
+        ],
+        classes: [], tasbihCount: 0 
       };
-
-      // Sidebar Toggle Logic
-      const menuBtn = $('#menuBtn');
-      const appShell = $('.app-shell');
-      if (menuBtn && appShell) {
-        menuBtn.addEventListener('click', () => {
-          appShell.classList.toggle('hide-sidebar');
-        });
-      }
-
-      const KEY = 'studentDashboard.v2';
-      const defaultState = { settings: { semester: '', week: '', appUrl: '', countdownTarget: '' }, announcements: [], classes: [], assignments: [] };
+      
       let state;
       try { state = { ...defaultState, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { state = defaultState; }
-      state.settings ||= {}; state.announcements ||= []; state.classes ||= []; state.assignments ||= [];
-      const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} };
-
-      let calendarCursor = new Date(); calendarCursor.setDate(1);
-      let selectedDate = todayKey;
-
-      if($('#todayLabel')) $('#todayLabel').textContent = formatDate(new Date(), { weekday:'short', day:'numeric', month:'short' });
-
-      function normalizeUrl(url) { if (!url) return ''; return /^https?:\/\//i.test(url) ? url : 'https://' + url; }
-      function renderWorkspace() {
-        const url = state.settings.appUrl || '';
-        if($('#appUrl')) $('#appUrl').value = url;
-        if($('#appFrame')) $('#appFrame').src = url;
-        if($('#workspaceEmpty')) $('#workspaceEmpty').style.display = url ? 'none' : 'flex';
-      }
-      function loadApp(value) {
-        const url = normalizeUrl(value || ($('#appUrl') ? $('#appUrl').value.trim() : ''));
-        if (!url) return;
-        state.settings.appUrl = url; save(); renderWorkspace(); toast('App opened in your workspace');
-      }
-      if($('#loadAppBtn')) $('#loadAppBtn').addEventListener('click', () => loadApp());
-      if($('#appUrl')) $('#appUrl').addEventListener('keydown', e => { if (e.key === 'Enter') loadApp(); });
-      if($('#clearAppBtn')) $('#clearAppBtn').addEventListener('click', () => { state.settings.appUrl = ''; save(); renderWorkspace(); });
-      document.querySelectorAll('.app-chip').forEach(btn => btn.addEventListener('click', () => loadApp(btn.dataset.url)));
-
-      function renderAnnouncements() {
-        const list = $('#announcementList'); if(!list) return;
-        if (!state.announcements.length) {
-          list.innerHTML = '<div class="empty-state"><div class="empty-icon">◌</div><div><strong style="color:#36425b;display:block;margin-bottom:3px">No saved updates yet</strong>Add notices or reminders.</div></div>';
-          return;
-        }
-        list.innerHTML = [...state.announcements].sort((a,b) => b.createdAt - a.createdAt).map(n => `
-          <article class="announcement" style="--accent:${escapeHTML(n.color)}"><div class="announcement-bar"></div><div><div class="announcement-title">${escapeHTML(n.title)}</div><div class="announcement-body">${escapeHTML(n.body)}</div></div><div class="announcement-meta"><span>${escapeHTML(n.source || formatDate(new Date(n.createdAt), { day:'numeric', month:'short' }))}</span><div class="notice-actions"><button type="button" class="icon-btn" data-delete-notice="${n.id}">×</button></div></div></article>`).join('');
-      }
-      if($('#addNoticeBtn')) $('#addNoticeBtn').addEventListener('click', () => $('#noticeDialog')?.showModal());
-      if($('#noticeForm')) $('#noticeForm').addEventListener('submit', e => {
-        e.preventDefault();
-        const title = $('#noticeTitle').value.trim(), body = $('#noticeBody').value.trim();
-        if (!title || !body) return;
-        const colorInput = document.querySelector('input[name="noticeColor"]:checked');
-        state.announcements.push({ id:id(), title, body, source:$('#noticeSource').value.trim(), color: colorInput ? colorInput.value : '#4c5ce8', createdAt:Date.now() });
-        save(); renderAnnouncements(); e.target.reset(); $('#noticeDialog')?.close(); toast('Announcement saved');
-      });
-      if($('#announcementList')) $('#announcementList').addEventListener('click', e => { const btn = e.target.closest('[data-delete-notice]'); if (!btn) return; state.announcements = state.announcements.filter(n => n.id !== btn.dataset.deleteNotice); save(); renderAnnouncements(); toast('Announcement removed'); });
-
-      function timeToMinutes(time) { const [h,m] = time.split(':').map(Number); return h * 60 + m; }
-      function renderTimetable() {
-        const weekGrid = $('#weekGrid'); if(!weekGrid) return;
-        const days = ['Mon','Tue','Wed','Thu','Fri']; const hours = Array.from({length:12}, (_, i) => i + 8);
-        let html = '<div class="day-heading"></div>' + days.map((d, i) => `<div class="day-heading">${d}<span>${['Mon','Tue','Wed','Thu','Fri'][i]}</span></div>`).join('');
-        hours.forEach((hour, hourIndex) => { const row = 2 + hourIndex * 2; html += `<div class="time-label" style="grid-column:1;grid-row:${row}/span 2">${String(hour).padStart(2,'0')}:00</div>`; for(let d=0;d<5;d++) html += `<div class="time-cell" style="grid-column:${d + 2};grid-row:${row}/span 2"></div>`; });
-        state.classes.forEach(c => {
-          if(!c.start || !c.end) return;
-          const start = timeToMinutes(c.start), end = timeToMinutes(c.end), first = 8 * 60;
-          if (c.day < 0 || c.day > 4 || end <= first || start >= 20 * 60) return;
-          const rowStart = 2 + Math.max(0, Math.round((start - first) / 30)); const span = Math.max(1, Math.round((end - start) / 30));
-          const title = escapeHTML(c.name), code = escapeHTML(c.code || ''), room = escapeHTML(c.room || '');
-          html += `<div class="class-card" style="--class-color:${escapeHTML(c.color)};grid-column:${c.day + 2};grid-row:${rowStart} / span ${span};"><button type="button" data-delete-class="${c.id}">×</button><strong>${title}</strong><span>${code}${code && room ? ' · ' : ''}${room}</span><span>${c.start}–${c.end}</span></div>`;
-        });
-        weekGrid.innerHTML = html;
-        if($('#semesterInput')) $('#semesterInput').value = state.settings.semester || ''; 
-        if($('#weekInput')) $('#weekInput').value = state.settings.week || '';
-      }
-      if($('#saveTermBtn')) $('#saveTermBtn').addEventListener('click', () => { state.settings.semester = $('#semesterInput').value.trim(); state.settings.week = $('#weekInput').value.trim(); save(); toast('Semester details saved'); });
-      if($('#addClassBtn')) $('#addClassBtn').addEventListener('click', () => $('#classDialog')?.showModal());
-      if($('#classForm')) $('#classForm').addEventListener('submit', e => {
-        e.preventDefault(); const start = $('#classStart').value, end = $('#classEnd').value;
-        if (timeToMinutes(end) <= timeToMinutes(start)) { toast('End time needs to be after start time'); return; }
-        const colorInput = document.querySelector('input[name="classColor"]:checked');
-        state.classes.push({ id:id(), name:$('#className').value.trim(), code:$('#classCode').value.trim(), day:+$('#classDay').value, room:$('#classRoom').value.trim(), start, end, color: colorInput ? colorInput.value : '#4c5ce8' });
-        save(); renderTimetable(); e.target.reset(); $('#classDialog')?.close(); toast('Class added to timetable');
-      });
-      if($('#weekGrid')) $('#weekGrid').addEventListener('click', e => { const btn = e.target.closest('[data-delete-class]'); if (!btn) return; state.classes = state.classes.filter(c => c.id !== btn.dataset.deleteClass); save(); renderTimetable(); toast('Class removed'); });
-
-      function daysUntil(due) { return Math.ceil((dateFromKey(due).getTime() - dateFromKey(todayKey).getTime()) / 86400000); }
-      function prettyDaysLeft(n) { return n < 0 ? `${Math.abs(n)}d overdue` : n === 0 ? 'Due today' : n === 1 ? 'Due tomorrow' : `${n} days left`; }
-      function renderUpcoming() {
-        const list = $('#upcomingList'); if(!list) return;
-        const assignments = [...state.assignments].sort((a,b) => a.due.localeCompare(b.due));
-        if (!assignments.length) { list.innerHTML = '<div class="empty-state"><div class="empty-icon">✓</div><div><strong style="color:#36425b;display:block;margin-bottom:3px">Nothing due yet</strong>Add an assignment and it will appear here automatically.</div></div>'; return; }
-        list.innerHTML = assignments.slice(0, 5).map(a => { const due = dateFromKey(a.due), remaining = daysUntil(a.due); return `<article class="assignment"><div class="date-badge"><b>${due.getDate()}</b><span>${formatDate(due,{month:'short'})}</span></div><div><div class="assignment-title">${escapeHTML(a.name)}</div><div class="assignment-tasks">${escapeHTML(a.course || a.tasks.join(' · ') || 'No task breakdown')}</div></div><div><div class="days-left ${remaining <= 3 ? 'urgent' : ''}">${prettyDaysLeft(remaining)}</div><button type="button" class="icon-btn" data-delete-assignment="${a.id}">×</button></div></article>`; }).join('');
-      }
-      if($('#assignmentForm')) $('#assignmentForm').addEventListener('submit', e => {
-        e.preventDefault(); const taskText = $('#assignmentTasks').value.trim();
-        state.assignments.push({ id:id(), name:$('#assignmentName').value.trim(), due:$('#assignmentDue').value, course:$('#assignmentCourse').value.trim(), tasks:taskText ? taskText.split(/\n|,/).map(t => t.trim()).filter(Boolean) : [] });
-        save(); renderUpcoming(); renderCalendar(); e.target.reset(); toast('Assignment added to your calendar');
-      });
-      if($('#upcomingList')) $('#upcomingList').addEventListener('click', e => { const btn = e.target.closest('[data-delete-assignment]'); if (!btn) return; state.assignments = state.assignments.filter(a => a.id !== btn.dataset.deleteAssignment); save(); renderUpcoming(); renderCalendar(); toast('Assignment removed'); });
-
-      function renderCalendar() {
-        if(!$('#calendarMonth') || !$('#calendar')) return;
-        const year = calendarCursor.getFullYear(), month = calendarCursor.getMonth();
-        $('#calendarMonth').textContent = formatDate(calendarCursor, { month:'long', year:'numeric' });
-        const firstDay = new Date(year, month, 1); const gridStart = new Date(year, month, 1 - firstDay.getDay());
-        const dueDays = new Set(state.assignments.map(a => a.due));
-        const dayNames = ['S','M','T','W','T','F','S']; let html = dayNames.map(d => `<div class="calendar-day-name">${d}</div>`).join('');
-        for(let i=0; i<42; i++) { const d = new Date(gridStart); d.setDate(gridStart.getDate() + i); const key = toDateKey(d); const classes = ['calendar-day']; if(d.getMonth() !== month) classes.push('muted'); if(key === todayKey) classes.push('today'); if(dueDays.has(key)) classes.push('has-task'); if(key === selectedDate) classes.push('selected'); html += `<button type="button" class="${classes.join(' ')}" data-date="${key}">${d.getDate()}</button>`; }
-        $('#calendar').innerHTML = html;
-        renderSelectedDateTasks();
-      }
-      function renderSelectedDateTasks() {
-        const area = $('#selectedDateTasks'); if(!area) return;
-        const tasks = state.assignments.filter(a => a.due === selectedDate); 
-        if($('#selectedDateLabel')) $('#selectedDateLabel').textContent = `Tasks due ${formatDate(dateFromKey(selectedDate), { day:'numeric', month:'short' })}`;
-        area.innerHTML = tasks.length ? tasks.map(a => `<div class="date-task"><strong>${escapeHTML(a.name)}</strong>${a.course ? ` <span style="color:#8b95a7">· ${escapeHTML(a.course)}</span>` : ''}${a.tasks.length ? `<ul class="task-detail-list">${a.tasks.map(t=>`<li>${escapeHTML(t)}</li>`).join('')}</ul>` : ''}</div>`).join('') : '<span style="font-size:11px;color:#98a2b4">No assignments due on this day.</span>';
-      }
-      if($('#calendar')) $('#calendar').addEventListener('click', e => { const btn = e.target.closest('[data-date]'); if (!btn) return; selectedDate = btn.dataset.date; const date = dateFromKey(selectedDate); calendarCursor = new Date(date.getFullYear(), date.getMonth(), 1); renderCalendar(); });
-      if($('#previousMonth')) $('#previousMonth').addEventListener('click', () => { calendarCursor.setMonth(calendarCursor.getMonth() - 1); renderCalendar(); });
-      if($('#nextMonth')) $('#nextMonth').addEventListener('click', () => { calendarCursor.setMonth(calendarCursor.getMonth() + 1); renderCalendar(); });
-
-      document.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', () => document.getElementById(btn.dataset.close)?.close()));
+      state.customApps ||= defaultState.customApps;
+      state.classes ||= [];
       
+      const save = () => localStorage.setItem(KEY, JSON.stringify(state));
+
+      // 1. Al-Quran & Daily Quotes
+      const quotes = [
+        "“Berdoalah kepada-Ku, nescaya akan Kuperkenankan bagimu.” (Ghafir: 60)",
+        "“Sesungguhnya beserta kesukaran itu ada kemudahan.” (Al-Insyirah: 6)",
+        "“Cukuplah Allah bagi kami dan Dia sebaik-baik pelindung.” (Ali Imran: 173)",
+        "“Janganlah kamu bersikap lemah, dan janganlah (pula) kamu bersedih hati.” (Ali Imran: 139)",
+        "“Maka nikmat Tuhan kamu yang manakah yang kamu dustakan?” (Ar-Rahman: 13)"
+      ];
+      $('#dailyQuote').textContent = quotes[new Date().getDay() % quotes.length];
+
+      // 2. Tasbih Digital
+      const tasbihBtn = $('#tasbihBtn');
+      tasbihBtn.textContent = `📿 Tasbih: ${state.tasbihCount}`;
+      tasbihBtn.addEventListener('click', () => {
+        state.tasbihCount++;
+        if(state.tasbihCount > 33) { state.tasbihCount = 1; toast("Alhamdulillah, mula kitaran baru!"); }
+        tasbihBtn.textContent = `📿 Tasbih: ${state.tasbihCount}`;
+        save();
+      });
+
+      // 3. Grid Apps System
+      function renderApps() {
+        const grid = $('#appsGrid');
+        grid.innerHTML = state.customApps.map(app => `
+          <a href="${app.url}" target="_blank" class="app-item">
+            <div class="app-icon">${app.icon.length <= 2 ? app.icon : `<img src="${app.icon}" width="30" height="30" style="border-radius:50%">`}</div>
+            <div class="app-label">${app.name}</div>
+            <button type="button" data-del-app="${app.id}" style="font-size:10px; border:none; background:none; color:red; margin-top:-5px">Buang</button>
+          </a>
+        `).join('');
+      }
+      
+      $('#saveNewAppBtn').addEventListener('click', () => {
+        let name = $('#newAppName').value.trim();
+        let icon = $('#newAppIcon').value.trim() || '🌐';
+        let url = $('#newAppUrl').value.trim();
+        if(!url.startsWith('http')) url = 'https://' + url;
+        if(!name || !url) { toast('Sila isi nama & link!'); return; }
+        
+        state.customApps.push({ id: id(), name, icon, url });
+        save(); renderApps(); 
+        $('#newAppName').value = ''; $('#newAppIcon').value = ''; $('#newAppUrl').value = '';
+        $('#addAppForm').style.display = 'none';
+        toast('App berjaya ditambah!');
+      });
+
+      $('#appsGrid').addEventListener('click', e => {
+        const btn = e.target.closest('[data-del-app]');
+        if(!btn) return;
+        e.preventDefault();
+        state.customApps = state.customApps.filter(a => a.id !== btn.dataset.delApp);
+        save(); renderApps(); toast('App dibuang');
+      });
+
+      // 4. Waktu Solat Auto-Shutdown (Zon Selangor)
+      async function checkWaktuSolat() {
+        try {
+          // Guna API Aladhan untuk Selangor
+          const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=Klang&country=Malaysia&method=11`);
+          const data = await res.json();
+          const timings = data.data.timings;
+          
+          const now = new Date();
+          const currentHourMin = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+          
+          // Semak waktu Fajar, Dhuhr, Asr, Maghrib, Isha
+          const solatTimes = [
+            { name: "Subuh", time: timings.Fajr },
+            { name: "Zohor", time: timings.Dhuhr },
+            { name: "Asar", time: timings.Asr },
+            { name: "Maghrib", time: timings.Maghrib },
+            { name: "Isyak", time: timings.Isha }
+          ];
+
+          for (let solat of solatTimes) {
+            if (currentHourMin === solat.time) {
+              $('#solatTitle').textContent = `Waktu ${solat.name} Dah Masuk!`;
+              $('#solatOverlay').style.display = 'flex';
+              break; // Elak trigger dua kali
+            }
+          }
+        } catch (e) { console.log('Gagal semak waktu solat. Mungkin tiada internet.'); }
+      }
+      // Semak setiap 60 saat
+      setInterval(checkWaktuSolat, 60000); 
+      // checkWaktuSolat(); // Boleh di-uncomment untuk test terus
+
+      // 5. Timetable (Ringkas)
+      function renderTimetable() {
+        const days = ['Isnin','Selasa','Rabu','Khamis','Jumaat'];
+        $('#weekGrid').innerHTML = state.classes.map(c => `
+          <div style="background:#f0f2f8; padding:10px; border-radius:8px; display:flex; justify-content:space-between;">
+            <div><strong>${c.name}</strong> (${days[c.day]}) - ${c.start} hingga ${c.end}</div>
+            <button data-del-class="${c.id}" style="color:red; border:none; background:none;">X</button>
+          </div>
+        `).join('');
+      }
+      $('#addClassBtn').addEventListener('click', () => {
+        state.classes.push({ id:id(), name: $('#className').value, day: $('#classDay').value, start: $('#classStart').value, end: $('#classEnd').value });
+        save(); renderTimetable(); toast('Kelas ditambah!');
+      });
+      $('#weekGrid').addEventListener('click', e => {
+        const btn = e.target.closest('[data-del-class]'); if(!btn) return;
+        state.classes = state.classes.filter(c => c.id !== btn.dataset.delClass);
+        save(); renderTimetable();
+      });
+
+      // 6. Exam Paper Generator
       if ($('#generateExamBtn')) {
         $('#generateExamBtn').addEventListener('click', () => {
-          const lang = $('#examLang')?.value || 'EN';
-          const t = {
-            title: lang === 'EN' ? 'FINAL EXAMINATION' : lang === 'DWI' ? 'PEPERIKSAAN AKHIR / FINAL EXAMINATION' : 'PEPERIKSAAN AKHIR',
-            course: lang === 'BM' ? 'KURSUS' : 'COURSE',
-            code: lang === 'BM' ? 'KOD KURSUS' : 'COURSE CODE',
-            duration: lang === 'BM' ? 'MASA' : 'DURATION',
-            fac: lang === 'BM' ? 'FAKULTI' : 'FACULTY',
-            dept: lang === 'BM' ? 'JABATAN' : 'DEPARTMENT',
-            prog: lang === 'BM' ? 'PROGRAM' : 'PROGRAMME',
-            lect: lang === 'BM' ? 'PENSYARAH' : 'LECTURER',
-            instruct: lang === 'EN' ? 'INSTRUCTIONS TO CANDIDATES' : lang === 'DWI' ? 'ARAHAN KEPADA CALON / INSTRUCTIONS TO CANDIDATES' : 'ARAHAN KEPADA CALON',
-            warning: lang === 'EN' ? 'DO NOT OPEN THE QUESTION PAPER UNTIL INSTRUCTED.' : lang === 'DWI' ? 'DILARANG MEMBUKA KERTAS SOALAN SEHINGGA DIBENARKAN. / DO NOT OPEN THE QUESTION PAPER UNTIL INSTRUCTED.' : 'DILARANG MEMBUKA KERTAS SOALAN SEHINGGA DIBENARKAN.',
-            confidential: lang === 'BM' ? 'SULIT' : 'CONFIDENTIAL',
-            secA: lang === 'EN' ? 'SECTION A: STRUCTURED QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN A / SECTION A' : 'BAHAGIAN A: SOALAN STRUKTUR',
-            secB: lang === 'EN' ? 'SECTION B: SUBJECTIVE QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN B / SECTION B' : 'BAHAGIAN B: SOALAN SUBJEKTIF',
-            secC: lang === 'EN' ? 'SECTION C: ESSAY QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN C / SECTION C' : 'BAHAGIAN C: SOALAN ESEI',
-            marks: lang === 'BM' ? 'Markah' : 'Marks',
-            ansAll: lang === 'EN' ? 'ANSWER ALL QUESTIONS.' : lang === 'DWI' ? 'JAWAB SEMUA SOALAN. / ANSWER ALL QUESTIONS.' : 'JAWAB SEMUA SOALAN.'
-          };
-
+          const lang = $('#examLang').value;
+          const isBM = lang === 'BM';
+          
           const parseQuestions = (text) => text.split('\n').filter(q => q.trim() !== '').map(q => {
             let weight = 10; 
             const lower = q.toLowerCase();
             if (lower.match(/jelaskan|huraikan|bincangkan|explain|discuss|describe/)) weight += 5;
             if (lower.match(/mengapa|pendapat|why|analyze/)) weight += 10;
-            
             let imgHtml = '';
             const imgMatch = q.match(/\[img:\s*(.*?)\]/);
-            if (imgMatch) {
-              imgHtml = `<br><img src="${imgMatch[1]}" style="max-width: 60%; margin-top: 10px; border: 1px solid #333;">`;
-              q = q.replace(imgMatch[0], '');
-            }
-            return { text: escapeHTML(q), weight, imgHtml, mark: 0 };
+            if (imgMatch) { imgHtml = `<br><img src="${imgMatch[1]}" style="max-width: 60%; margin-top: 10px; border: 1px solid #333;">`; q = q.replace(imgMatch[0], ''); }
+            return { text: q, weight, imgHtml, mark: 0 };
           });
 
           const distributeMarks = (questions, totalMarks) => {
@@ -559,109 +360,39 @@
             return questions;
           };
 
-          const partA = distributeMarks(parseQuestions($('#qBankA')?.value || ''), 30);
-          const partB = distributeMarks(parseQuestions($('#qBankB')?.value || ''), 30);
-          const partC = distributeMarks(parseQuestions($('#qBankC')?.value || ''), 40);
+          const partA = distributeMarks(parseQuestions($('#qBankA').value), 30);
+          const partB = distributeMarks(parseQuestions($('#qBankB').value), 30);
+          const partC = distributeMarks(parseQuestions($('#qBankC').value), 40);
 
-          if (!partA.length && !partB.length && !partC.length) { toast('Please enter questions first.'); return; }
+          if (!partA.length && !partB.length && !partC.length) { toast('Isi soalan dulu Haziq!'); return; }
 
-          const renderSection = (title, data, startIndex) => {
-            if (!data.length) return '';
-            return `<h3 style="font-weight: bold; margin: 20px 0 5px; font-size: 13pt; text-transform: uppercase;">${title}</h3>
-                    <h4 style="margin: 0 0 15px; font-size: 12pt; font-weight: normal; text-transform: uppercase;">${t.ansAll}</h4>
-                    <ol style="padding-left: 20px; margin-bottom: 30px;" start="${startIndex}">
-                      ${data.map(q => `<li style="margin-bottom: 15px; text-align: justify;">${q.text} <span style="float: right; font-weight: bold;">[${q.mark} ${t.marks}]</span>${q.imgHtml}</li>`).join('')}
-                    </ol>`;
-          };
+          const renderSec = (title, data, idx) => data.length ? `<h3 style="margin: 20px 0 5px;">${title}</h3><ol start="${idx}">${data.map(q => `<li style="margin-bottom:15px;">${q.text} <span style="float:right;">[${q.mark} Markah]</span>${q.imgHtml}</li>`).join('')}</ol>` : '';
 
-          const cCode = escapeHTML($('#examCode')?.value || '-');
-          const cName = escapeHTML($('#examName')?.value || '-');
-          const cDur = escapeHTML($('#examDuration')?.value || '-');
-          const cFac = escapeHTML($('#examFac')?.value || '-');
-          const cDept = escapeHTML($('#examDept')?.value || '-');
-          const cProg = escapeHTML($('#examProg')?.value || '-');
-          const cLect = escapeHTML($('#examLecturer')?.value || '-');
-
-          if($('#examPaper')) {
-            $('#examPaper').innerHTML = `
-              <div class="print-footer">${t.confidential}</div>
-              <div class="cover-page">
-                <h2 style="font-size: 26px; font-weight: bold; text-align: center; margin-bottom: 5px;">EXAM PAPER GENERATOR</h2>
-                <h3 style="font-size: 18px; text-align: center; margin-bottom: 40px; text-transform: uppercase;">${t.title}</h3>
-                
-                <table style="text-align: left; font-size: 12pt; font-weight: bold; margin: 0 auto 40px auto; width: 90%; line-height: 1.8; text-transform: uppercase;">
-                  <tr><td style="width: 25%;">${t.course}</td><td>: ${cName}</td></tr>
-                  <tr><td>${t.code}</td><td>: ${cCode}</td></tr>
-                  <tr><td>${t.duration}</td><td>: ${cDur}</td></tr>
-                  <tr><td>${t.fac}</td><td>: ${cFac}</td></tr>
-                  <tr><td>${t.dept}</td><td>: ${cDept}</td></tr>
-                  <tr><td>${t.prog}</td><td>: ${cProg}</td></tr>
-                  <tr><td>${t.lect}</td><td>: ${cLect}</td></tr>
-                </table>
-                
-                <div style="margin: 0 auto; width: 90%; text-align: left; border-top: 1.5px solid black; border-bottom: 1.5px solid black; padding: 20px 0;">
-                  <h3 style="font-weight: bold; font-size: 13pt; text-align: center; margin-top: 0; text-decoration: underline;">${t.instruct}</h3>
-                  <p style="font-size: 12pt; margin: 15px 0 5px 0;">This paper consists of the following sections:</p>
-                  <ul style="font-size: 12pt; line-height: 1.6; padding-left: 20px; margin-top: 5px;">
-                    <li>Section A - Structured / Objective Questions</li>
-                    <li>Section B - Subjective Questions</li>
-                    <li>Section C - Essay Questions</li>
-                  </ul>
-                  <p style="font-size: 12pt; margin: 15px 0;">Read CAREFULLY the instructions for each section.</p>
-                  <p style="font-size: 12pt; font-weight: bold; text-align: center; margin-top: 30px;">${t.warning}</p>
-                </div>
+          $('#examPaper').innerHTML = `
+            <div class="cover-page">
+              <h2 style="font-size: 26px; text-align: center;">EXAM PAPER GENERATOR</h2>
+              <h3 style="font-size: 18px; text-align: center; margin-bottom: 40px;">${isBM ? 'PEPERIKSAAN AKHIR' : 'FINAL EXAMINATION'}</h3>
+              <table style="width: 100%; margin-bottom: 40px; font-weight: bold; line-height: 1.8;">
+                <tr><td style="width: 30%;">${isBM ? 'KURSUS' : 'COURSE'}</td><td>: ${$('#examName').value || '-'}</td></tr>
+                <tr><td>${isBM ? 'KOD KURSUS' : 'COURSE CODE'}</td><td>: ${$('#examCode').value || '-'}</td></tr>
+              </table>
+              <div style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 20px 0;">
+                <h3 style="text-align: center; text-decoration: underline;">${isBM ? 'ARAHAN KEPADA CALON' : 'INSTRUCTIONS TO CANDIDATES'}</h3>
+                <p>Kertas soalan ini mengandungi Bahagian A, B dan C.</p>
+                <p style="text-align: center; font-weight: bold; margin-top:20px;">DILARANG MEMBUKA KERTAS SOALAN SEHINGGA DIBENARKAN.</p>
               </div>
-              <div class="exam-content">
-                ${renderSection(t.secA, partA, 1)}
-                ${renderSection(t.secB, partB, partA.length + 1)}
-                ${renderSection(t.secC, partC, partA.length + partB.length + 1)}
-              </div>
-            `;
-          }
+            </div>
+            <div class="exam-content">
+              ${renderSec(isBM ? 'BAHAGIAN A' : 'SECTION A', partA, 1)}
+              ${renderSec(isBM ? 'BAHAGIAN B' : 'SECTION B', partB, partA.length + 1)}
+              ${renderSec(isBM ? 'BAHAGIAN C' : 'SECTION C', partC, partA.length + partB.length + 1)}
+            </div>
+          `;
           setTimeout(() => window.print(), 300);
         });
       }
 
-      function updateCountdown() {
-        const targetStr = state.settings.countdownTarget;
-        const display = $('#countdownDisplay');
-        if (!display) return;
-        
-        if (!targetStr) {
-          display.textContent = "Please set a date on the right 👉";
-          return;
-        }
-        
-        const target = new Date(targetStr + 'T00:00:00').getTime();
-        const now = new Date().getTime();
-        const distance = target - now;
-        
-        if (distance < 0) {
-          display.textContent = "🎉 Alhamdulillah, the target is reached!";
-          return;
-        }
-        
-        const d = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const s = Math.floor((distance % (1000 * 60)) / 1000);
-        
-        display.textContent = `${d} Days, ${h} Hours, ${m} Minutes, ${s} Seconds`;
-      }
-
-      if($('#countdownInput')) $('#countdownInput').value = state.settings.countdownTarget || '';
-      if($('#saveCountdownBtn')) {
-        $('#saveCountdownBtn').addEventListener('click', () => {
-          state.settings.countdownTarget = $('#countdownInput').value;
-          save();
-          toast('Countdown date successfully set!');
-          updateCountdown();
-        });
-      }
-
-      setInterval(updateCountdown, 1000);
-      updateCountdown();
-      renderWorkspace(); renderAnnouncements(); renderTimetable(); renderUpcoming(); renderCalendar();
+      renderApps(); renderTimetable();
     })();
   </script>
 </body>
