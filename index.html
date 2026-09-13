@@ -3,257 +3,367 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Dashboard Pro</title>
+  <title>Student Space</title>
   <style>
+    /* VARIABLES & RESET */
     :root {
-      --ink: #16213d; --muted: #64718a; --line: #e6eaf1; --canvas: #f6f8fc;
-      --panel: #ffffff; --indigo: #4c5ce8; --indigo-soft: #eef0ff;
-      --teal: #23a7a2; --coral: #ef766a; --yellow: #f4b844;
-      --shadow: 0 10px 32px rgba(26, 45, 89, .07);
+      --ink: #1e293b; --muted: #64748b; --canvas: #f1f5f9; --panel: #ffffff;
+      --indigo: #4f46e5; --indigo-soft: #e0e7ff; --teal: #0d9488; --coral: #f43f5e;
+      --border: #e2e8f0; --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    * { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body { margin: 0; background: var(--canvas); color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; padding-bottom: 70px; }
-    button, input, select, textarea { font: inherit; }
-    button { cursor: pointer; }
-    
-    /* Animations */
+    body { margin: 0; background: var(--canvas); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; line-height: 1.5; overflow-x: hidden; }
+    button, input, select, textarea { font: inherit; outline: none; }
+    button { cursor: pointer; border: none; background: none; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ANIMATIONS */
     @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-    .section, .panel { animation: slideUp 0.5s ease forwards; }
+    .section, .panel { animation: slideUp 0.6s ease forwards; }
 
-    /* Layout */
-    .app-shell { display: grid; grid-template-columns: 238px minmax(0, 1fr); min-height: 100vh; }
-    .sidebar { position: sticky; top: 0; height: 100vh; padding: 25px 16px; background: #17213b; color: #fff; display: flex; flex-direction: column; z-index: 50; }
-    .brand { display: flex; align-items: center; gap: 11px; padding: 0 10px 30px; font-weight: 750; letter-spacing: -.02em; font-size: 18px; }
-    .brand-mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, #7181ff, #a9b3ff); color: #17213b; font-size: 17px; }
-    .nav-label { color: #8e9ab5; text-transform: uppercase; letter-spacing: .12em; font-size: 10px; font-weight: 700; padding: 0 11px 10px; }
-    .nav { display: grid; gap: 5px; }
-    .nav a { text-decoration: none; color: #bfc8dd; display: flex; align-items: center; gap: 12px; padding: 11px; border-radius: 9px; font-size: 14px; transition: .18s ease; }
-    .nav a:hover, .nav a.active { background: rgba(255,255,255,.10); color: #fff; transform: translateX(5px); }
-    .nav-icon { width: 20px; text-align: center; font-size: 16px; }
-    .sidebar-note { margin-top: auto; padding: 15px; border-radius: 12px; background: rgba(124, 143, 255, .14); color: #cdd4ff; font-size: 12px; line-height: 1.55; }
+    /* LAYOUT */
+    .app-shell { display: flex; min-height: 100vh; }
     
-    main { padding: 30px clamp(15px, 3.4vw, 54px) 48px; overflow-x: hidden; }
-    .topbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px; margin: 0 auto 28px; max-width: 1440px; }
-    .quote-box { background: #fff; padding: 12px 18px; border-radius: 12px; box-shadow: var(--shadow); flex: 1; min-width: 250px; border-left: 4px solid var(--teal); font-size: 13px; font-style: italic; color: var(--muted); }
-    .tasbih-btn { background: #fff; color: var(--indigo); border: 2px solid var(--indigo); font-weight: bold; border-radius: 20px; padding: 8px 18px; font-size: 13px; transition: 0.3s; box-shadow: var(--shadow); }
+    /* MOBILE HEADER (Hidden on Desktop) */
+    .mobile-header { display: none; background: #0f172a; color: white; padding: 15px 20px; align-items: center; justify-content: space-between; position: fixed; top: 0; width: 100%; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .mobile-brand { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 16px; }
+    .menu-btn { color: white; font-size: 24px; padding: 5px; }
+
+    /* SIDEBAR */
+    .sidebar { width: 250px; background: #0f172a; color: #f8fafc; display: flex; flex-direction: column; padding: 25px 20px; position: sticky; top: 0; height: 100vh; flex-shrink: 0; z-index: 90; transition: var(--transition); }
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; font-weight: 800; font-size: 18px; }
+    .brand-mark { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #818cf8, #c7d2fe); color: #0f172a; display: grid; place-items: center; font-size: 18px; }
+    .nav-label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+    .nav { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .nav a { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 10px; font-size: 14px; font-weight: 500; color: #94a3b8; transition: var(--transition); }
+    .nav a:hover, .nav a.active { background: rgba(255,255,255,0.1); color: #fff; transform: translateX(5px); }
+    .nav-icon { font-size: 18px; width: 24px; text-align: center; }
+    .sidebar-footer { margin-top: auto; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; font-size: 12px; color: #94a3b8; line-height: 1.6; }
+
+    /* MAIN CONTENT */
+    main { flex: 1; padding: 35px 40px 60px; max-width: 1400px; margin: 0 auto; width: 100%; }
+    
+    .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 30px; }
+    .topbar h1 { margin: 0 0 5px; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+    .topbar p { margin: 0; color: var(--muted); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+    
+    .widgets { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; }
+    .quote-box { background: var(--panel); padding: 12px 20px; border-radius: 12px; box-shadow: var(--shadow); border-left: 4px solid var(--teal); font-size: 13px; font-style: italic; color: var(--muted); max-width: 400px; line-height: 1.5; }
+    .tasbih-btn { background: var(--panel); color: var(--indigo); border: 2px solid var(--indigo); border-radius: 20px; padding: 8px 20px; font-weight: 700; font-size: 14px; box-shadow: var(--shadow); transition: var(--transition); }
     .tasbih-btn:active { animation: pulse 0.2s; background: var(--indigo-soft); }
 
-    .content { max-width: 1440px; margin: 0 auto; display: grid; gap: 24px; }
-    .section { scroll-margin-top: 18px; }
-    .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; margin: 0 0 13px; flex-wrap: wrap; }
-    h2 { margin: 0; font-size: 18px; letter-spacing: -.025em; }
-    .section-subtitle { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    /* COUNTDOWN BANNER */
+    .countdown-banner { background: linear-gradient(135deg, var(--indigo), #818cf8); color: white; padding: 20px 25px; border-radius: 16px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 35px; box-shadow: 0 10px 20px rgba(79,70,229,0.2); }
+    .countdown-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px; opacity: 0.9; }
+    .countdown-timer { font-size: 22px; font-weight: 800; letter-spacing: 0.5px; margin: 0; }
+    .countdown-controls { display: flex; gap: 10px; flex-wrap: wrap; }
+    .countdown-input { padding: 10px 15px; border-radius: 8px; border: none; font-size: 14px; font-family: inherit; color: var(--ink); }
+    .btn-target { background: var(--teal); color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; transition: var(--transition); }
+    .btn-target:hover { background: #0f766e; transform: translateY(-2px); }
+
+    /* SECTIONS & PANELS */
+    .content-grid { display: flex; flex-direction: column; gap: 35px; }
+    .section-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+    .section-head h2 { margin: 0; font-size: 20px; font-weight: 700; }
+    .section-head p { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
     
-    .panel { background: var(--panel); border: 1px solid rgba(226,230,239,.9); border-radius: 16px; box-shadow: var(--shadow); padding: 20px; }
-    .btn { border: 0; background: var(--indigo); color: #fff; padding: 10px 13px; border-radius: 9px; font-weight: 650; font-size: 13px; transition: transform .15s, background .15s; }
-    .btn:hover { transform: translateY(-2px); background: #3f50d6; box-shadow: 0 4px 10px rgba(76,92,232,0.3); }
-    .btn.ghost { background: #f0f2f8; color: #47546e; }
-    .btn.small { padding: 7px 10px; font-size: 12px; }
-    .icon-btn { border: 0; color: #66738b; background: #f3f5f9; border-radius: 8px; width: 30px; height: 30px; line-height: 1; font-size: 18px; transition: 0.2s; }
-    .icon-btn:hover { background: #e7eaf1; color: #e15959; transform: rotate(90deg); }
+    .panel { background: var(--panel); border-radius: 16px; padding: 25px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+    .btn { background: var(--indigo); color: white; padding: 10px 18px; border-radius: 8px; font-weight: 600; font-size: 13px; transition: var(--transition); display: inline-block; text-align: center; }
+    .btn:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
+    .btn.outline { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .btn.outline:hover { background: var(--canvas); color: var(--ink); }
 
-    /* Custom Apps Grid */
-    .apps-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 20px; justify-items: center; }
-    .app-item { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; cursor: pointer; text-decoration: none; color: inherit; width: 100%; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .app-item:hover { transform: translateY(-5px) scale(1.05); }
-    .app-icon { width: 56px; height: 56px; background: #fff; border-radius: 16px; display: grid; place-items: center; font-size: 26px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #f0f0f0; transition: 0.3s; }
-    .app-item:hover .app-icon { box-shadow: 0 8px 20px rgba(76,92,232,0.2); border-color: var(--indigo-soft); }
-    .app-label { font-size: 11px; font-weight: 600; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px; }
-    .del-app-btn { font-size:10px; border:none; background:none; color:var(--coral); margin-top:-5px; opacity:0; transition:0.3s; }
-    .app-item:hover .del-app-btn { opacity:1; }
-
-    /* Layout Grids */
-    .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(310px, .82fr); gap: 24px; align-items: start; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    /* FORMS & GRIDS */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
     .form-grid .full { grid-column: 1 / -1; }
-    input, select, textarea { width: 100%; border: 1px solid #dfe4ed; border-radius: 8px; padding: 10px; font-size: 13px; background: #fff; transition: 0.2s; }
-    input:focus, textarea:focus { outline: none; border-color: var(--indigo); box-shadow: 0 0 0 3px var(--indigo-soft); }
-    textarea { min-height: 80px; resize: vertical; }
+    .input-group { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+    .input-group label { font-size: 12px; font-weight: 600; color: var(--muted); }
+    input, select, textarea { width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border); background: var(--canvas); font-size: 14px; color: var(--ink); transition: var(--transition); }
+    input:focus, select:focus, textarea:focus { border-color: var(--indigo); background: var(--panel); box-shadow: 0 0 0 3px var(--indigo-soft); }
+    textarea { min-height: 100px; resize: vertical; }
 
-    /* Lists & Trackers */
-    .announcement { display: grid; grid-template-columns: 4px minmax(0, 1fr) auto; gap: 12px; padding: 12px 0; border-bottom: 1px solid #eef0f5; }
-    .announcement-bar { width: 4px; border-radius: 8px; background: var(--accent, var(--indigo)); }
-    .assignment { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 11px; align-items: center; border: 1px solid #e8ebf1; padding: 10px; border-radius: 11px; transition: 0.2s; }
-    .assignment:hover { transform: translateX(4px); border-color: var(--indigo-soft); }
-    .date-badge { width: 39px; height: 42px; background: #fff2ee; color: #c85548; border-radius: 8px; display: grid; place-content: center; text-align: center; line-height: 1; }
-    .date-badge b { font-size: 15px; } .date-badge span { font-size: 9px; font-weight: 700; text-transform: uppercase; }
+    /* APPS GRID */
+    .apps-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 25px; justify-items: center; }
+    .app-card { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; position: relative; transition: var(--transition); }
+    .app-card:hover { transform: translateY(-5px); }
+    .app-icon { width: 64px; height: 64px; border-radius: 18px; background: var(--panel); border: 1px solid var(--border); display: grid; place-items: center; font-size: 28px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); transition: var(--transition); }
+    .app-card:hover .app-icon { border-color: var(--indigo-soft); box-shadow: 0 8px 20px rgba(79,70,229,0.15); }
+    .app-name { font-size: 12px; font-weight: 600; color: #334155; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .app-del { position: absolute; top: -8px; right: 5px; background: var(--coral); color: white; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; opacity: 0; transition: var(--transition); transform: scale(0.8); }
+    .app-card:hover .app-del { opacity: 1; transform: scale(1); }
+
+    /* DASHBOARD COLUMNS (Patch Notes & Tasks) */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
     
-    /* Timetable Grid */
-    .week-grid-wrap { overflow-x: auto; padding-bottom: 10px; }
-    .week-grid { --hour-height: 57px; min-width: 800px; display: grid; grid-template-columns: 54px repeat(5, 1fr); grid-template-rows: 35px repeat(24, calc(var(--hour-height) / 2)); background: #fff; position: relative; border-radius: 15px; border: 1px solid #e4e8f0; }
-    .day-heading { padding: 10px 8px; text-align: center; font-size: 11px; font-weight: 750; background: #fbfcfe; border-bottom: 1px solid #e6eaf1; border-left: 1px solid #e6eaf1; }
-    .time-label { color: #98a2b4; font-size: 10px; padding: 7px 7px 0 0; text-align: right; border-bottom: 1px solid #edf0f5; }
-    .time-cell { border-left: 1px solid #edf0f5; border-bottom: 1px solid #edf0f5; }
-    .class-card { z-index: 2; margin: 3px 4px; padding: 7px 8px; overflow: hidden; color: #fff; background: var(--class-color, var(--indigo)); border-radius: 7px; box-shadow: 0 3px 8px rgba(36,54,92,.13); font-size: 10px; line-height: 1.3; transition: 0.2s; }
-    .class-card:hover { transform: scale(1.02); z-index: 3; }
+    /* PATCH NOTES (Hardcoded) */
+    .patch-list { display: flex; flex-direction: column; gap: 20px; max-height: 350px; overflow-y: auto; padding-right: 10px; }
+    .patch-item { position: relative; padding-left: 20px; }
+    .patch-item::before { content: ''; position: absolute; left: 0; top: 5px; width: 8px; height: 8px; border-radius: 50%; background: var(--indigo); }
+    .patch-item::after { content: ''; position: absolute; left: 3px; top: 15px; bottom: -20px; width: 2px; background: var(--indigo-soft); }
+    .patch-item:last-child::after { display: none; }
+    .patch-version { font-size: 14px; font-weight: 700; margin: 0 0 5px; color: var(--ink); display: flex; justify-content: space-between; }
+    .patch-date { font-size: 11px; color: var(--muted); font-weight: normal; }
+    .patch-desc { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.6; }
 
-    /* Solat Overlay */
-    #solatOverlay { position: fixed; inset: 0; background: rgba(18, 25, 43, 0.95); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 20px; backdrop-filter: blur(8px); animation: slideUp 0.4s ease; }
-    .solat-box { background: linear-gradient(135deg, #23a7a2, #188682); padding: 40px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-width: 420px; width: 100%; border: 1px solid rgba(255,255,255,0.2); }
+    /* TASKS LIST */
+    .task-list { display: flex; flex-direction: column; gap: 12px; }
+    .task-card { display: grid; grid-template-columns: auto 1fr auto; gap: 15px; align-items: center; padding: 12px 15px; border-radius: 12px; border: 1px solid var(--border); transition: var(--transition); }
+    .task-card:hover { border-color: var(--indigo-soft); background: var(--canvas); }
+    .task-date { width: 45px; height: 45px; background: #fff1f2; color: var(--coral); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; }
+    .task-date strong { font-size: 16px; } .task-date span { font-size: 10px; font-weight: 700; text-transform: uppercase; margin-top: 2px; }
+    .task-info h4 { margin: 0 0 4px; font-size: 14px; font-weight: 600; }
+    .task-info p { margin: 0; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+    .task-status { text-align: right; }
+    .task-status span { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 5px; }
+    .task-status span.urgent { color: var(--coral); }
 
-    /* Dialogs & Toasts */
-    dialog { width: min(94vw, 500px); border: 0; padding: 0; border-radius: 17px; box-shadow: 0 20px 65px rgba(18, 29, 59, .24); }
-    dialog::backdrop { background: rgba(22, 33, 61, .42); backdrop-filter: blur(3px); }
-    .dialog-inner { padding: 21px; }
-    .toast { position: fixed; right: 24px; bottom: 24px; background: #1f2b49; color: #fff; padding: 12px 18px; border-radius: 10px; box-shadow: 0 8px 25px rgba(25,38,70,.2); font-size: 13px; transform: translateY(80px); opacity: 0; transition: .3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 999; }
+    /* TIMETABLE */
+    .timetable-grid { display: grid; gap: 10px; }
+    .time-card { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--canvas); border-radius: 12px; border-left: 4px solid var(--indigo); }
+    .time-info h4 { margin: 0 0 5px; font-size: 14px; }
+    .time-info p { margin: 0; font-size: 12px; color: var(--muted); }
+    .time-clock { font-size: 13px; font-weight: 700; color: var(--ink); background: var(--panel); padding: 5px 10px; border-radius: 6px; box-shadow: var(--shadow); }
+
+    /* OVERLAYS & MODALS */
+    #solatOverlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; backdrop-filter: blur(10px); }
+    .solat-box { background: linear-gradient(135deg, var(--teal), #0f766e); padding: 40px; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); color: white; max-width: 450px; width: 100%; border: 1px solid rgba(255,255,255,0.2); animation: slideUp 0.5s ease; }
+    
+    dialog { width: min(90vw, 500px); border: none; border-radius: 20px; padding: 0; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+    dialog::backdrop { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+    .dialog-content { padding: 30px; }
+    .dialog-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+    .dialog-header h3 { margin: 0; font-size: 20px; }
+    .dialog-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border); }
+
+    .toast { position: fixed; bottom: 30px; right: 30px; background: var(--ink); color: white; padding: 15px 25px; border-radius: 12px; font-size: 14px; font-weight: 500; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transform: translateY(100px); opacity: 0; transition: var(--transition); z-index: 9999; }
     .toast.show { transform: translateY(0); opacity: 1; }
 
-    /* Print Format */
+    /* RESPONSIVE MEDIA QUERIES */
+    @media (max-width: 1024px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .mobile-header { display: flex; }
+      .sidebar { position: fixed; left: -260px; height: 100%; box-shadow: 10px 0 25px rgba(0,0,0,0.5); }
+      .sidebar.open { left: 0; }
+      main { padding: 90px 20px 40px; }
+      .topbar { flex-direction: column; align-items: flex-start; }
+      .countdown-banner { flex-direction: column; align-items: flex-start; }
+      .form-grid { grid-template-columns: 1fr; }
+      .brand { display: none; } /* Hide duplicate brand in mobile sidebar */
+    }
+
+    /* PRINT STYLES (EXAM GEN) */
     #examOutput { display: none; }
     @media print {
       body * { visibility: hidden; }
       #examOutput, #examOutput * { visibility: visible; }
       #examOutput { position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0; background: white; display: block !important; }
-      .cover-page { page-break-after: always; padding: 10px 40px; font-family: 'Times New Roman', serif; color: black; display: block; }
+      .cover-page { page-break-after: always; padding: 20px 40px; font-family: 'Times New Roman', serif; color: black; display: flex; flex-direction: column; justify-content: center; min-height: 95vh; }
       .exam-content { font-family: 'Times New Roman', serif; font-size: 12pt; padding: 20px 40px; color: black; display: block; }
+      .print-table { width: 90%; margin: 0 auto 40px; font-size: 12pt; font-weight: bold; line-height: 2; text-transform: uppercase; text-align: left; }
+      .print-table td { padding: 5px; }
+      .print-footer { position: fixed; bottom: 15px; width: 100%; text-align: center; font-weight: bold; font-family: 'Times New Roman', serif; font-size: 10pt; border-top: 1.5px solid black; padding-top: 5px; }
       @page { margin: 15mm; }
-    }
-
-    /* Mobile Responsive */
-    @media (max-width: 960px) { 
-      .app-shell { grid-template-columns: 70px minmax(0,1fr); } 
-      .sidebar { padding: 20px 9px; } 
-      .brand { justify-content: center; padding: 0 0 28px; } 
-      .brand span, .nav-label, .nav span:not(.nav-icon), .sidebar-note { display: none; } 
-      .nav a { justify-content: center; padding: 11px 0; } 
-      .dashboard-grid { grid-template-columns: 1fr; } 
-    }
-    @media (max-width: 600px) { 
-      .app-shell { display: block; } 
-      .sidebar { height: auto; min-height: 60px; position: fixed; bottom: 0; top: auto; z-index: 100; padding: 8px 12px; flex-direction: row; align-items: center; width: 100%; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); border-top: 1px solid #2a3b61; } 
-      .brand, .sidebar-note { display: none; } 
-      .nav { display: flex; flex: 1; justify-content: space-around; gap: 2px; } 
-      .nav a { padding: 8px; flex-direction: column; gap: 3px; font-size: 9px; border-radius: 8px; } 
-      .nav-icon { font-size: 18px; }
-      main { padding: 20px 15px 90px; } 
-      .topbar { flex-direction: column; align-items: stretch; }
-      .form-grid { grid-template-columns: 1fr; } 
     }
   </style>
 </head>
 <body>
-  
-  <!-- Prayer Time Overlay -->
+
+  <!-- PRAYER TIME OVERLAY -->
   <div id="solatOverlay">
     <div class="solat-box">
-      <h1 style="font-size: 45px; margin: 0 0 10px; animation: pulse 2s infinite;">🕌</h1>
-      <h2 id="solatTitle" style="margin: 0 0 10px;">Prayer Time!</h2>
-      <p style="font-size: 14px; margin-bottom: 25px; line-height: 1.5; opacity: 0.9;">Take a break. "Prayer is the pillar of religion, whoever establishes it establishes religion."</p>
-      <button class="btn" onclick="document.getElementById('solatOverlay').style.display='none'" style="background: #fff; color: #188682; width: 100%; margin-bottom: 10px; font-size: 14px;">Alhamdulillah, Time to Pray</button>
-      <button class="btn ghost" onclick="document.getElementById('solatOverlay').style.display='none'" style="width: 100%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.4); color: #fff; font-size: 12px;">Postpone 5 Mins (Emergency)</button>
+      <h1 style="font-size: 50px; margin: 0 0 15px; animation: pulse 2s infinite;">🕌</h1>
+      <h2 id="solatTitle" style="margin: 0 0 15px; font-size: 24px;">Prayer Time!</h2>
+      <p style="font-size: 15px; margin-bottom: 30px; line-height: 1.6; opacity: 0.9;">Take a spiritual break. Success lies in your prayers.</p>
+      <button class="btn" onclick="document.getElementById('solatOverlay').style.display='none'" style="background: white; color: var(--teal); width: 100%; margin-bottom: 12px; font-size: 15px; padding: 12px;">Alhamdulillah, Time to Pray</button>
+      <button class="btn" onclick="document.getElementById('solatOverlay').style.display='none'" style="width: 100%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 10px;">Postpone 5 Mins (Emergency)</button>
     </div>
   </div>
 
+  <!-- MOBILE HEADER -->
+  <header class="mobile-header">
+    <div class="mobile-brand">
+      <div class="brand-mark" style="width: 28px; height: 28px; font-size: 14px;">⌘</div>
+      <span>Student Space</span>
+    </div>
+    <button class="menu-btn" id="menuToggle">☰</button>
+  </header>
+
   <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand"><div class="brand-mark">⌘</div><span>Student Space</span></div>
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">⌘</div>
+        <span>Student Space</span>
+      </div>
       <div class="nav-label">Main Menu</div>
       <nav class="nav">
-        <a class="active" href="#workspace"><span class="nav-icon">📱</span><span>Apps</span></a>
-        <a href="#announcements"><span class="nav-icon">◌</span><span>Notices</span></a>
+        <a class="active" href="#workspace"><span class="nav-icon">📱</span><span>Workspace</span></a>
+        <a href="#dashboard"><span class="nav-icon">📊</span><span>Dashboard</span></a>
         <a href="#timetable"><span class="nav-icon">▦</span><span>Timetable</span></a>
-        <a href="#tracker"><span class="nav-icon">✓</span><span>Tasks</span></a>
-        <a href="#examGen"><span class="nav-icon">📝</span><span>Exam Gen</span></a>
+        <a href="#examGen"><span class="nav-icon">📝</span><span>Exam Gen Pro</span></a>
       </nav>
-      <div class="sidebar-note"><strong>Data Secured</strong>Everything is saved locally.</div>
+      <div class="sidebar-footer">
+        <strong>Data Secured</strong><br>All information is saved locally in your browser.
+      </div>
     </aside>
 
+    <!-- MAIN CONTENT -->
     <main>
+      
+      <!-- TOPBAR -->
       <header class="topbar">
         <div>
-          <p class="eyebrow">Personal Learning Hub</p>
-          <h1 style="font-size: clamp(22px, 3vw, 28px); margin: 0;">Welcome back! 👋</h1>
+          <p>Personal Learning Hub</p>
+          <h1>Welcome back! 👋</h1>
         </div>
-        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <div class="widgets">
           <button id="tasbihBtn" class="tasbih-btn">📿 Dhikr: 0</button>
-          <div class="quote-box" id="dailyQuote">Loading daily quote...</div>
+          <div class="quote-box" id="dailyQuote">Loading wisdom...</div>
         </div>
       </header>
 
-      <!-- Goal Countdown Banner -->
-      <div class="panel" style="margin-bottom: 24px; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; background: linear-gradient(135deg, #4c5ce8, #7181ff); color: white; border: none;">
+      <!-- GOAL COUNTDOWN -->
+      <div class="countdown-banner">
         <div>
-          <h3 style="margin: 0 0 5px; font-size: 14px; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 1px;">🎯 Goal Countdown</h3>
-          <div id="countdownDisplay" style="font-size: 18px; font-weight: bold; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">Please set a target date...</div>
+          <h3 class="countdown-title">🎯 Goal Countdown</h3>
+          <p class="countdown-timer" id="countdownDisplay">Please set a target date...</p>
         </div>
-        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
-          <input id="countdownInput" type="date" style="padding: 8px 12px; border-radius: 8px; border: none; font-size: 13px; color: var(--ink); box-shadow: 0 4px 10px rgba(0,0,0,0.1);" />
-          <button id="saveCountdownBtn" class="btn" style="background: #23a7a2; padding: 8px 15px; font-size: 13px; color: white; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">Set Target</button>
+        <div class="countdown-controls">
+          <input id="countdownInput" type="date" class="countdown-input" />
+          <button id="saveCountdownBtn" class="btn-target">Set Target</button>
         </div>
       </div>
 
-      <div class="content">
-        <!-- Apps Workspace -->
+      <div class="content-grid">
+        
+        <!-- WORKSPACE (Custom Apps) -->
         <section id="workspace" class="section">
-          <div class="section-heading">
-            <div><h2>My Learning Space</h2><p class="section-subtitle">Your customizable quick access tools.</p></div>
-            <button class="btn small" onclick="document.getElementById('addAppDialog').showModal()">+ Add App</button>
+          <div class="section-head">
+            <div>
+              <h2>My Learning Space</h2>
+              <p>Your customizable quick access study tools.</p>
+            </div>
+            <button class="btn outline" onclick="document.getElementById('addAppDialog').showModal()">+ Add App</button>
           </div>
           <div class="panel">
             <div id="appsGrid" class="apps-container"></div>
           </div>
         </section>
 
-        <!-- Notices & Tasks -->
-        <div class="dashboard-grid">
-          <section id="announcements" class="section">
-            <div class="section-heading"><div><h2>Notice Board</h2><p class="section-subtitle">Campus updates & patches.</p></div><button id="addNoticeBtn" class="btn small">+ Add</button></div>
-            <div class="panel notice-board"><div id="announcementList" class="announcement-list"></div></div>
-          </section>
+        <!-- DASHBOARD (Patch Notes & Tasks) -->
+        <div id="dashboard" class="two-col section">
+          
+          <!-- Patch Notes (Hardcoded) -->
+          <div>
+            <div class="section-head">
+              <div><h2>Developer Updates</h2><p>Latest system patch notes.</p></div>
+            </div>
+            <div class="panel">
+              <div class="patch-list">
+                <div class="patch-item">
+                  <div class="patch-version">v2.0 (Latest) <span class="patch-date">Just Now</span></div>
+                  <p class="patch-desc">Complete UI/UX revamp. Fully responsive for mobile devices. Pristine PDF rendering for Exam Gen Pro. Universal English system language.</p>
+                </div>
+                <div class="patch-item">
+                  <div class="patch-version">v1.3 <span class="patch-date">Previous</span></div>
+                  <p class="patch-desc">Added Custom App Grid and automated Prayer Time overlay with Dhikr counter.</p>
+                </div>
+                <div class="patch-item">
+                  <div class="patch-version">v1.2 <span class="patch-date">Previous</span></div>
+                  <p class="patch-desc">Integrated advanced Exam Generator algorithm with dynamic mark distribution.</p>
+                </div>
+                <div class="patch-item">
+                  <div class="patch-version">v1.0 <span class="patch-date">Launch</span></div>
+                  <p class="patch-desc">Initial release of personal learning dashboard with local storage capabilities.</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
-          <section class="section">
-            <div class="section-heading"><div><h2>Upcoming</h2><p class="section-subtitle">Sorted by due date.</p></div><a class="btn ghost small" href="#tracker">View All</a></div>
-            <div class="panel assignments-panel"><div id="upcomingList" class="assignment-list"></div></div>
-          </section>
+          <!-- Task Tracker -->
+          <div>
+            <div class="section-head">
+              <div><h2>Upcoming Tasks</h2><p>Keep track of your deadlines.</p></div>
+              <button class="btn outline" onclick="document.getElementById('taskDialog').showModal()">+ Task</button>
+            </div>
+            <div class="panel">
+              <div id="upcomingList" class="task-list"></div>
+            </div>
+          </div>
+
         </div>
 
-        <!-- Timetable -->
+        <!-- TIMETABLE -->
         <section id="timetable" class="section">
-          <div class="section-heading"><div><h2>Dynamic Timetable</h2><p class="section-subtitle">Map out your teaching week.</p></div><button id="addClassBtn" class="btn small">+ Add Class</button></div>
-          <div class="panel timetable-controls" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
-            <div class="form-grid" style="flex: 1; min-width: 250px;"><input id="semesterInput" placeholder="Semester (e.g. Sem 2)" /><input id="weekInput" placeholder="Week (e.g. Week 7)" /></div>
-            <button id="saveTermBtn" class="btn ghost">Save Details</button>
+          <div class="section-head">
+            <div><h2>Dynamic Timetable</h2><p>Map out your academic week.</p></div>
+            <button class="btn outline" onclick="document.getElementById('classDialog').showModal()">+ Class</button>
           </div>
-          <div class="week-grid-wrap"><div id="weekGrid" class="week-grid"></div></div>
-        </section>
-
-        <!-- Task Tracker -->
-        <section id="tracker" class="section">
-          <div class="section-heading"><div><h2>Task Tracker</h2><p class="section-subtitle">Capture work and stay organized.</p></div></div>
           <div class="panel">
-            <form id="assignmentForm" class="form-grid">
-              <input id="assignmentName" required placeholder="Assignment Name" />
-              <input id="assignmentDue" type="date" required />
-              <input id="assignmentCourse" class="full" placeholder="Course / Module (Optional)" />
-              <textarea id="assignmentTasks" class="full" placeholder="Tasks to complete (One per line)"></textarea>
-              <button class="btn full" type="submit">Save Assignment</button>
-            </form>
+            <div class="timetable-grid" id="weekGrid"></div>
           </div>
         </section>
 
-        <!-- Exam Gen Pro -->
+        <!-- EXAM GEN PRO -->
         <section id="examGen" class="section">
-          <div class="section-heading">
-            <div><h2>Exam Paper Generator Pro</h2><p class="section-subtitle">Generate standard formatted examination papers.</p></div>
+          <div class="section-head">
+            <div><h2>Exam Paper Generator Pro</h2><p>Generate standard formatted examination papers.</p></div>
           </div>
-          <div class="panel task-form">
+          <div class="panel">
             <div class="form-grid">
-              <label>Language<select id="examLang"><option value="BM">Malay</option><option value="EN">English</option><option value="DWI">Dwi-Language</option></select></label>
-              <label>Course Code<input id="examCode" placeholder="E.g. CEA1344" /></label>
-              <label class="full">Course Name<input id="examName" placeholder="E.g. Introduction to Literature" /></label>
-              <label>Duration<input id="examDuration" placeholder="E.g. 3 HOURS / 3 JAM" /></label>
-              <label>Faculty<input id="examFac" placeholder="E.g. Education and Social Sciences" /></label>
-              <label>Department<input id="examDept" placeholder="E.g. Language Education" /></label>
-              <label>Programme<input id="examProg" placeholder="E.g. Foundation" /></label>
-              <label class="full">Lecturer<input id="examLecturer" placeholder="E.g. Mdm Sofea" /></label>
+              <div class="input-group">
+                <label>Language</label>
+                <select id="examLang"><option value="BM">Malay</option><option value="EN">English</option><option value="DWI">Dwi-Language</option></select>
+              </div>
+              <div class="input-group">
+                <label>Course Code</label>
+                <input id="examCode" placeholder="E.g. CEA1344" />
+              </div>
+              <div class="input-group full">
+                <label>Course Name</label>
+                <input id="examName" placeholder="E.g. Introduction to Literature" />
+              </div>
+              <div class="input-group">
+                <label>Duration</label>
+                <input id="examDuration" placeholder="E.g. 3 HOURS" />
+              </div>
+              <div class="input-group">
+                <label>Faculty</label>
+                <input id="examFac" placeholder="E.g. Education and Social Sciences" />
+              </div>
+              <div class="input-group">
+                <label>Department</label>
+                <input id="examDept" placeholder="E.g. Language Education" />
+              </div>
+              <div class="input-group">
+                <label>Programme</label>
+                <input id="examProg" placeholder="E.g. Foundation" />
+              </div>
+              <div class="input-group full">
+                <label>Lecturer Name</label>
+                <input id="examLecturer" placeholder="E.g. Mdm Sofea" />
+              </div>
               
-              <label class="full">Section A: Structure / Objective<textarea id="qBankA" placeholder="Enter questions here (One per line)..."></textarea></label>
-              <label class="full">Section B: Subjective (use [img: url] for image)<textarea id="qBankB" placeholder="1. Explain the concept... [img: https://link.jpg]"></textarea></label>
-              <label class="full">Section C: Essay<textarea id="qBankC" placeholder="Enter essay questions here..."></textarea></label>
+              <div class="input-group full" style="margin-top: 15px;">
+                <label>Section A: Structure / Objective (One question per line)</label>
+                <textarea id="qBankA" placeholder="Enter Section A questions here..."></textarea>
+              </div>
+              <div class="input-group full">
+                <label>Section B: Subjective (Use [img: url] to insert image)</label>
+                <textarea id="qBankB" placeholder="1. Explain the concept... [img: https://link.jpg]"></textarea>
+              </div>
+              <div class="input-group full">
+                <label>Section C: Essay</label>
+                <textarea id="qBankC" placeholder="Enter Section C questions here..."></textarea>
+              </div>
             </div>
-            <button id="generateExamBtn" class="btn" style="margin-top: 15px; width: 100%;">Generate PDF</button>
+            <button id="generateExamBtn" class="btn" style="width: 100%; margin-top: 25px; padding: 15px; font-size: 15px;">Generate & Print PDF</button>
           </div>
         </section>
 
@@ -261,70 +371,106 @@
     </main>
   </div>
 
-  <!-- Print Output Container (Hidden from UI) -->
+  <!-- PRINT OUTPUT CONTAINER -->
   <div id="examOutput"><div id="examPaper"></div></div>
 
-  <!-- Dialogs -->
+  <!-- MODALS / DIALOGS -->
   <dialog id="addAppDialog">
-    <div class="dialog-inner">
-      <div class="dialog-head"><h3>Add New App</h3><button class="icon-btn" onclick="document.getElementById('addAppDialog').close()">×</button></div>
-      <div class="form-grid">
-        <input id="newAppName" placeholder="App Name (e.g. E-Learning)" />
-        <input id="newAppIcon" placeholder="Emoji / Image URL (e.g. 📚)" />
-        <input id="newAppUrl" class="full" placeholder="URL (e.g. https://unisel.edu.my)" />
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h3>Add New App</h3>
+        <button class="icon-btn" onclick="document.getElementById('addAppDialog').close()">×</button>
       </div>
-      <div class="dialog-footer"><button class="btn ghost" onclick="document.getElementById('addAppDialog').close()">Cancel</button><button class="btn" id="saveNewAppBtn">Save App</button></div>
+      <div class="form-grid">
+        <div class="input-group">
+          <label>App Name</label>
+          <input id="newAppName" placeholder="E.g. Canva" />
+        </div>
+        <div class="input-group">
+          <label>Icon (Emoji or Image URL)</label>
+          <input id="newAppIcon" placeholder="E.g. 🎨" />
+        </div>
+        <div class="input-group full">
+          <label>Website URL</label>
+          <input id="newAppUrl" placeholder="E.g. https://canva.com" />
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn outline" onclick="document.getElementById('addAppDialog').close()">Cancel</button>
+        <button class="btn" id="saveNewAppBtn">Save App</button>
+      </div>
     </div>
   </dialog>
 
-  <dialog id="noticeDialog">
-    <form id="noticeForm" class="dialog-inner" method="dialog">
-      <div class="dialog-head"><h3>Save Notice</h3><button type="button" class="icon-btn" data-close="noticeDialog">×</button></div>
-      <div class="dialog-grid">
-        <input id="noticeTitle" required placeholder="Title" />
-        <textarea id="noticeBody" required placeholder="Details..."></textarea>
-        <input id="noticeSource" placeholder="Source / Author" />
-        <div class="color-options"><input class="color-swatch" type="radio" name="noticeColor" value="#4c5ce8" style="--swatch:#4c5ce8" checked /><input class="color-swatch" type="radio" name="noticeColor" value="#23a7a2" style="--swatch:#23a7a2" /><input class="color-swatch" type="radio" name="noticeColor" value="#ef766a" style="--swatch:#ef766a" /></div>
+  <dialog id="taskDialog">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h3>Add Assignment</h3>
+        <button class="icon-btn" onclick="document.getElementById('taskDialog').close()">×</button>
       </div>
-      <div class="dialog-footer"><button type="button" class="btn ghost" data-close="noticeDialog">Cancel</button><button class="btn" type="submit">Save</button></div>
-    </form>
+      <form id="assignmentForm">
+        <div class="form-grid">
+          <div class="input-group full"><label>Task Name</label><input id="assignmentName" required /></div>
+          <div class="input-group"><label>Due Date</label><input id="assignmentDue" type="date" required /></div>
+          <div class="input-group"><label>Course (Optional)</label><input id="assignmentCourse" /></div>
+        </div>
+        <div class="dialog-footer">
+          <button type="button" class="btn outline" onclick="document.getElementById('taskDialog').close()">Cancel</button>
+          <button type="submit" class="btn">Save Task</button>
+        </div>
+      </form>
+    </div>
   </dialog>
 
   <dialog id="classDialog">
-    <form id="classForm" class="dialog-inner" method="dialog">
-      <div class="dialog-head"><h3>Add Class</h3><button type="button" class="icon-btn" data-close="classDialog">×</button></div>
-      <div class="form-grid">
-        <input id="className" required placeholder="Class Name" />
-        <input id="classCode" placeholder="Course Code" />
-        <select id="classDay"><option value="0">Monday</option><option value="1">Tuesday</option><option value="2">Wednesday</option><option value="3">Thursday</option><option value="4">Friday</option></select>
-        <input id="classRoom" placeholder="Room" />
-        <input id="classStart" type="time" required value="09:00" />
-        <input id="classEnd" type="time" required value="10:00" />
-        <div class="color-options full"><input class="color-swatch" type="radio" name="classColor" value="#4c5ce8" style="--swatch:#4c5ce8" checked /><input class="color-swatch" type="radio" name="classColor" value="#23a7a2" style="--swatch:#23a7a2" /><input class="color-swatch" type="radio" name="classColor" value="#ef766a" style="--swatch:#ef766a" /></div>
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h3>Add Class</h3>
+        <button class="icon-btn" onclick="document.getElementById('classDialog').close()">×</button>
       </div>
-      <div class="dialog-footer"><button type="button" class="btn ghost" data-close="classDialog">Cancel</button><button class="btn" type="submit">Add Class</button></div>
-    </form>
+      <form id="classForm">
+        <div class="form-grid">
+          <div class="input-group full"><label>Class Name</label><input id="className" required /></div>
+          <div class="input-group"><label>Day</label><select id="classDay"><option value="0">Monday</option><option value="1">Tuesday</option><option value="2">Wednesday</option><option value="3">Thursday</option><option value="4">Friday</option></select></div>
+          <div class="input-group"><label>Room / Code</label><input id="classRoom" /></div>
+          <div class="input-group"><label>Start Time</label><input id="classStart" type="time" required value="09:00" /></div>
+          <div class="input-group"><label>End Time</label><input id="classEnd" type="time" required value="10:00" /></div>
+        </div>
+        <div class="dialog-footer">
+          <button type="button" class="btn outline" onclick="document.getElementById('classDialog').close()">Cancel</button>
+          <button type="submit" class="btn">Save Class</button>
+        </div>
+      </form>
+    </div>
   </dialog>
 
-  <div id="toast" class="toast" role="status"></div>
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast"></div>
 
   <script>
     (() => {
-      // 1. Core Helpers
+      // 1. CORE HELPERS
       const $ = (s) => document.querySelector(s);
       const id = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
       const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c]));
       const toDateKey = (date) => { const offset = date.getTimezoneOffset(); return new Date(date.getTime() - offset * 60000).toISOString().slice(0, 10); };
       const dateFromKey = (key) => new Date(key + 'T12:00:00');
-      const formatDate = (date, opts) => new Intl.DateTimeFormat('en-US', opts).format(date);
-      const todayKey = toDateKey(new Date());
       const toast = (msg) => { const el = $('#toast'); if(!el) return; el.textContent = msg; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => el.classList.remove('show'), 2500); };
 
-      // 2. State & Storage
-      const KEY = 'studentDashboard.v1'; // Kept same key so data doesn't wipe
+      // 2. MOBILE MENU TOGGLE
+      $('#menuToggle').addEventListener('click', () => {
+        $('#sidebar').classList.toggle('open');
+      });
+      // Close sidebar when clicking a link (mobile)
+      document.querySelectorAll('.nav a').forEach(link => {
+        link.addEventListener('click', () => $('#sidebar').classList.remove('open'));
+      });
+
+      // 3. STATE & STORAGE
+      const KEY = 'studentSpace.v2'; 
       const defaultState = { 
-        settings: { semester: '', week: '', countdownTarget: '' }, 
-        announcements: [], classes: [], assignments: [], 
+        settings: { countdownTarget: '' }, 
+        classes: [], assignments: [], 
         customApps: [
           { id: '1', name: 'MyStudent', icon: '🎓', url: 'https://mystudent.unisel.edu.my' },
           { id: '2', name: 'E-Learning', icon: '📚', url: 'https://elearning.unisel.edu.my' },
@@ -335,10 +481,10 @@
       };
       let state;
       try { state = { ...defaultState, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { state = defaultState; }
-      state.settings ||= {}; state.announcements ||= []; state.classes ||= []; state.assignments ||= []; state.customApps ||= defaultState.customApps;
+      state.settings ||= {}; state.classes ||= []; state.assignments ||= []; state.customApps ||= defaultState.customApps;
       const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} };
 
-      // 3. Goal Countdown
+      // 4. GOAL COUNTDOWN
       function updateCountdown() {
         const targetStr = state.settings.countdownTarget;
         const display = $('#countdownDisplay');
@@ -361,12 +507,12 @@
       if($('#saveCountdownBtn')) {
         $('#saveCountdownBtn').addEventListener('click', () => {
           state.settings.countdownTarget = $('#countdownInput').value;
-          save(); toast('Countdown date set!'); updateCountdown();
+          save(); toast('Countdown target set!'); updateCountdown();
         });
       }
       setInterval(updateCountdown, 1000); updateCountdown();
 
-      // 4. Quotes & Dhikr
+      // 5. QUOTES & DHIKR
       const quotes = [
         "“Call upon Me; I will respond to you.” (Ghafir: 60)",
         "“For indeed, with hardship [will be] ease.” (Al-Inshirah: 5)",
@@ -387,14 +533,14 @@
         });
       }
 
-      // 5. Custom Apps Grid
+      // 6. CUSTOM APPS
       function renderApps() {
         const grid = $('#appsGrid'); if(!grid) return;
         grid.innerHTML = state.customApps.map(app => `
-          <a href="${app.url}" target="_blank" class="app-item">
-            <div class="app-icon">${app.icon.length <= 2 ? app.icon : `<img src="${app.icon}" width="32" height="32" style="border-radius:8px">`}</div>
-            <div class="app-label">${escapeHTML(app.name)}</div>
-            <button type="button" class="del-app-btn" data-del-app="${app.id}">Remove</button>
+          <a href="${app.url}" target="_blank" class="app-card">
+            <div class="app-icon">${app.icon.length <= 2 ? app.icon : `<img src="${app.icon}" width="36" height="36" style="border-radius:8px">`}</div>
+            <div class="app-name">${escapeHTML(app.name)}</div>
+            <button type="button" class="app-del" data-del-app="${app.id}">×</button>
           </a>
         `).join('');
       }
@@ -420,7 +566,7 @@
         });
       }
 
-      // 6. Prayer Time (Solat)
+      // 7. PRAYER TIMES (Selangor)
       async function checkPrayerTimes() {
         try {
           const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=Klang&country=Malaysia&method=11`);
@@ -442,71 +588,60 @@
       }
       setInterval(checkPrayerTimes, 60000);
 
-      // 7. Announcements
-      function renderAnnouncements() {
-        const list = $('#announcementList'); if(!list) return;
-        if (!state.announcements.length) { list.innerHTML = '<span style="font-size:12px;color:var(--muted)">No notices saved.</span>'; return; }
-        list.innerHTML = [...state.announcements].sort((a,b) => b.createdAt - a.createdAt).map(n => `
-          <div class="announcement" style="--accent:${escapeHTML(n.color)}"><div class="announcement-bar"></div><div><div class="announcement-title">${escapeHTML(n.title)}</div><div class="announcement-body">${escapeHTML(n.body)}</div></div><div class="announcement-meta"><span>${escapeHTML(n.source)}</span><button class="icon-btn" data-delete-notice="${n.id}">×</button></div></div>
+      // 8. TIMETABLE
+      function renderTimetable() {
+        const grid = $('#weekGrid'); if(!grid) return;
+        const days = ['Mon','Tue','Wed','Thu','Fri'];
+        if (!state.classes.length) { grid.innerHTML = '<span style="font-size:13px;color:var(--muted)">No classes scheduled.</span>'; return; }
+        
+        let sorted = [...state.classes].sort((a,b) => a.day - b.day || a.start.localeCompare(b.start));
+        grid.innerHTML = sorted.map(c => `
+          <div class="time-card">
+            <div class="time-info">
+              <h4>${escapeHTML(c.name)}</h4>
+              <p>${days[c.day]} • ${escapeHTML(c.room || c.code || 'Room N/A')}</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:15px;">
+              <span class="time-clock">${c.start} - ${c.end}</span>
+              <button class="icon-btn" style="width:24px;height:24px;font-size:14px;background:none;color:var(--coral);" data-del-class="${c.id}">×</button>
+            </div>
+          </div>
         `).join('');
       }
-      if($('#addNoticeBtn')) $('#addNoticeBtn').addEventListener('click', () => $('#noticeDialog')?.showModal());
-      if($('#noticeForm')) $('#noticeForm').addEventListener('submit', e => {
-        e.preventDefault(); const title = $('#noticeTitle').value, body = $('#noticeBody').value;
-        if (!title || !body) return;
-        state.announcements.push({ id:id(), title, body, source:$('#noticeSource').value, color:document.querySelector('input[name="noticeColor"]:checked').value, createdAt:Date.now() });
-        save(); renderAnnouncements(); e.target.reset(); $('#noticeDialog').close(); toast('Notice saved');
-      });
-      if($('#announcementList')) $('#announcementList').addEventListener('click', e => { const b = e.target.closest('[data-delete-notice]'); if(!b) return; state.announcements = state.announcements.filter(n => n.id !== b.dataset.deleteNotice); save(); renderAnnouncements(); });
-
-      // 8. Timetable
-      function renderTimetable() {
-        const weekGrid = $('#weekGrid'); if(!weekGrid) return;
-        const days = ['Mon','Tue','Wed','Thu','Fri']; const hours = Array.from({length:12}, (_, i) => i + 8);
-        let html = '<div class="day-heading"></div>' + days.map(d => `<div class="day-heading">${d}</div>`).join('');
-        hours.forEach((hour, i) => { const r = 2 + i * 2; html += `<div class="time-label" style="grid-column:1;grid-row:${r}/span 2">${String(hour).padStart(2,'0')}:00</div>`; for(let d=0;d<5;d++) html += `<div class="time-cell" style="grid-column:${d+2};grid-row:${r}/span 2"></div>`; });
-        state.classes.forEach(c => {
-          if(!c.start || !c.end) return;
-          const start = c.start.split(':').map(Number)[0]*60 + c.start.split(':').map(Number)[1], end = c.end.split(':').map(Number)[0]*60 + c.end.split(':').map(Number)[1], first = 480;
-          if (c.day<0 || c.day>4 || end<=first || start>=1200) return;
-          const rStart = 2 + Math.max(0, Math.round((start-first)/30)), span = Math.max(1, Math.round((end-start)/30));
-          html += `<div class="class-card" style="--class-color:${escapeHTML(c.color)};grid-column:${c.day+2};grid-row:${rStart}/span ${span};"><button data-delete-class="${c.id}">×</button><strong>${escapeHTML(c.name)}</strong><span>${escapeHTML(c.code)} ${escapeHTML(c.room)}</span><span>${c.start}-${c.end}</span></div>`;
-        });
-        weekGrid.innerHTML = html;
-        if($('#semesterInput')) $('#semesterInput').value = state.settings.semester || ''; 
-        if($('#weekInput')) $('#weekInput').value = state.settings.week || '';
-      }
-      if($('#saveTermBtn')) $('#saveTermBtn').addEventListener('click', () => { state.settings.semester = $('#semesterInput').value; state.settings.week = $('#weekInput').value; save(); toast('Saved!'); });
-      if($('#addClassBtn')) $('#addClassBtn').addEventListener('click', () => $('#classDialog')?.showModal());
       if($('#classForm')) $('#classForm').addEventListener('submit', e => {
-        e.preventDefault(); const color = document.querySelector('input[name="classColor"]:checked').value;
-        state.classes.push({ id:id(), name:$('#className').value, code:$('#classCode').value, day:+$('#classDay').value, room:$('#classRoom').value, start:$('#classStart').value, end:$('#classEnd').value, color });
+        e.preventDefault(); 
+        state.classes.push({ id:id(), name:$('#className').value, code:$('#classCode').value, day:+$('#classDay').value, room:$('#classRoom').value, start:$('#classStart').value, end:$('#classEnd').value });
         save(); renderTimetable(); e.target.reset(); $('#classDialog').close(); toast('Class added');
       });
-      if($('#weekGrid')) $('#weekGrid').addEventListener('click', e => { const b = e.target.closest('[data-delete-class]'); if(!b) return; state.classes = state.classes.filter(c => c.id !== b.dataset.deleteClass); save(); renderTimetable(); });
+      if($('#weekGrid')) $('#weekGrid').addEventListener('click', e => { const b = e.target.closest('[data-del-class]'); if(!b) return; state.classes = state.classes.filter(c => c.id !== b.dataset.delClass); save(); renderTimetable(); });
 
-      // 9. Assignments
+      // 9. TASK TRACKER
       function renderUpcoming() {
         const list = $('#upcomingList'); if(!list) return;
         const sorted = [...state.assignments].sort((a,b) => a.due.localeCompare(b.due));
-        if (!sorted.length) { list.innerHTML = '<span style="font-size:12px;color:var(--muted)">All caught up!</span>'; return; }
+        if (!sorted.length) { list.innerHTML = '<span style="font-size:13px;color:var(--muted)">All caught up! No pending tasks.</span>'; return; }
         list.innerHTML = sorted.map(a => { 
           const d = Math.ceil((dateFromKey(a.due).getTime() - dateFromKey(todayKey).getTime())/86400000); 
           const txt = d<0?`${Math.abs(d)}d late`:d===0?'Today':`${d}d left`;
-          return `<div class="assignment"><div class="date-badge"><b>${dateFromKey(a.due).getDate()}</b></div><div><div style="font-weight:bold;font-size:13px">${escapeHTML(a.name)}</div></div><div><div class="days-left ${d<=3?'urgent':''}">${txt}</div><button class="icon-btn" data-del-ass="${a.id}">×</button></div></div>`; 
+          return `
+            <div class="task-card">
+              <div class="task-date"><strong>${dateFromKey(a.due).getDate()}</strong><span>${dateFromKey(a.due).toLocaleString('default',{month:'short'})}</span></div>
+              <div class="task-info"><h4>${escapeHTML(a.name)}</h4><p>${escapeHTML(a.course || 'No course assigned')}</p></div>
+              <div class="task-status"><span class="${d<=3?'urgent':''}">${txt}</span><button class="icon-btn" style="width:24px;height:24px;font-size:14px;background:none;color:var(--coral);" data-del-ass="${a.id}">×</button></div>
+            </div>`; 
         }).join('');
       }
       if($('#assignmentForm')) $('#assignmentForm').addEventListener('submit', e => {
-        e.preventDefault(); const t = $('#assignmentTasks').value;
-        state.assignments.push({ id:id(), name:$('#assignmentName').value, due:$('#assignmentDue').value, course:$('#assignmentCourse').value, tasks:t?t.split('\n'):[] });
-        save(); renderUpcoming(); e.target.reset(); toast('Saved task');
+        e.preventDefault();
+        state.assignments.push({ id:id(), name:$('#assignmentName').value, due:$('#assignmentDue').value, course:$('#assignmentCourse').value });
+        save(); renderUpcoming(); e.target.reset(); $('#taskDialog').close(); toast('Task saved');
       });
       if($('#upcomingList')) $('#upcomingList').addEventListener('click', e => { const b = e.target.closest('[data-del-ass]'); if(!b) return; state.assignments = state.assignments.filter(a => a.id !== b.dataset.delAss); save(); renderUpcoming(); });
 
-      // 10. Exam Gen Pro (Exact same logic, translated labels)
+      // 10. EXAM GEN PRO
       if ($('#generateExamBtn')) {
         $('#generateExamBtn').addEventListener('click', () => {
-          const lang = $('#examLang')?.value || 'BM';
+          const lang = $('#examLang')?.value || 'EN';
           const t = {
             title: lang === 'EN' ? 'FINAL EXAMINATION' : lang === 'DWI' ? 'PEPERIKSAAN AKHIR / FINAL EXAMINATION' : 'PEPERIKSAAN AKHIR',
             course: lang === 'BM' ? 'KURSUS' : 'COURSE',
@@ -531,7 +666,7 @@
             if (low.match(/jelaskan|huraikan|bincangkan|explain|discuss|describe/)) w += 5;
             if (low.match(/mengapa|pendapat|why|analyze/)) w += 10;
             let img = ''; const m = q.match(/\[img:\s*(.*?)\]/);
-            if (m) { img = `<br><img src="${m[1]}" style="max-width: 60%; margin-top: 10px; border: 1px solid #333;">`; q = q.replace(m[0], ''); }
+            if (m) { img = `<br><img src="${m[1]}" style="max-width: 60%; margin-top: 15px; margin-bottom: 10px; border: 1px solid #333;">`; q = q.replace(m[0], ''); }
             return { text: escapeHTML(q), weight: w, imgHtml: img, mark: 0 };
           });
 
@@ -542,19 +677,25 @@
             return qs;
           };
 
-          const pA = distMarks(parseQ($('#qBankA')?.value || ''), 30), pB = distMarks(parseQ($('#qBankB')?.value || ''), 30), pC = distMarks(parseQ($('#qBankC')?.value || ''), 40);
-          if (!pA.length && !pB.length && !pC.length) { toast('Please insert questions!'); return; }
+          const pA = distMarks(parseQ($('#qBankA')?.value || ''), 30);
+          const pB = distMarks(parseQ($('#qBankB')?.value || ''), 30);
+          const pC = distMarks(parseQ($('#qBankC')?.value || ''), 40);
 
-          const rendSec = (title, data, idx) => data.length ? `<h3 style="font-weight: bold; margin: 20px 0 5px; font-size: 13pt; text-transform: uppercase;">${title}</h3><h4 style="margin: 0 0 15px; font-size: 12pt; font-weight: normal; text-transform: uppercase;">${t.ansAll}</h4><ol style="padding-left: 20px; margin-bottom: 30px;" start="${idx}">${data.map(q => `<li style="margin-bottom: 15px; text-align: justify;">${q.text} <span style="float: right; font-weight: bold;">[${q.mark} ${t.marks}]</span>${q.imgHtml}</li>`).join('')}</ol>` : '';
+          if (!pA.length && !pB.length && !pC.length) { toast('Please insert questions first!'); return; }
+
+          const rendSec = (title, data, idx) => data.length ? `<h3 style="font-weight: bold; margin: 25px 0 5px; font-size: 13pt; text-transform: uppercase;">${title}</h3><h4 style="margin: 0 0 15px; font-size: 12pt; font-weight: normal; text-transform: uppercase;">${t.ansAll}</h4><ol style="padding-left: 25px; margin-bottom: 30px;" start="${idx}">${data.map(q => `<li style="margin-bottom: 20px; text-align: justify; line-height: 1.6;">${q.text} <span style="float: right; font-weight: bold;">[${q.mark} ${t.marks}]</span>${q.imgHtml}</li>`).join('')}</ol>` : '';
 
           if($('#examPaper')) {
             $('#examPaper').innerHTML = `
               <div class="print-footer">${t.confidential}</div>
               <div class="cover-page">
-                <h2 style="font-size: 26px; font-weight: bold; text-align: center; margin-bottom: 5px;">EXAM PAPER GENERATOR</h2>
-                <h3 style="font-size: 18px; text-align: center; margin-bottom: 40px; text-transform: uppercase;">${t.title}</h3>
-                <table style="text-align: left; font-size: 12pt; font-weight: bold; margin: 0 auto 40px auto; width: 90%; line-height: 1.8; text-transform: uppercase;">
-                  <tr><td style="width: 25%;">${t.course}</td><td>: ${escapeHTML($('#examName').value||'-')}</td></tr>
+                <div style="text-align: center; margin-bottom: 50px;">
+                  <h2 style="font-size: 26px; font-weight: 800; margin: 0 0 8px;">EXAM PAPER GENERATOR</h2>
+                  <h3 style="font-size: 20px; font-weight: normal; margin: 0; text-transform: uppercase;">${t.title}</h3>
+                </div>
+                
+                <table class="print-table">
+                  <tr><td style="width: 30%;">${t.course}</td><td>: ${escapeHTML($('#examName').value||'-')}</td></tr>
                   <tr><td>${t.code}</td><td>: ${escapeHTML($('#examCode').value||'-')}</td></tr>
                   <tr><td>${t.duration}</td><td>: ${escapeHTML($('#examDuration').value||'-')}</td></tr>
                   <tr><td>${t.fac}</td><td>: ${escapeHTML($('#examFac').value||'-')}</td></tr>
@@ -562,24 +703,32 @@
                   <tr><td>${t.prog}</td><td>: ${escapeHTML($('#examProg').value||'-')}</td></tr>
                   <tr><td>${t.lect}</td><td>: ${escapeHTML($('#examLecturer').value||'-')}</td></tr>
                 </table>
-                <div style="margin: 0 auto; width: 90%; text-align: left; border-top: 1.5px solid black; border-bottom: 1.5px solid black; padding: 20px 0;">
-                  <h3 style="font-weight: bold; font-size: 13pt; text-align: center; margin-top: 0; text-decoration: underline;">${t.instruct}</h3>
-                  <p style="font-size: 12pt; margin: 15px 0 5px 0;">This paper consists of the following sections:</p>
-                  <ul style="font-size: 12pt; line-height: 1.6; padding-left: 20px; margin-top: 5px;"><li>Section A - Structured / Objective Questions</li><li>Section B - Subjective Questions</li><li>Section C - Essay Questions</li></ul>
-                  <p style="font-size: 12pt; margin: 15px 0;">Read CAREFULLY the instructions for each section.</p>
-                  <p style="font-size: 12pt; font-weight: bold; text-align: center; margin-top: 30px;">${t.warning}</p>
+                
+                <div style="margin: 0 auto; width: 90%; text-align: left; border-top: 2px solid black; border-bottom: 2px solid black; padding: 25px 0;">
+                  <h3 style="font-weight: bold; font-size: 14pt; text-align: center; margin-top: 0; text-decoration: underline;">${t.instruct}</h3>
+                  <p style="font-size: 12pt; margin: 15px 0 10px 0;">This paper consists of the following sections:</p>
+                  <ul style="font-size: 12pt; line-height: 1.8; padding-left: 25px; margin-top: 5px;">
+                    <li>Section A - Structured / Objective Questions</li>
+                    <li>Section B - Subjective Questions</li>
+                    <li>Section C - Essay Questions</li>
+                  </ul>
+                  <p style="font-size: 12pt; margin: 20px 0;">Read CAREFULLY the instructions for each section.</p>
+                  <p style="font-size: 12pt; font-weight: bold; text-align: center; margin-top: 35px;">${t.warning}</p>
                 </div>
               </div>
-              <div class="exam-content">${rendSec(t.secA, pA, 1)}${rendSec(t.secB, pB, pA.length+1)}${rendSec(t.secC, pC, pA.length+pB.length+1)}</div>
+              <div class="exam-content">
+                ${rendSec(t.secA, pA, 1)}
+                ${rendSec(t.secB, pB, pA.length+1)}
+                ${rendSec(t.secC, pC, pA.length+pB.length+1)}
+              </div>
             `;
           }
-          setTimeout(() => window.print(), 300);
+          setTimeout(() => window.print(), 500);
         });
       }
 
-      // Init
-      renderApps(); renderAnnouncements(); renderTimetable(); renderUpcoming();
-      document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => document.getElementById(b.dataset.close)?.close()));
+      // INITIALIZE
+      renderApps(); renderTimetable(); renderUpcoming();
     })();
   </script>
 </body>
