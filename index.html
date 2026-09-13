@@ -8,71 +8,99 @@
     :root {
       --ink: #16213d; --muted: #64718a; --line: #e6eaf1; --canvas: #f6f8fc;
       --panel: #ffffff; --indigo: #4c5ce8; --indigo-soft: #eef0ff;
-      --teal: #23a7a2; --coral: #ef766a; --shadow: 0 10px 32px rgba(26, 45, 89, .07);
+      --teal: #23a7a2; --coral: #ef766a; --yellow: #f4b844;
+      --shadow: 0 10px 32px rgba(26, 45, 89, .07);
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body { margin: 0; background: var(--canvas); color: var(--ink); font-family: 'Segoe UI', system-ui, sans-serif; padding-bottom: 60px; }
+    body { margin: 0; background: var(--canvas); color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; padding-bottom: 70px; }
     button, input, select, textarea { font: inherit; }
     button { cursor: pointer; }
     
-    .app-shell { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
-    .sidebar { position: sticky; top: 0; height: 100vh; padding: 25px 16px; background: #17213b; color: #fff; display: flex; flex-direction: column; overflow-y: auto; }
-    .brand { display: flex; align-items: center; gap: 10px; padding: 0 5px 30px; font-weight: bold; font-size: 18px; }
-    .brand-mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, #7181ff, #a9b3ff); color: #17213b; }
-    .nav { display: grid; gap: 5px; }
-    .nav a { text-decoration: none; color: #bfc8dd; display: flex; align-items: center; gap: 12px; padding: 11px; border-radius: 9px; font-size: 14px; transition: 0.2s; }
-    .nav a:hover, .nav a.active { background: rgba(255,255,255,.10); color: #fff; }
-    
-    main { padding: 25px 30px; overflow-x: hidden; }
-    .topbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 25px; }
-    .quote-box { background: #fff; padding: 12px 18px; border-radius: 12px; box-shadow: var(--shadow); flex: 1; min-width: 280px; border-left: 4px solid var(--teal); font-size: 13px; font-style: italic; color: #444; }
-    
-    .content { display: grid; gap: 24px; }
-    .panel { background: var(--panel); border: 1px solid #e2e6ef; border-radius: 16px; box-shadow: var(--shadow); padding: 20px; }
-    .btn { border: 0; background: var(--indigo); color: #fff; padding: 10px 15px; border-radius: 8px; font-weight: bold; font-size: 13px; transition: 0.2s; }
-    .btn:hover { background: #3f50d6; }
-    .btn.ghost { background: #f0f2f8; color: #47546e; }
-    .section-heading h2 { margin: 0 0 15px 0; font-size: 18px; }
+    /* Animations */
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    .section, .panel { animation: slideUp 0.5s ease forwards; }
 
-    /* New Apps Grid */
-    .apps-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 20px; justify-items: center; }
-    .app-item { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; cursor: pointer; transition: transform 0.2s; text-decoration: none; color: inherit; width: 100%; }
-    .app-item:hover { transform: translateY(-3px); }
-    .app-icon { width: 56px; height: 56px; background: #fff; border-radius: 50%; display: grid; place-items: center; font-size: 26px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #f0f0f0; }
+    /* Layout */
+    .app-shell { display: grid; grid-template-columns: 238px minmax(0, 1fr); min-height: 100vh; }
+    .sidebar { position: sticky; top: 0; height: 100vh; padding: 25px 16px; background: #17213b; color: #fff; display: flex; flex-direction: column; z-index: 50; }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 10px 30px; font-weight: 750; letter-spacing: -.02em; font-size: 18px; }
+    .brand-mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, #7181ff, #a9b3ff); color: #17213b; font-size: 17px; }
+    .nav-label { color: #8e9ab5; text-transform: uppercase; letter-spacing: .12em; font-size: 10px; font-weight: 700; padding: 0 11px 10px; }
+    .nav { display: grid; gap: 5px; }
+    .nav a { text-decoration: none; color: #bfc8dd; display: flex; align-items: center; gap: 12px; padding: 11px; border-radius: 9px; font-size: 14px; transition: .18s ease; }
+    .nav a:hover, .nav a.active { background: rgba(255,255,255,.10); color: #fff; transform: translateX(5px); }
+    .nav-icon { width: 20px; text-align: center; font-size: 16px; }
+    .sidebar-note { margin-top: auto; padding: 15px; border-radius: 12px; background: rgba(124, 143, 255, .14); color: #cdd4ff; font-size: 12px; line-height: 1.55; }
+    
+    main { padding: 30px clamp(15px, 3.4vw, 54px) 48px; overflow-x: hidden; }
+    .topbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px; margin: 0 auto 28px; max-width: 1440px; }
+    .quote-box { background: #fff; padding: 12px 18px; border-radius: 12px; box-shadow: var(--shadow); flex: 1; min-width: 250px; border-left: 4px solid var(--teal); font-size: 13px; font-style: italic; color: var(--muted); }
+    .tasbih-btn { background: #fff; color: var(--indigo); border: 2px solid var(--indigo); font-weight: bold; border-radius: 20px; padding: 8px 18px; font-size: 13px; transition: 0.3s; box-shadow: var(--shadow); }
+    .tasbih-btn:active { animation: pulse 0.2s; background: var(--indigo-soft); }
+
+    .content { max-width: 1440px; margin: 0 auto; display: grid; gap: 24px; }
+    .section { scroll-margin-top: 18px; }
+    .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; margin: 0 0 13px; flex-wrap: wrap; }
+    h2 { margin: 0; font-size: 18px; letter-spacing: -.025em; }
+    .section-subtitle { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    
+    .panel { background: var(--panel); border: 1px solid rgba(226,230,239,.9); border-radius: 16px; box-shadow: var(--shadow); padding: 20px; }
+    .btn { border: 0; background: var(--indigo); color: #fff; padding: 10px 13px; border-radius: 9px; font-weight: 650; font-size: 13px; transition: transform .15s, background .15s; }
+    .btn:hover { transform: translateY(-2px); background: #3f50d6; box-shadow: 0 4px 10px rgba(76,92,232,0.3); }
+    .btn.ghost { background: #f0f2f8; color: #47546e; }
+    .btn.small { padding: 7px 10px; font-size: 12px; }
+    .icon-btn { border: 0; color: #66738b; background: #f3f5f9; border-radius: 8px; width: 30px; height: 30px; line-height: 1; font-size: 18px; transition: 0.2s; }
+    .icon-btn:hover { background: #e7eaf1; color: #e15959; transform: rotate(90deg); }
+
+    /* Custom Apps Grid */
+    .apps-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 20px; justify-items: center; }
+    .app-item { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; cursor: pointer; text-decoration: none; color: inherit; width: 100%; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .app-item:hover { transform: translateY(-5px) scale(1.05); }
+    .app-icon { width: 56px; height: 56px; background: #fff; border-radius: 16px; display: grid; place-items: center; font-size: 26px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #f0f0f0; transition: 0.3s; }
+    .app-item:hover .app-icon { box-shadow: 0 8px 20px rgba(76,92,232,0.2); border-color: var(--indigo-soft); }
     .app-label { font-size: 11px; font-weight: 600; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px; }
-    
-    /* Layouts */
-    .two-col { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; align-items: start; }
-    .patch-notes { font-size: 12px; color: var(--muted); max-height: 300px; overflow-y: auto; padding-right: 10px; }
-    .patch-item { border-left: 2px solid var(--indigo); padding-left: 12px; margin-bottom: 15px; }
-    .patch-item h4 { margin: 0 0 4px 0; color: var(--ink); font-size: 13px; }
-    
+    .del-app-btn { font-size:10px; border:none; background:none; color:var(--coral); margin-top:-5px; opacity:0; transition:0.3s; }
+    .app-item:hover .del-app-btn { opacity:1; }
+
+    /* Layout Grids */
+    .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(310px, .82fr); gap: 24px; align-items: start; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .form-grid .full { grid-column: 1 / -1; }
-    input, select, textarea { width: 100%; border: 1px solid #dfe4ed; border-radius: 8px; padding: 10px; font-size: 13px; background: #fafbff; }
-    
-    /* Solat Overlay */
-    #solatOverlay { position: fixed; inset: 0; background: rgba(18, 25, 43, 0.96); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 20px; backdrop-filter: blur(5px); }
-    .solat-box { background: linear-gradient(135deg, #23a7a2, #188682); padding: 40px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-width: 400px; width: 100%; }
-    
-    .tasbih-btn { background: #fff; color: var(--indigo); border: 2px solid var(--indigo); font-weight: bold; border-radius: 20px; padding: 6px 15px; font-size: 13px; margin-left: auto; }
-    
-    /* Mobile Responsive Fixes */
-    @media (max-width: 900px) {
-      .two-col { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 768px) {
-      .app-shell { display: block; }
-      .sidebar { position: fixed; bottom: 0; top: auto; height: 60px; width: 100%; flex-direction: row; padding: 5px 10px; z-index: 100; overflow: visible; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); }
-      .brand, .sidebar-note { display: none; }
-      .nav { display: flex; flex-direction: row; justify-content: space-around; width: 100%; }
-      .nav a { flex-direction: column; padding: 5px; gap: 3px; font-size: 10px; }
-      .nav-icon { font-size: 18px; }
-      main { padding: 15px 15px 80px; }
-      .form-grid { grid-template-columns: 1fr; }
-    }
+    input, select, textarea { width: 100%; border: 1px solid #dfe4ed; border-radius: 8px; padding: 10px; font-size: 13px; background: #fff; transition: 0.2s; }
+    input:focus, textarea:focus { outline: none; border-color: var(--indigo); box-shadow: 0 0 0 3px var(--indigo-soft); }
+    textarea { min-height: 80px; resize: vertical; }
 
+    /* Lists & Trackers */
+    .announcement { display: grid; grid-template-columns: 4px minmax(0, 1fr) auto; gap: 12px; padding: 12px 0; border-bottom: 1px solid #eef0f5; }
+    .announcement-bar { width: 4px; border-radius: 8px; background: var(--accent, var(--indigo)); }
+    .assignment { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 11px; align-items: center; border: 1px solid #e8ebf1; padding: 10px; border-radius: 11px; transition: 0.2s; }
+    .assignment:hover { transform: translateX(4px); border-color: var(--indigo-soft); }
+    .date-badge { width: 39px; height: 42px; background: #fff2ee; color: #c85548; border-radius: 8px; display: grid; place-content: center; text-align: center; line-height: 1; }
+    .date-badge b { font-size: 15px; } .date-badge span { font-size: 9px; font-weight: 700; text-transform: uppercase; }
+    
+    /* Timetable Grid */
+    .week-grid-wrap { overflow-x: auto; padding-bottom: 10px; }
+    .week-grid { --hour-height: 57px; min-width: 800px; display: grid; grid-template-columns: 54px repeat(5, 1fr); grid-template-rows: 35px repeat(24, calc(var(--hour-height) / 2)); background: #fff; position: relative; border-radius: 15px; border: 1px solid #e4e8f0; }
+    .day-heading { padding: 10px 8px; text-align: center; font-size: 11px; font-weight: 750; background: #fbfcfe; border-bottom: 1px solid #e6eaf1; border-left: 1px solid #e6eaf1; }
+    .time-label { color: #98a2b4; font-size: 10px; padding: 7px 7px 0 0; text-align: right; border-bottom: 1px solid #edf0f5; }
+    .time-cell { border-left: 1px solid #edf0f5; border-bottom: 1px solid #edf0f5; }
+    .class-card { z-index: 2; margin: 3px 4px; padding: 7px 8px; overflow: hidden; color: #fff; background: var(--class-color, var(--indigo)); border-radius: 7px; box-shadow: 0 3px 8px rgba(36,54,92,.13); font-size: 10px; line-height: 1.3; transition: 0.2s; }
+    .class-card:hover { transform: scale(1.02); z-index: 3; }
+
+    /* Solat Overlay */
+    #solatOverlay { position: fixed; inset: 0; background: rgba(18, 25, 43, 0.95); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 20px; backdrop-filter: blur(8px); animation: slideUp 0.4s ease; }
+    .solat-box { background: linear-gradient(135deg, #23a7a2, #188682); padding: 40px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-width: 420px; width: 100%; border: 1px solid rgba(255,255,255,0.2); }
+
+    /* Dialogs & Toasts */
+    dialog { width: min(94vw, 500px); border: 0; padding: 0; border-radius: 17px; box-shadow: 0 20px 65px rgba(18, 29, 59, .24); }
+    dialog::backdrop { background: rgba(22, 33, 61, .42); backdrop-filter: blur(3px); }
+    .dialog-inner { padding: 21px; }
+    .toast { position: fixed; right: 24px; bottom: 24px; background: #1f2b49; color: #fff; padding: 12px 18px; border-radius: 10px; box-shadow: 0 8px 25px rgba(25,38,70,.2); font-size: 13px; transform: translateY(80px); opacity: 0; transition: .3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 999; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* Print Format */
     #examOutput { display: none; }
     @media print {
       body * { visibility: hidden; }
@@ -82,115 +110,150 @@
       .exam-content { font-family: 'Times New Roman', serif; font-size: 12pt; padding: 20px 40px; color: black; display: block; }
       @page { margin: 15mm; }
     }
+
+    /* Mobile Responsive */
+    @media (max-width: 960px) { 
+      .app-shell { grid-template-columns: 70px minmax(0,1fr); } 
+      .sidebar { padding: 20px 9px; } 
+      .brand { justify-content: center; padding: 0 0 28px; } 
+      .brand span, .nav-label, .nav span:not(.nav-icon), .sidebar-note { display: none; } 
+      .nav a { justify-content: center; padding: 11px 0; } 
+      .dashboard-grid { grid-template-columns: 1fr; } 
+    }
+    @media (max-width: 600px) { 
+      .app-shell { display: block; } 
+      .sidebar { height: auto; min-height: 60px; position: fixed; bottom: 0; top: auto; z-index: 100; padding: 8px 12px; flex-direction: row; align-items: center; width: 100%; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); border-top: 1px solid #2a3b61; } 
+      .brand, .sidebar-note { display: none; } 
+      .nav { display: flex; flex: 1; justify-content: space-around; gap: 2px; } 
+      .nav a { padding: 8px; flex-direction: column; gap: 3px; font-size: 9px; border-radius: 8px; } 
+      .nav-icon { font-size: 18px; }
+      main { padding: 20px 15px 90px; } 
+      .topbar { flex-direction: column; align-items: stretch; }
+      .form-grid { grid-template-columns: 1fr; } 
+    }
   </style>
 </head>
 <body>
   
+  <!-- Prayer Time Overlay -->
   <div id="solatOverlay">
     <div class="solat-box">
-      <h1 style="font-size: 40px; margin: 0 0 10px;">🕌</h1>
-      <h2 id="solatTitle" style="margin: 0 0 10px;">Waktu Solat Dah Masuk!</h2>
-      <p style="font-size: 15px; margin-bottom: 25px;">Berhentilah seketika. "Solat itu tiang agama, barangsiapa mendirikannya maka dia mendirikan agama."</p>
-      <button class="btn" onclick="document.getElementById('solatOverlay').style.display='none'" style="background: #fff; color: #188682; width: 100%; margin-bottom: 10px;">Alhamdulillah, Saya Nak Solat</button>
-      <button class="btn ghost" onclick="document.getElementById('solatOverlay').style.display='none'" style="width: 100%; background: transparent; border: 1px solid #fff; color: #fff;">Tangguh 5 Minit (Kecemasan)</button>
+      <h1 style="font-size: 45px; margin: 0 0 10px; animation: pulse 2s infinite;">🕌</h1>
+      <h2 id="solatTitle" style="margin: 0 0 10px;">Prayer Time!</h2>
+      <p style="font-size: 14px; margin-bottom: 25px; line-height: 1.5; opacity: 0.9;">Take a break. "Prayer is the pillar of religion, whoever establishes it establishes religion."</p>
+      <button class="btn" onclick="document.getElementById('solatOverlay').style.display='none'" style="background: #fff; color: #188682; width: 100%; margin-bottom: 10px; font-size: 14px;">Alhamdulillah, Time to Pray</button>
+      <button class="btn ghost" onclick="document.getElementById('solatOverlay').style.display='none'" style="width: 100%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.4); color: #fff; font-size: 12px;">Postpone 5 Mins (Emergency)</button>
     </div>
   </div>
 
   <div class="app-shell">
     <aside class="sidebar">
       <div class="brand"><div class="brand-mark">⌘</div><span>Student Space</span></div>
+      <div class="nav-label">Main Menu</div>
       <nav class="nav">
         <a class="active" href="#workspace"><span class="nav-icon">📱</span><span>Apps</span></a>
-        <a href="#timetable"><span class="nav-icon">▦</span><span>Jadual</span></a>
+        <a href="#announcements"><span class="nav-icon">◌</span><span>Notices</span></a>
+        <a href="#timetable"><span class="nav-icon">▦</span><span>Timetable</span></a>
+        <a href="#tracker"><span class="nav-icon">✓</span><span>Tasks</span></a>
         <a href="#examGen"><span class="nav-icon">📝</span><span>Exam Gen</span></a>
       </nav>
-      <div class="sidebar-note"><strong>Data Selamat</strong>Semua info disimpan secara lokal.</div>
+      <div class="sidebar-note"><strong>Data Secured</strong>Everything is saved locally.</div>
     </aside>
 
     <main>
       <header class="topbar">
-        <div><h1 style="font-size: 22px;">Assalamualaikum, Haziq! 👋</h1></div>
-        <button id="tasbihBtn" class="tasbih-btn">📿 Tasbih: 0</button>
-        <div class="quote-box" id="dailyQuote">Memuat turun mutiara kata...</div>
+        <div>
+          <p class="eyebrow">Personal Learning Hub</p>
+          <h1 style="font-size: clamp(22px, 3vw, 28px); margin: 0;">Welcome back! 👋</h1>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <button id="tasbihBtn" class="tasbih-btn">📿 Dhikr: 0</button>
+          <div class="quote-box" id="dailyQuote">Loading daily quote...</div>
+        </div>
       </header>
 
-      <div class="content">
-        
-        <!-- APPS WORKSPACE & PATCH NOTES -->
-        <div class="two-col" id="workspace">
-          <section class="section">
-            <div class="section-heading" style="display: flex; justify-content: space-between;">
-              <div><h2>Ruang Pembelajaran Saya</h2></div>
-              <button class="btn small" onclick="document.getElementById('addAppForm').style.display='block'">+ Add App</button>
-            </div>
-            
-            <div id="addAppForm" class="panel" style="display: none; margin-bottom: 20px; background: #fafbff;">
-              <h4 style="margin: 0 0 10px;">Tambah Aplikasi Baru</h4>
-              <div class="form-grid">
-                <input id="newAppName" placeholder="Nama App (cth: E-Learning)" />
-                <input id="newAppIcon" placeholder="Emoji / Link Gambar (cth: 📚)" />
-                <input id="newAppUrl" class="full" placeholder="Link URL (cth: https://unisel.edu.my)" />
-              </div>
-              <div style="margin-top: 10px; text-align: right;">
-                <button class="btn ghost small" onclick="document.getElementById('addAppForm').style.display='none'">Batal</button>
-                <button class="btn small" id="saveNewAppBtn">Simpan</button>
-              </div>
-            </div>
-
-            <div class="panel">
-              <div id="appsGrid" class="apps-container"></div>
-            </div>
-          </section>
-
-          <section class="section">
-            <div class="section-heading"><h2>Dev Patch Notes 🛠️</h2></div>
-            <div class="panel patch-notes">
-              <div class="patch-item">
-                <h4>v1.3 - Waktu Solat & Custom Apps (Terkini)</h4>
-                <p>Tambah sistem Grid Apps (boleh custom letak sendiri), ciri Auto-Shutdown Waktu Solat (Zon Selangor), Tasbih Digital & Petikan Al-Quran Harian. UI dibetulkan untuk skrin POCO C75.</p>
-              </div>
-              <div class="patch-item">
-                <h4>v1.2 - Exam Generator Pro</h4>
-                <p>Integrasi penjana kertas peperiksaan dengan pembahagian wajaran markah automatik & format cetakan rasmi UNISEL tanpa logo.</p>
-              </div>
-              <div class="patch-item">
-                <h4>v1.1 - Jadual & Kalendar</h4>
-                <p>Memasukkan ciri Dynamic Timetable, Assignment Tracker dan storan pangkalan data LocalStorage.</p>
-              </div>
-              <div class="patch-item">
-                <h4>v1.0 - Prototaip Awal</h4>
-                <p>Pelancaran antaramuka asas Student Dashboard dan papan kenyataan statik.</p>
-              </div>
-            </div>
-          </section>
+      <!-- Goal Countdown Banner -->
+      <div class="panel" style="margin-bottom: 24px; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; background: linear-gradient(135deg, #4c5ce8, #7181ff); color: white; border: none;">
+        <div>
+          <h3 style="margin: 0 0 5px; font-size: 14px; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 1px;">🎯 Goal Countdown</h3>
+          <div id="countdownDisplay" style="font-size: 18px; font-weight: bold; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">Please set a target date...</div>
         </div>
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <input id="countdownInput" type="date" style="padding: 8px 12px; border-radius: 8px; border: none; font-size: 13px; color: var(--ink); box-shadow: 0 4px 10px rgba(0,0,0,0.1);" />
+          <button id="saveCountdownBtn" class="btn" style="background: #23a7a2; padding: 8px 15px; font-size: 13px; color: white; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">Set Target</button>
+        </div>
+      </div>
 
-        <!-- JADUAL & KELAS -->
-        <section id="timetable" class="section">
-          <div class="section-heading"><div><h2>Dynamic Timetable</h2></div></div>
+      <div class="content">
+        <!-- Apps Workspace -->
+        <section id="workspace" class="section">
+          <div class="section-heading">
+            <div><h2>My Learning Space</h2><p class="section-subtitle">Your customizable quick access tools.</p></div>
+            <button class="btn small" onclick="document.getElementById('addAppDialog').showModal()">+ Add App</button>
+          </div>
           <div class="panel">
-            <div class="form-grid" style="margin-bottom: 15px;">
-              <input id="className" placeholder="Nama Kelas" />
-              <select id="classDay"><option value="0">Isnin</option><option value="1">Selasa</option><option value="2">Rabu</option><option value="3">Khamis</option><option value="4">Jumaat</option></select>
-              <input id="classStart" type="time" value="09:00" />
-              <input id="classEnd" type="time" value="11:00" />
-            </div>
-            <button id="addClassBtn" class="btn small">Tambah Kelas</button>
-            <div id="weekGrid" style="margin-top: 20px; font-size: 12px; display: grid; gap: 8px;"></div>
+            <div id="appsGrid" class="apps-container"></div>
           </div>
         </section>
 
-        <!-- EXAM GEN PRO -->
+        <!-- Notices & Tasks -->
+        <div class="dashboard-grid">
+          <section id="announcements" class="section">
+            <div class="section-heading"><div><h2>Notice Board</h2><p class="section-subtitle">Campus updates & patches.</p></div><button id="addNoticeBtn" class="btn small">+ Add</button></div>
+            <div class="panel notice-board"><div id="announcementList" class="announcement-list"></div></div>
+          </section>
+
+          <section class="section">
+            <div class="section-heading"><div><h2>Upcoming</h2><p class="section-subtitle">Sorted by due date.</p></div><a class="btn ghost small" href="#tracker">View All</a></div>
+            <div class="panel assignments-panel"><div id="upcomingList" class="assignment-list"></div></div>
+          </section>
+        </div>
+
+        <!-- Timetable -->
+        <section id="timetable" class="section">
+          <div class="section-heading"><div><h2>Dynamic Timetable</h2><p class="section-subtitle">Map out your teaching week.</p></div><button id="addClassBtn" class="btn small">+ Add Class</button></div>
+          <div class="panel timetable-controls" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+            <div class="form-grid" style="flex: 1; min-width: 250px;"><input id="semesterInput" placeholder="Semester (e.g. Sem 2)" /><input id="weekInput" placeholder="Week (e.g. Week 7)" /></div>
+            <button id="saveTermBtn" class="btn ghost">Save Details</button>
+          </div>
+          <div class="week-grid-wrap"><div id="weekGrid" class="week-grid"></div></div>
+        </section>
+
+        <!-- Task Tracker -->
+        <section id="tracker" class="section">
+          <div class="section-heading"><div><h2>Task Tracker</h2><p class="section-subtitle">Capture work and stay organized.</p></div></div>
+          <div class="panel">
+            <form id="assignmentForm" class="form-grid">
+              <input id="assignmentName" required placeholder="Assignment Name" />
+              <input id="assignmentDue" type="date" required />
+              <input id="assignmentCourse" class="full" placeholder="Course / Module (Optional)" />
+              <textarea id="assignmentTasks" class="full" placeholder="Tasks to complete (One per line)"></textarea>
+              <button class="btn full" type="submit">Save Assignment</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- Exam Gen Pro -->
         <section id="examGen" class="section">
-          <div class="section-heading"><div><h2>Exam Paper Generator Pro</h2></div></div>
-          <div class="panel form-grid">
-            <select id="examLang"><option value="BM">Bahasa Melayu</option><option value="EN">English</option></select>
-            <input id="examCode" placeholder="Kod Kursus" />
-            <input id="examName" class="full" placeholder="Nama Kursus" />
-            <textarea id="qBankA" class="full" placeholder="Soalan Struktur / Objektif (1 soalan 1 baris)"></textarea>
-            <textarea id="qBankB" class="full" placeholder="Soalan Subjektif"></textarea>
-            <textarea id="qBankC" class="full" placeholder="Soalan Esei"></textarea>
-            <button id="generateExamBtn" class="btn full">Generate & Print PDF</button>
+          <div class="section-heading">
+            <div><h2>Exam Paper Generator Pro</h2><p class="section-subtitle">Generate standard formatted examination papers.</p></div>
+          </div>
+          <div class="panel task-form">
+            <div class="form-grid">
+              <label>Language<select id="examLang"><option value="BM">Malay</option><option value="EN">English</option><option value="DWI">Dwi-Language</option></select></label>
+              <label>Course Code<input id="examCode" placeholder="E.g. CEA1344" /></label>
+              <label class="full">Course Name<input id="examName" placeholder="E.g. Introduction to Literature" /></label>
+              <label>Duration<input id="examDuration" placeholder="E.g. 3 HOURS / 3 JAM" /></label>
+              <label>Faculty<input id="examFac" placeholder="E.g. Education and Social Sciences" /></label>
+              <label>Department<input id="examDept" placeholder="E.g. Language Education" /></label>
+              <label>Programme<input id="examProg" placeholder="E.g. Foundation" /></label>
+              <label class="full">Lecturer<input id="examLecturer" placeholder="E.g. Mdm Sofea" /></label>
+              
+              <label class="full">Section A: Structure / Objective<textarea id="qBankA" placeholder="Enter questions here (One per line)..."></textarea></label>
+              <label class="full">Section B: Subjective (use [img: url] for image)<textarea id="qBankB" placeholder="1. Explain the concept... [img: https://link.jpg]"></textarea></label>
+              <label class="full">Section C: Essay<textarea id="qBankC" placeholder="Enter essay questions here..."></textarea></label>
+            </div>
+            <button id="generateExamBtn" class="btn" style="margin-top: 15px; width: 100%;">Generate PDF</button>
           </div>
         </section>
 
@@ -198,201 +261,325 @@
     </main>
   </div>
 
+  <!-- Print Output Container (Hidden from UI) -->
   <div id="examOutput"><div id="examPaper"></div></div>
-  <div id="toast" style="position:fixed; bottom:20px; right:20px; background:#333; color:white; padding:10px 20px; border-radius:8px; display:none; z-index:1000;">Berjaya!</div>
+
+  <!-- Dialogs -->
+  <dialog id="addAppDialog">
+    <div class="dialog-inner">
+      <div class="dialog-head"><h3>Add New App</h3><button class="icon-btn" onclick="document.getElementById('addAppDialog').close()">×</button></div>
+      <div class="form-grid">
+        <input id="newAppName" placeholder="App Name (e.g. E-Learning)" />
+        <input id="newAppIcon" placeholder="Emoji / Image URL (e.g. 📚)" />
+        <input id="newAppUrl" class="full" placeholder="URL (e.g. https://unisel.edu.my)" />
+      </div>
+      <div class="dialog-footer"><button class="btn ghost" onclick="document.getElementById('addAppDialog').close()">Cancel</button><button class="btn" id="saveNewAppBtn">Save App</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="noticeDialog">
+    <form id="noticeForm" class="dialog-inner" method="dialog">
+      <div class="dialog-head"><h3>Save Notice</h3><button type="button" class="icon-btn" data-close="noticeDialog">×</button></div>
+      <div class="dialog-grid">
+        <input id="noticeTitle" required placeholder="Title" />
+        <textarea id="noticeBody" required placeholder="Details..."></textarea>
+        <input id="noticeSource" placeholder="Source / Author" />
+        <div class="color-options"><input class="color-swatch" type="radio" name="noticeColor" value="#4c5ce8" style="--swatch:#4c5ce8" checked /><input class="color-swatch" type="radio" name="noticeColor" value="#23a7a2" style="--swatch:#23a7a2" /><input class="color-swatch" type="radio" name="noticeColor" value="#ef766a" style="--swatch:#ef766a" /></div>
+      </div>
+      <div class="dialog-footer"><button type="button" class="btn ghost" data-close="noticeDialog">Cancel</button><button class="btn" type="submit">Save</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="classDialog">
+    <form id="classForm" class="dialog-inner" method="dialog">
+      <div class="dialog-head"><h3>Add Class</h3><button type="button" class="icon-btn" data-close="classDialog">×</button></div>
+      <div class="form-grid">
+        <input id="className" required placeholder="Class Name" />
+        <input id="classCode" placeholder="Course Code" />
+        <select id="classDay"><option value="0">Monday</option><option value="1">Tuesday</option><option value="2">Wednesday</option><option value="3">Thursday</option><option value="4">Friday</option></select>
+        <input id="classRoom" placeholder="Room" />
+        <input id="classStart" type="time" required value="09:00" />
+        <input id="classEnd" type="time" required value="10:00" />
+        <div class="color-options full"><input class="color-swatch" type="radio" name="classColor" value="#4c5ce8" style="--swatch:#4c5ce8" checked /><input class="color-swatch" type="radio" name="classColor" value="#23a7a2" style="--swatch:#23a7a2" /><input class="color-swatch" type="radio" name="classColor" value="#ef766a" style="--swatch:#ef766a" /></div>
+      </div>
+      <div class="dialog-footer"><button type="button" class="btn ghost" data-close="classDialog">Cancel</button><button class="btn" type="submit">Add Class</button></div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
 
   <script>
     (() => {
+      // 1. Core Helpers
       const $ = (s) => document.querySelector(s);
       const id = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
-      const toast = (msg) => { const el = $('#toast'); el.textContent = msg; el.style.display = 'block'; setTimeout(() => el.style.display='none', 2500); };
+      const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c]));
+      const toDateKey = (date) => { const offset = date.getTimezoneOffset(); return new Date(date.getTime() - offset * 60000).toISOString().slice(0, 10); };
+      const dateFromKey = (key) => new Date(key + 'T12:00:00');
+      const formatDate = (date, opts) => new Intl.DateTimeFormat('en-US', opts).format(date);
+      const todayKey = toDateKey(new Date());
+      const toast = (msg) => { const el = $('#toast'); if(!el) return; el.textContent = msg; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => el.classList.remove('show'), 2500); };
 
-      const KEY = 'studentDashboard.v1.3';
+      // 2. State & Storage
+      const KEY = 'studentDashboard.v1'; // Kept same key so data doesn't wipe
       const defaultState = { 
+        settings: { semester: '', week: '', countdownTarget: '' }, 
+        announcements: [], classes: [], assignments: [], 
         customApps: [
           { id: '1', name: 'MyStudent', icon: '🎓', url: 'https://mystudent.unisel.edu.my' },
           { id: '2', name: 'E-Learning', icon: '📚', url: 'https://elearning.unisel.edu.my' },
           { id: '3', name: 'MyPTPTN', icon: '💰', url: 'https://myptptn.ptptn.gov.my' },
           { id: '4', name: 'Canva', icon: '🎨', url: 'https://canva.com' }
         ],
-        classes: [], tasbihCount: 0 
+        tasbihCount: 0 
       };
-      
       let state;
       try { state = { ...defaultState, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { state = defaultState; }
-      state.customApps ||= defaultState.customApps;
-      state.classes ||= [];
-      
-      const save = () => localStorage.setItem(KEY, JSON.stringify(state));
+      state.settings ||= {}; state.announcements ||= []; state.classes ||= []; state.assignments ||= []; state.customApps ||= defaultState.customApps;
+      const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} };
 
-      // 1. Al-Quran & Daily Quotes
+      // 3. Goal Countdown
+      function updateCountdown() {
+        const targetStr = state.settings.countdownTarget;
+        const display = $('#countdownDisplay');
+        if (!display) return;
+        if (!targetStr) { display.textContent = "Please set a target date 👉"; return; }
+        
+        const target = new Date(targetStr + 'T00:00:00').getTime();
+        const now = new Date().getTime();
+        const distance = target - now;
+        
+        if (distance < 0) { display.textContent = "🎉 Alhamdulillah, goal reached!"; return; }
+        
+        const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((distance % (1000 * 60)) / 1000);
+        display.textContent = `${d} Days, ${h} Hrs, ${m} Mins, ${s} Secs`;
+      }
+      if($('#countdownInput')) $('#countdownInput').value = state.settings.countdownTarget || '';
+      if($('#saveCountdownBtn')) {
+        $('#saveCountdownBtn').addEventListener('click', () => {
+          state.settings.countdownTarget = $('#countdownInput').value;
+          save(); toast('Countdown date set!'); updateCountdown();
+        });
+      }
+      setInterval(updateCountdown, 1000); updateCountdown();
+
+      // 4. Quotes & Dhikr
       const quotes = [
-        "“Berdoalah kepada-Ku, nescaya akan Kuperkenankan bagimu.” (Ghafir: 60)",
-        "“Sesungguhnya beserta kesukaran itu ada kemudahan.” (Al-Insyirah: 6)",
-        "“Cukuplah Allah bagi kami dan Dia sebaik-baik pelindung.” (Ali Imran: 173)",
-        "“Janganlah kamu bersikap lemah, dan janganlah (pula) kamu bersedih hati.” (Ali Imran: 139)",
-        "“Maka nikmat Tuhan kamu yang manakah yang kamu dustakan?” (Ar-Rahman: 13)"
+        "“Call upon Me; I will respond to you.” (Ghafir: 60)",
+        "“For indeed, with hardship [will be] ease.” (Al-Inshirah: 5)",
+        "“Sufficient for us is Allah, and [He is] the best Disposer of affairs.” (Ali Imran: 173)",
+        "“So do not weaken and do not grieve.” (Ali Imran: 139)",
+        "“So which of the favors of your Lord would you deny?” (Ar-Rahman: 13)"
       ];
-      $('#dailyQuote').textContent = quotes[new Date().getDay() % quotes.length];
+      if($('#dailyQuote')) $('#dailyQuote').textContent = quotes[new Date().getDay() % quotes.length];
 
-      // 2. Tasbih Digital
       const tasbihBtn = $('#tasbihBtn');
-      tasbihBtn.textContent = `📿 Tasbih: ${state.tasbihCount}`;
-      tasbihBtn.addEventListener('click', () => {
-        state.tasbihCount++;
-        if(state.tasbihCount > 33) { state.tasbihCount = 1; toast("Alhamdulillah, mula kitaran baru!"); }
-        tasbihBtn.textContent = `📿 Tasbih: ${state.tasbihCount}`;
-        save();
-      });
+      if(tasbihBtn) {
+        tasbihBtn.textContent = `📿 Dhikr: ${state.tasbihCount || 0}`;
+        tasbihBtn.addEventListener('click', () => {
+          state.tasbihCount = (state.tasbihCount || 0) + 1;
+          if(state.tasbihCount > 33) { state.tasbihCount = 1; toast("Alhamdulillah, cycle refreshed!"); }
+          tasbihBtn.textContent = `📿 Dhikr: ${state.tasbihCount}`;
+          save();
+        });
+      }
 
-      // 3. Grid Apps System
+      // 5. Custom Apps Grid
       function renderApps() {
-        const grid = $('#appsGrid');
+        const grid = $('#appsGrid'); if(!grid) return;
         grid.innerHTML = state.customApps.map(app => `
           <a href="${app.url}" target="_blank" class="app-item">
-            <div class="app-icon">${app.icon.length <= 2 ? app.icon : `<img src="${app.icon}" width="30" height="30" style="border-radius:50%">`}</div>
-            <div class="app-label">${app.name}</div>
-            <button type="button" data-del-app="${app.id}" style="font-size:10px; border:none; background:none; color:red; margin-top:-5px">Buang</button>
+            <div class="app-icon">${app.icon.length <= 2 ? app.icon : `<img src="${app.icon}" width="32" height="32" style="border-radius:8px">`}</div>
+            <div class="app-label">${escapeHTML(app.name)}</div>
+            <button type="button" class="del-app-btn" data-del-app="${app.id}">Remove</button>
           </a>
         `).join('');
       }
-      
-      $('#saveNewAppBtn').addEventListener('click', () => {
-        let name = $('#newAppName').value.trim();
-        let icon = $('#newAppIcon').value.trim() || '🌐';
-        let url = $('#newAppUrl').value.trim();
-        if(!url.startsWith('http')) url = 'https://' + url;
-        if(!name || !url) { toast('Sila isi nama & link!'); return; }
-        
-        state.customApps.push({ id: id(), name, icon, url });
-        save(); renderApps(); 
-        $('#newAppName').value = ''; $('#newAppIcon').value = ''; $('#newAppUrl').value = '';
-        $('#addAppForm').style.display = 'none';
-        toast('App berjaya ditambah!');
-      });
+      if($('#saveNewAppBtn')) {
+        $('#saveNewAppBtn').addEventListener('click', () => {
+          let name = $('#newAppName').value.trim();
+          let icon = $('#newAppIcon').value.trim() || '🌐';
+          let url = $('#newAppUrl').value.trim();
+          if(!url.startsWith('http')) url = 'https://' + url;
+          if(!name || !url) { toast('Please fill name & URL!'); return; }
+          state.customApps.push({ id: id(), name, icon, url });
+          save(); renderApps(); 
+          $('#newAppName').value = ''; $('#newAppIcon').value = ''; $('#newAppUrl').value = '';
+          $('#addAppDialog').close(); toast('App added successfully!');
+        });
+      }
+      if($('#appsGrid')) {
+        $('#appsGrid').addEventListener('click', e => {
+          const btn = e.target.closest('[data-del-app]'); if(!btn) return;
+          e.preventDefault();
+          state.customApps = state.customApps.filter(a => a.id !== btn.dataset.delApp);
+          save(); renderApps(); toast('App removed');
+        });
+      }
 
-      $('#appsGrid').addEventListener('click', e => {
-        const btn = e.target.closest('[data-del-app]');
-        if(!btn) return;
-        e.preventDefault();
-        state.customApps = state.customApps.filter(a => a.id !== btn.dataset.delApp);
-        save(); renderApps(); toast('App dibuang');
-      });
-
-      // 4. Waktu Solat Auto-Shutdown (Zon Selangor)
-      async function checkWaktuSolat() {
+      // 6. Prayer Time (Solat)
+      async function checkPrayerTimes() {
         try {
-          // Guna API Aladhan untuk Selangor
           const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=Klang&country=Malaysia&method=11`);
           const data = await res.json();
           const timings = data.data.timings;
-          
           const now = new Date();
-          const currentHourMin = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-          
-          // Semak waktu Fajar, Dhuhr, Asr, Maghrib, Isha
+          const currentHM = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
           const solatTimes = [
-            { name: "Subuh", time: timings.Fajr },
-            { name: "Zohor", time: timings.Dhuhr },
-            { name: "Asar", time: timings.Asr },
-            { name: "Maghrib", time: timings.Maghrib },
-            { name: "Isyak", time: timings.Isha }
+            { name: "Fajr", time: timings.Fajr }, { name: "Dhuhr", time: timings.Dhuhr },
+            { name: "Asr", time: timings.Asr }, { name: "Maghrib", time: timings.Maghrib }, { name: "Isha", time: timings.Isha }
           ];
-
-          for (let solat of solatTimes) {
-            if (currentHourMin === solat.time) {
-              $('#solatTitle').textContent = `Waktu ${solat.name} Dah Masuk!`;
-              $('#solatOverlay').style.display = 'flex';
-              break; // Elak trigger dua kali
+          for (let s of solatTimes) {
+            if (currentHM === s.time) {
+              $('#solatTitle').textContent = `${s.name} Prayer Time!`;
+              $('#solatOverlay').style.display = 'flex'; break;
             }
           }
-        } catch (e) { console.log('Gagal semak waktu solat. Mungkin tiada internet.'); }
+        } catch (e) { console.log('Prayer API error.'); }
       }
-      // Semak setiap 60 saat
-      setInterval(checkWaktuSolat, 60000); 
-      // checkWaktuSolat(); // Boleh di-uncomment untuk test terus
+      setInterval(checkPrayerTimes, 60000);
 
-      // 5. Timetable (Ringkas)
-      function renderTimetable() {
-        const days = ['Isnin','Selasa','Rabu','Khamis','Jumaat'];
-        $('#weekGrid').innerHTML = state.classes.map(c => `
-          <div style="background:#f0f2f8; padding:10px; border-radius:8px; display:flex; justify-content:space-between;">
-            <div><strong>${c.name}</strong> (${days[c.day]}) - ${c.start} hingga ${c.end}</div>
-            <button data-del-class="${c.id}" style="color:red; border:none; background:none;">X</button>
-          </div>
+      // 7. Announcements
+      function renderAnnouncements() {
+        const list = $('#announcementList'); if(!list) return;
+        if (!state.announcements.length) { list.innerHTML = '<span style="font-size:12px;color:var(--muted)">No notices saved.</span>'; return; }
+        list.innerHTML = [...state.announcements].sort((a,b) => b.createdAt - a.createdAt).map(n => `
+          <div class="announcement" style="--accent:${escapeHTML(n.color)}"><div class="announcement-bar"></div><div><div class="announcement-title">${escapeHTML(n.title)}</div><div class="announcement-body">${escapeHTML(n.body)}</div></div><div class="announcement-meta"><span>${escapeHTML(n.source)}</span><button class="icon-btn" data-delete-notice="${n.id}">×</button></div></div>
         `).join('');
       }
-      $('#addClassBtn').addEventListener('click', () => {
-        state.classes.push({ id:id(), name: $('#className').value, day: $('#classDay').value, start: $('#classStart').value, end: $('#classEnd').value });
-        save(); renderTimetable(); toast('Kelas ditambah!');
+      if($('#addNoticeBtn')) $('#addNoticeBtn').addEventListener('click', () => $('#noticeDialog')?.showModal());
+      if($('#noticeForm')) $('#noticeForm').addEventListener('submit', e => {
+        e.preventDefault(); const title = $('#noticeTitle').value, body = $('#noticeBody').value;
+        if (!title || !body) return;
+        state.announcements.push({ id:id(), title, body, source:$('#noticeSource').value, color:document.querySelector('input[name="noticeColor"]:checked').value, createdAt:Date.now() });
+        save(); renderAnnouncements(); e.target.reset(); $('#noticeDialog').close(); toast('Notice saved');
       });
-      $('#weekGrid').addEventListener('click', e => {
-        const btn = e.target.closest('[data-del-class]'); if(!btn) return;
-        state.classes = state.classes.filter(c => c.id !== btn.dataset.delClass);
-        save(); renderTimetable();
-      });
+      if($('#announcementList')) $('#announcementList').addEventListener('click', e => { const b = e.target.closest('[data-delete-notice]'); if(!b) return; state.announcements = state.announcements.filter(n => n.id !== b.dataset.deleteNotice); save(); renderAnnouncements(); });
 
-      // 6. Exam Paper Generator
+      // 8. Timetable
+      function renderTimetable() {
+        const weekGrid = $('#weekGrid'); if(!weekGrid) return;
+        const days = ['Mon','Tue','Wed','Thu','Fri']; const hours = Array.from({length:12}, (_, i) => i + 8);
+        let html = '<div class="day-heading"></div>' + days.map(d => `<div class="day-heading">${d}</div>`).join('');
+        hours.forEach((hour, i) => { const r = 2 + i * 2; html += `<div class="time-label" style="grid-column:1;grid-row:${r}/span 2">${String(hour).padStart(2,'0')}:00</div>`; for(let d=0;d<5;d++) html += `<div class="time-cell" style="grid-column:${d+2};grid-row:${r}/span 2"></div>`; });
+        state.classes.forEach(c => {
+          if(!c.start || !c.end) return;
+          const start = c.start.split(':').map(Number)[0]*60 + c.start.split(':').map(Number)[1], end = c.end.split(':').map(Number)[0]*60 + c.end.split(':').map(Number)[1], first = 480;
+          if (c.day<0 || c.day>4 || end<=first || start>=1200) return;
+          const rStart = 2 + Math.max(0, Math.round((start-first)/30)), span = Math.max(1, Math.round((end-start)/30));
+          html += `<div class="class-card" style="--class-color:${escapeHTML(c.color)};grid-column:${c.day+2};grid-row:${rStart}/span ${span};"><button data-delete-class="${c.id}">×</button><strong>${escapeHTML(c.name)}</strong><span>${escapeHTML(c.code)} ${escapeHTML(c.room)}</span><span>${c.start}-${c.end}</span></div>`;
+        });
+        weekGrid.innerHTML = html;
+        if($('#semesterInput')) $('#semesterInput').value = state.settings.semester || ''; 
+        if($('#weekInput')) $('#weekInput').value = state.settings.week || '';
+      }
+      if($('#saveTermBtn')) $('#saveTermBtn').addEventListener('click', () => { state.settings.semester = $('#semesterInput').value; state.settings.week = $('#weekInput').value; save(); toast('Saved!'); });
+      if($('#addClassBtn')) $('#addClassBtn').addEventListener('click', () => $('#classDialog')?.showModal());
+      if($('#classForm')) $('#classForm').addEventListener('submit', e => {
+        e.preventDefault(); const color = document.querySelector('input[name="classColor"]:checked').value;
+        state.classes.push({ id:id(), name:$('#className').value, code:$('#classCode').value, day:+$('#classDay').value, room:$('#classRoom').value, start:$('#classStart').value, end:$('#classEnd').value, color });
+        save(); renderTimetable(); e.target.reset(); $('#classDialog').close(); toast('Class added');
+      });
+      if($('#weekGrid')) $('#weekGrid').addEventListener('click', e => { const b = e.target.closest('[data-delete-class]'); if(!b) return; state.classes = state.classes.filter(c => c.id !== b.dataset.deleteClass); save(); renderTimetable(); });
+
+      // 9. Assignments
+      function renderUpcoming() {
+        const list = $('#upcomingList'); if(!list) return;
+        const sorted = [...state.assignments].sort((a,b) => a.due.localeCompare(b.due));
+        if (!sorted.length) { list.innerHTML = '<span style="font-size:12px;color:var(--muted)">All caught up!</span>'; return; }
+        list.innerHTML = sorted.map(a => { 
+          const d = Math.ceil((dateFromKey(a.due).getTime() - dateFromKey(todayKey).getTime())/86400000); 
+          const txt = d<0?`${Math.abs(d)}d late`:d===0?'Today':`${d}d left`;
+          return `<div class="assignment"><div class="date-badge"><b>${dateFromKey(a.due).getDate()}</b></div><div><div style="font-weight:bold;font-size:13px">${escapeHTML(a.name)}</div></div><div><div class="days-left ${d<=3?'urgent':''}">${txt}</div><button class="icon-btn" data-del-ass="${a.id}">×</button></div></div>`; 
+        }).join('');
+      }
+      if($('#assignmentForm')) $('#assignmentForm').addEventListener('submit', e => {
+        e.preventDefault(); const t = $('#assignmentTasks').value;
+        state.assignments.push({ id:id(), name:$('#assignmentName').value, due:$('#assignmentDue').value, course:$('#assignmentCourse').value, tasks:t?t.split('\n'):[] });
+        save(); renderUpcoming(); e.target.reset(); toast('Saved task');
+      });
+      if($('#upcomingList')) $('#upcomingList').addEventListener('click', e => { const b = e.target.closest('[data-del-ass]'); if(!b) return; state.assignments = state.assignments.filter(a => a.id !== b.dataset.delAss); save(); renderUpcoming(); });
+
+      // 10. Exam Gen Pro (Exact same logic, translated labels)
       if ($('#generateExamBtn')) {
         $('#generateExamBtn').addEventListener('click', () => {
-          const lang = $('#examLang').value;
-          const isBM = lang === 'BM';
-          
-          const parseQuestions = (text) => text.split('\n').filter(q => q.trim() !== '').map(q => {
-            let weight = 10; 
-            const lower = q.toLowerCase();
-            if (lower.match(/jelaskan|huraikan|bincangkan|explain|discuss|describe/)) weight += 5;
-            if (lower.match(/mengapa|pendapat|why|analyze/)) weight += 10;
-            let imgHtml = '';
-            const imgMatch = q.match(/\[img:\s*(.*?)\]/);
-            if (imgMatch) { imgHtml = `<br><img src="${imgMatch[1]}" style="max-width: 60%; margin-top: 10px; border: 1px solid #333;">`; q = q.replace(imgMatch[0], ''); }
-            return { text: q, weight, imgHtml, mark: 0 };
-          });
-
-          const distributeMarks = (questions, totalMarks) => {
-            if (!questions.length) return [];
-            const totalWeight = questions.reduce((sum, q) => sum + q.weight, 0);
-            let accumulated = 0;
-            questions.forEach((q, i) => {
-              if (i === questions.length - 1) q.mark = totalMarks - accumulated;
-              else { q.mark = Math.round((q.weight / totalWeight) * totalMarks); accumulated += q.mark; }
-            });
-            return questions;
+          const lang = $('#examLang')?.value || 'BM';
+          const t = {
+            title: lang === 'EN' ? 'FINAL EXAMINATION' : lang === 'DWI' ? 'PEPERIKSAAN AKHIR / FINAL EXAMINATION' : 'PEPERIKSAAN AKHIR',
+            course: lang === 'BM' ? 'KURSUS' : 'COURSE',
+            code: lang === 'BM' ? 'KOD KURSUS' : 'COURSE CODE',
+            duration: lang === 'BM' ? 'MASA' : 'DURATION',
+            fac: lang === 'BM' ? 'FAKULTI' : 'FACULTY',
+            dept: lang === 'BM' ? 'JABATAN' : 'DEPARTMENT',
+            prog: lang === 'BM' ? 'PROGRAM' : 'PROGRAMME',
+            lect: lang === 'BM' ? 'PENSYARAH' : 'LECTURER',
+            instruct: lang === 'EN' ? 'INSTRUCTIONS TO CANDIDATES' : lang === 'DWI' ? 'ARAHAN KEPADA CALON / INSTRUCTIONS TO CANDIDATES' : 'ARAHAN KEPADA CALON',
+            warning: lang === 'EN' ? 'DO NOT OPEN THE QUESTION PAPER UNTIL INSTRUCTED.' : lang === 'DWI' ? 'DILARANG MEMBUKA KERTAS SOALAN SEHINGGA DIBENARKAN. / DO NOT OPEN THE QUESTION PAPER UNTIL INSTRUCTED.' : 'DILARANG MEMBUKA KERTAS SOALAN SEHINGGA DIBENARKAN.',
+            confidential: lang === 'BM' ? 'SULIT' : 'CONFIDENTIAL',
+            secA: lang === 'EN' ? 'SECTION A: STRUCTURED QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN A / SECTION A' : 'BAHAGIAN A: SOALAN STRUKTUR',
+            secB: lang === 'EN' ? 'SECTION B: SUBJECTIVE QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN B / SECTION B' : 'BAHAGIAN B: SOALAN SUBJEKTIF',
+            secC: lang === 'EN' ? 'SECTION C: ESSAY QUESTIONS' : lang === 'DWI' ? 'BAHAGIAN C / SECTION C' : 'BAHAGIAN C: SOALAN ESEI',
+            marks: lang === 'BM' ? 'Markah' : 'Marks',
+            ansAll: lang === 'EN' ? 'ANSWER ALL QUESTIONS.' : lang === 'DWI' ? 'JAWAB SEMUA SOALAN. / ANSWER ALL QUESTIONS.' : 'JAWAB SEMUA SOALAN.'
           };
 
-          const partA = distributeMarks(parseQuestions($('#qBankA').value), 30);
-          const partB = distributeMarks(parseQuestions($('#qBankB').value), 30);
-          const partC = distributeMarks(parseQuestions($('#qBankC').value), 40);
+          const parseQ = (text) => text.split('\n').filter(q => q.trim() !== '').map(q => {
+            let w = 10, low = q.toLowerCase();
+            if (low.match(/jelaskan|huraikan|bincangkan|explain|discuss|describe/)) w += 5;
+            if (low.match(/mengapa|pendapat|why|analyze/)) w += 10;
+            let img = ''; const m = q.match(/\[img:\s*(.*?)\]/);
+            if (m) { img = `<br><img src="${m[1]}" style="max-width: 60%; margin-top: 10px; border: 1px solid #333;">`; q = q.replace(m[0], ''); }
+            return { text: escapeHTML(q), weight: w, imgHtml: img, mark: 0 };
+          });
 
-          if (!partA.length && !partB.length && !partC.length) { toast('Isi soalan dulu Haziq!'); return; }
+          const distMarks = (qs, total) => {
+            if (!qs.length) return [];
+            const tw = qs.reduce((s, q) => s + q.weight, 0); let acc = 0;
+            qs.forEach((q, i) => { if(i===qs.length-1) q.mark=total-acc; else { q.mark=Math.round((q.weight/tw)*total); acc+=q.mark; } });
+            return qs;
+          };
 
-          const renderSec = (title, data, idx) => data.length ? `<h3 style="margin: 20px 0 5px;">${title}</h3><ol start="${idx}">${data.map(q => `<li style="margin-bottom:15px;">${q.text} <span style="float:right;">[${q.mark} Markah]</span>${q.imgHtml}</li>`).join('')}</ol>` : '';
+          const pA = distMarks(parseQ($('#qBankA')?.value || ''), 30), pB = distMarks(parseQ($('#qBankB')?.value || ''), 30), pC = distMarks(parseQ($('#qBankC')?.value || ''), 40);
+          if (!pA.length && !pB.length && !pC.length) { toast('Please insert questions!'); return; }
 
-          $('#examPaper').innerHTML = `
-            <div class="cover-page">
-              <h2 style="font-size: 26px; text-align: center;">EXAM PAPER GENERATOR</h2>
-              <h3 style="font-size: 18px; text-align: center; margin-bottom: 40px;">${isBM ? 'PEPERIKSAAN AKHIR' : 'FINAL EXAMINATION'}</h3>
-              <table style="width: 100%; margin-bottom: 40px; font-weight: bold; line-height: 1.8;">
-                <tr><td style="width: 30%;">${isBM ? 'KURSUS' : 'COURSE'}</td><td>: ${$('#examName').value || '-'}</td></tr>
-                <tr><td>${isBM ? 'KOD KURSUS' : 'COURSE CODE'}</td><td>: ${$('#examCode').value || '-'}</td></tr>
-              </table>
-              <div style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 20px 0;">
-                <h3 style="text-align: center; text-decoration: underline;">${isBM ? 'ARAHAN KEPADA CALON' : 'INSTRUCTIONS TO CANDIDATES'}</h3>
-                <p>Kertas soalan ini mengandungi Bahagian A, B dan C.</p>
-                <p style="text-align: center; font-weight: bold; margin-top:20px;">DILARANG MEMBUKA KERTAS SOALAN SEHINGGA DIBENARKAN.</p>
+          const rendSec = (title, data, idx) => data.length ? `<h3 style="font-weight: bold; margin: 20px 0 5px; font-size: 13pt; text-transform: uppercase;">${title}</h3><h4 style="margin: 0 0 15px; font-size: 12pt; font-weight: normal; text-transform: uppercase;">${t.ansAll}</h4><ol style="padding-left: 20px; margin-bottom: 30px;" start="${idx}">${data.map(q => `<li style="margin-bottom: 15px; text-align: justify;">${q.text} <span style="float: right; font-weight: bold;">[${q.mark} ${t.marks}]</span>${q.imgHtml}</li>`).join('')}</ol>` : '';
+
+          if($('#examPaper')) {
+            $('#examPaper').innerHTML = `
+              <div class="print-footer">${t.confidential}</div>
+              <div class="cover-page">
+                <h2 style="font-size: 26px; font-weight: bold; text-align: center; margin-bottom: 5px;">EXAM PAPER GENERATOR</h2>
+                <h3 style="font-size: 18px; text-align: center; margin-bottom: 40px; text-transform: uppercase;">${t.title}</h3>
+                <table style="text-align: left; font-size: 12pt; font-weight: bold; margin: 0 auto 40px auto; width: 90%; line-height: 1.8; text-transform: uppercase;">
+                  <tr><td style="width: 25%;">${t.course}</td><td>: ${escapeHTML($('#examName').value||'-')}</td></tr>
+                  <tr><td>${t.code}</td><td>: ${escapeHTML($('#examCode').value||'-')}</td></tr>
+                  <tr><td>${t.duration}</td><td>: ${escapeHTML($('#examDuration').value||'-')}</td></tr>
+                  <tr><td>${t.fac}</td><td>: ${escapeHTML($('#examFac').value||'-')}</td></tr>
+                  <tr><td>${t.dept}</td><td>: ${escapeHTML($('#examDept').value||'-')}</td></tr>
+                  <tr><td>${t.prog}</td><td>: ${escapeHTML($('#examProg').value||'-')}</td></tr>
+                  <tr><td>${t.lect}</td><td>: ${escapeHTML($('#examLecturer').value||'-')}</td></tr>
+                </table>
+                <div style="margin: 0 auto; width: 90%; text-align: left; border-top: 1.5px solid black; border-bottom: 1.5px solid black; padding: 20px 0;">
+                  <h3 style="font-weight: bold; font-size: 13pt; text-align: center; margin-top: 0; text-decoration: underline;">${t.instruct}</h3>
+                  <p style="font-size: 12pt; margin: 15px 0 5px 0;">This paper consists of the following sections:</p>
+                  <ul style="font-size: 12pt; line-height: 1.6; padding-left: 20px; margin-top: 5px;"><li>Section A - Structured / Objective Questions</li><li>Section B - Subjective Questions</li><li>Section C - Essay Questions</li></ul>
+                  <p style="font-size: 12pt; margin: 15px 0;">Read CAREFULLY the instructions for each section.</p>
+                  <p style="font-size: 12pt; font-weight: bold; text-align: center; margin-top: 30px;">${t.warning}</p>
+                </div>
               </div>
-            </div>
-            <div class="exam-content">
-              ${renderSec(isBM ? 'BAHAGIAN A' : 'SECTION A', partA, 1)}
-              ${renderSec(isBM ? 'BAHAGIAN B' : 'SECTION B', partB, partA.length + 1)}
-              ${renderSec(isBM ? 'BAHAGIAN C' : 'SECTION C', partC, partA.length + partB.length + 1)}
-            </div>
-          `;
+              <div class="exam-content">${rendSec(t.secA, pA, 1)}${rendSec(t.secB, pB, pA.length+1)}${rendSec(t.secC, pC, pA.length+pB.length+1)}</div>
+            `;
+          }
           setTimeout(() => window.print(), 300);
         });
       }
 
-      renderApps(); renderTimetable();
+      // Init
+      renderApps(); renderAnnouncements(); renderTimetable(); renderUpcoming();
+      document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => document.getElementById(b.dataset.close)?.close()));
     })();
   </script>
 </body>
