@@ -33,31 +33,35 @@
     .menu-btn { color: white; font-size: 24px; padding: 5px; }
 
     /* SIDEBAR */
-    .sidebar { width: 250px; background: #0f172a; color: #f8fafc; display: flex; flex-direction: column; padding: 25px 20px; position: sticky; top: 0; height: 100vh; flex-shrink: 0; z-index: 90; transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    @media (min-width: 769px) { .sidebar.collapsed { margin-left: -250px; } }
-    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; font-weight: 800; font-size: 18px; }
-    .brand-mark { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #818cf8, #c7d2fe); color: #0f172a; display: grid; place-items: center; font-size: 18px; }
-    .nav-label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+    .sidebar { width: 250px; background: #0f172a; color: #f8fafc; display: flex; flex-direction: column; padding: 25px 20px; position: sticky; top: 0; height: 100vh; flex-shrink: 0; z-index: 90; transition: var(--transition); }
+    .sidebar.collapsed { width: 0; padding-left: 0; padding-right: 0; overflow: hidden; opacity: 0; }
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; font-weight: 800; font-size: 18px; white-space: nowrap; }
+    .brand-mark { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #818cf8, #c7d2fe); color: #0f172a; display: grid; place-items: center; font-size: 18px; flex-shrink: 0; }
+    .nav-label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; white-space: nowrap; }
     .nav { display: flex; flex-direction: column; gap: 8px; flex: 1; }
-    .nav a { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 10px; font-size: 14px; font-weight: 500; color: #94a3b8; transition: var(--transition); }
+    .nav a { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 10px; font-size: 14px; font-weight: 500; color: #94a3b8; transition: var(--transition); white-space: nowrap; }
     .nav a:hover, .nav a.active { background: rgba(255,255,255,0.1); color: #fff; transform: translateX(5px); }
     .nav-icon { font-size: 18px; width: 24px; text-align: center; }
-    .sidebar-footer { margin-top: auto; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; font-size: 12px; color: #94a3b8; line-height: 1.6; }
+    .sidebar-footer { margin-top: auto; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; font-size: 12px; color: #94a3b8; line-height: 1.6; white-space: nowrap; }
 
     /* MAIN CONTENT */
-    main { flex: 1; padding: 35px 40px 60px; max-width: 1400px; margin: 0 auto; width: 100%; }
+    main { flex: 1; padding: 35px 40px 60px; max-width: 1400px; margin: 0 auto; width: 100%; transition: var(--transition); overflow-x: hidden; }
     
     .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 30px; }
-    #desktopMenuToggle { font-size: 22px; color: var(--ink); display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; transition: background 0.2s; margin-right: 10px; }
-    #desktopMenuToggle:hover { background: rgba(0,0,0,0.05); }
+    .topbar-left { display: flex; align-items: center; gap: 15px; }
     .topbar h1 { margin: 0 0 5px; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
     .topbar p { margin: 0; color: var(--muted); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+    .desktop-toggle-btn { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; width: 40px; height: 40px; display: grid; place-items: center; font-size: 20px; color: var(--muted); box-shadow: var(--shadow); transition: var(--transition); }
+    .desktop-toggle-btn:hover { color: var(--indigo); border-color: var(--indigo-soft); }
     
     .widgets { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; }
-    .clock-box { background: var(--panel); padding: 12px 20px; border-radius: 12px; box-shadow: var(--shadow); border-left: 4px solid var(--teal); min-width: 250px; display: flex; flex-direction: column; justify-content: center; }
-    #formatToggleBtn:hover { background: var(--border) !important; color: var(--ink) !important; }
+    .clock-box { background: var(--panel); padding: 10px 20px; border-radius: 20px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: normal; color: var(--ink); border: 1px solid var(--border); }
     .tasbih-btn { background: var(--panel); color: var(--indigo); border: 2px solid var(--indigo); border-radius: 20px; padding: 8px 20px; font-weight: 700; font-size: 14px; box-shadow: var(--shadow); transition: var(--transition); }
     .tasbih-btn:active { animation: pulse 0.2s; background: var(--indigo-soft); }
+
+    /* SYSTEM NOTICE */
+    .system-notice { background: rgba(79,70,229,0.08); border: 1px solid rgba(79,70,229,0.2); color: var(--indigo); padding: 15px 20px; border-radius: 12px; margin-bottom: 25px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; animation: slideUp 0.5s ease; }
+    .system-notice-content { display: flex; align-items: center; gap: 12px; }
 
     /* COUNTDOWN BANNER */
     .countdown-banner { background: linear-gradient(135deg, var(--indigo), #818cf8); color: white; padding: 20px 25px; border-radius: 16px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 35px; box-shadow: 0 10px 20px rgba(79,70,229,0.2); }
@@ -98,6 +102,7 @@
     .app-name { font-size: 12px; font-weight: 600; color: #334155; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .app-del { position: absolute; top: -8px; right: 5px; background: var(--coral); color: white; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; opacity: 0; transition: var(--transition); transform: scale(0.8); }
     .app-card:hover .app-del { opacity: 1; transform: scale(1); }
+    .empty-apps { grid-column: 1 / -1; padding: 40px; text-align: center; color: var(--muted); font-size: 14px; border: 2px dashed var(--border); border-radius: 16px; width: 100%; }
 
     /* DASHBOARD COLUMNS (Patch Notes & Tasks) */
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
@@ -150,15 +155,16 @@
       .two-col { grid-template-columns: 1fr; }
     }
     @media (max-width: 768px) {
-      #desktopMenuToggle { display: none !important; }
+      .desktop-toggle-btn { display: none; }
       .mobile-header { display: flex; }
       .sidebar { position: fixed; left: -260px; height: 100%; box-shadow: 10px 0 25px rgba(0,0,0,0.5); }
       .sidebar.open { left: 0; }
+      .sidebar.collapsed { width: 250px; opacity: 1; padding: 25px 20px; } /* Override desktop collapse on mobile */
       main { padding: 90px 20px 40px; }
       .topbar { flex-direction: column; align-items: flex-start; }
       .countdown-banner { flex-direction: column; align-items: flex-start; }
       .form-grid { grid-template-columns: 1fr; }
-      .brand { display: none; } /* Hide duplicate brand in mobile sidebar */
+      .brand { display: none; }
     }
 
     /* PRINT STYLES (EXAM GEN) */
@@ -223,8 +229,8 @@
       
       <!-- TOPBAR -->
       <header class="topbar">
-        <div style="display: flex; align-items: center;">
-          <button id="desktopMenuToggle" title="Toggle Sidebar">☰</button>
+        <div class="topbar-left">
+          <button class="desktop-toggle-btn" id="desktopToggle">☰</button>
           <div>
             <p>Personal Learning Hub</p>
             <h1>Welcome back! 👋</h1>
@@ -233,17 +239,22 @@
         <div class="widgets">
           <button id="tasbihBtn" class="tasbih-btn">📿 Dhikr: 0</button>
           
-          <!-- DIGITAL CLOCK & DATE WIDGET -->
-          <div class="clock-box" id="digitalClockContainer">
-            <div id="currentDate" style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 2px; font-weight: 600;"></div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span id="currentTime" style="font-size: 22px; font-weight: 400; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-variant-numeric: tabular-nums; letter-spacing: 1px;"></span>
-              <button id="formatToggleBtn" style="font-size: 10px; background: var(--canvas); padding: 3px 6px; border-radius: 6px; color: var(--muted); border: 1px solid var(--border); font-weight: bold; transition: 0.2s;"></button>
-            </div>
+          <!-- LIVE CLOCK & DATE -->
+          <div class="clock-box">
+            <span id="liveDate"></span> | <span id="liveClock" style="font-family: monospace; font-size: 15px; letter-spacing: 0.5px;"></span>
+            <button id="formatToggleBtn" class="btn outline small" style="padding: 4px 8px; font-size: 11px; border-radius: 6px; margin-left: 5px;">12H</button>
           </div>
-
         </div>
       </header>
+
+      <!-- SYSTEM BETA NOTICE -->
+      <div class="system-notice">
+        <div class="system-notice-content">
+          <span style="font-size: 18px;">🚀</span>
+          <span><strong>System Announcement:</strong> Welcome to the Beta phase of the Student Space. Features are continuously being updated and refined for your convenience.</span>
+        </div>
+        <button class="icon-btn" onclick="this.parentElement.style.display='none'" style="width: 28px; height: 28px; background: transparent; color: inherit;">×</button>
+      </div>
 
       <!-- GOAL COUNTDOWN -->
       <div class="countdown-banner">
@@ -269,21 +280,39 @@
             <button class="btn outline" onclick="document.getElementById('addAppDialog').showModal()">+ Add App</button>
           </div>
           <div class="panel">
-            <div id="appsGrid" class="apps-container"></div>
+            <div id="appsGrid" class="apps-container">
+              <!-- Apps will load here -->
+            </div>
           </div>
         </section>
 
         <!-- DASHBOARD (Patch Notes & Tasks) -->
         <div id="dashboard" class="two-col section">
           
-          <!-- Patch Notes & Announcements -->
+          <!-- Patch Notes (Hardcoded) -->
           <div>
             <div class="section-head">
-              <div><h2>Notice Board</h2><p>Campus updates & patches.</p></div>
-              <button class="btn outline" onclick="document.getElementById('noticeDialog').showModal()">+ Notice</button>
+              <div><h2>Developer Updates</h2><p>Latest system patch notes.</p></div>
             </div>
             <div class="panel">
-              <div id="announcementList" class="patch-list"></div>
+              <div class="patch-list">
+                <div class="patch-item">
+                  <div class="patch-version">v2.1 (Latest) <span class="patch-date">Just Now</span></div>
+                  <p class="patch-desc">Added desktop sidebar toggle. Replaced daily quotes with a live digital clock (12H/24H formats) and date. Initiated blank state for My Learning Space. English translation complete.</p>
+                </div>
+                <div class="patch-item">
+                  <div class="patch-version">v2.0 <span class="patch-date">Previous</span></div>
+                  <p class="patch-desc">Complete UI/UX revamp. Fully responsive for mobile devices. Pristine PDF rendering for Exam Gen Pro.</p>
+                </div>
+                <div class="patch-item">
+                  <div class="patch-version">v1.3 <span class="patch-date">Previous</span></div>
+                  <p class="patch-desc">Added Custom App Grid and automated Prayer Time overlay with Dhikr counter.</p>
+                </div>
+                <div class="patch-item">
+                  <div class="patch-version">v1.0 <span class="patch-date">Launch</span></div>
+                  <p class="patch-desc">Initial release of personal learning dashboard with local storage capabilities.</p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -402,24 +431,6 @@
       </div>
     </div>
   </dialog>
-  
-  <dialog id="noticeDialog">
-    <form id="noticeForm" class="dialog-content" method="dialog">
-      <div class="dialog-header">
-        <h3>Add Notice</h3>
-        <button type="button" class="icon-btn" onclick="document.getElementById('noticeDialog').close()">×</button>
-      </div>
-      <div class="form-grid">
-        <div class="input-group full"><label>Title</label><input id="noticeTitle" required placeholder="E.g. Final Exam Info" /></div>
-        <div class="input-group full"><label>Message</label><textarea id="noticeBody" required placeholder="Details..."></textarea></div>
-        <div class="input-group full"><label>Author</label><input id="noticeSource" placeholder="E.g. Faculty Office" /></div>
-      </div>
-      <div class="dialog-footer">
-        <button type="button" class="btn outline" onclick="document.getElementById('noticeDialog').close()">Cancel</button>
-        <button type="submit" class="btn">Save Notice</button>
-      </div>
-    </form>
-  </dialog>
 
   <dialog id="taskDialog">
     <div class="dialog-content">
@@ -476,55 +487,66 @@
       const dateFromKey = (key) => new Date(key + 'T12:00:00');
       const toast = (msg) => { const el = $('#toast'); if(!el) return; el.textContent = msg; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => el.classList.remove('show'), 2500); };
 
-      // 2. MENU TOGGLES (Mobile & Desktop)
-      $('#menuToggle')?.addEventListener('click', () => $('#sidebar').classList.toggle('open'));
-      document.querySelectorAll('.nav a').forEach(link => { link.addEventListener('click', () => $('#sidebar').classList.remove('open')); });
-      $('#desktopMenuToggle')?.addEventListener('click', () => $('#sidebar').classList.toggle('collapsed'));
+      // 2. DESKTOP & MOBILE MENU TOGGLE
+      const sidebar = $('#sidebar');
+      if($('#menuToggle')) {
+        $('#menuToggle').addEventListener('click', () => sidebar.classList.toggle('open'));
+      }
+      if($('#desktopToggle')) {
+        $('#desktopToggle').addEventListener('click', () => sidebar.classList.toggle('collapsed'));
+      }
+      document.querySelectorAll('.nav a').forEach(link => {
+        link.addEventListener('click', () => sidebar.classList.remove('open'));
+      });
 
-      // 3. STATE & STORAGE
-      const KEY = 'studentSpace.v2'; 
+      // 3. STATE & STORAGE (Version 3 to reset default empty apps)
+      const KEY = 'studentSpace.v3'; 
       const defaultState = { 
-        settings: { countdownTarget: '', clock12h: false }, 
-        classes: [], assignments: [], customApps: [],
-        announcements: [
-          { id: 'beta-notice', title: 'Welcome to Student Space (Beta)', body: 'This dashboard is currently in its beta phase. Feel free to customize your learning space, manage your timetable, and track your assignments. Stay tuned for future updates and patches!', source: 'System Developer', createdAt: Date.now() }
-        ],
+        settings: { countdownTarget: '' }, 
+        classes: [], assignments: [], 
+        customApps: [], // Empty state as requested
         tasbihCount: 0 
       };
       let state;
       try { state = { ...defaultState, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { state = defaultState; }
-      state.settings ||= {}; state.classes ||= []; state.assignments ||= []; state.customApps ||= []; state.announcements ||= [];
-      if(state.announcements.length === 0) state.announcements = defaultState.announcements; // Ensure beta notice runs if empty
+      state.settings ||= {}; state.classes ||= []; state.assignments ||= []; state.customApps ||= [];
       const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} };
 
-      // 4. DIGITAL CLOCK WIDGET (English, 24/12 toggle)
+      // 4. LIVE CLOCK & DATE
+      let is24Hour = true;
+      const toggleFormatBtn = $('#formatToggleBtn');
+      if (toggleFormatBtn) {
+        toggleFormatBtn.addEventListener('click', () => {
+          is24Hour = !is24Hour;
+          toggleFormatBtn.textContent = is24Hour ? '12H' : '24H';
+          updateClock();
+        });
+      }
+
       function updateClock() {
         const now = new Date();
-        const is12h = state.settings.clock12h || false;
-        
-        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        if($('#currentDate')) $('#currentDate').textContent = now.toLocaleDateString('en-US', dateOptions);
+        const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        if($('#liveDate')) $('#liveDate').textContent = now.toLocaleDateString('en-US', optionsDate);
         
         let h = now.getHours();
-        const m = now.getMinutes().toString().padStart(2, '0');
-        const s = now.getSeconds().toString().padStart(2, '0');
+        let m = now.getMinutes();
+        let s = now.getSeconds();
         let ampm = '';
         
-        if (is12h) {
+        if (!is24Hour) {
           ampm = h >= 12 ? ' PM' : ' AM';
-          h = h % 12 || 12;
+          h = h % 12;
+          h = h ? h : 12;
         }
-        h = h.toString().padStart(2, '0');
         
-        if($('#currentTime')) $('#currentTime').textContent = `${h}:${m}:${s}${ampm}`;
-        if($('#formatToggleBtn')) $('#formatToggleBtn').textContent = is12h ? '12H' : '24H';
+        h = h.toString().padStart(2, '0');
+        m = m.toString().padStart(2, '0');
+        s = s.toString().padStart(2, '0');
+        
+        if($('#liveClock')) $('#liveClock').textContent = `${h}:${m}:${s}${ampm}`;
       }
-      setInterval(updateClock, 1000); updateClock();
-      
-      $('#formatToggleBtn')?.addEventListener('click', () => {
-        state.settings.clock12h = !state.settings.clock12h;
-        save(); updateClock();
-      });
+      setInterval(updateClock, 1000);
+      updateClock();
 
       // 5. GOAL COUNTDOWN
       function updateCountdown() {
@@ -554,7 +576,7 @@
       }
       setInterval(updateCountdown, 1000); updateCountdown();
 
-      // 6. DHIKR TASBIH
+      // 6. DHIKR BUTTON
       const tasbihBtn = $('#tasbihBtn');
       if(tasbihBtn) {
         tasbihBtn.textContent = `📿 Dhikr: ${state.tasbihCount || 0}`;
@@ -570,7 +592,7 @@
       function renderApps() {
         const grid = $('#appsGrid'); if(!grid) return;
         if (!state.customApps.length) {
-          grid.innerHTML = '<div style="grid-column: 1/-1; padding: 30px; text-align: center; color: var(--muted); font-size: 13px; background: var(--canvas); border-radius: 12px; width: 100%;">Your learning space is empty. Click "+ Add App" to customize your workspace!</div>';
+          grid.innerHTML = '<div class="empty-apps">No apps added yet. Click "+ Add App" to customize your learning space.</div>';
           return;
         }
         grid.innerHTML = state.customApps.map(app => `
@@ -603,27 +625,7 @@
         });
       }
 
-      // 8. NOTICES / ANNOUNCEMENTS
-      function renderAnnouncements() {
-        const list = $('#announcementList'); if(!list) return;
-        if (!state.announcements.length) { list.innerHTML = '<span style="font-size:13px;color:var(--muted)">No notices available.</span>'; return; }
-        list.innerHTML = [...state.announcements].sort((a,b) => b.createdAt - a.createdAt).map(n => `
-          <div class="patch-item" style="margin-bottom:20px;">
-            <div class="patch-version">${escapeHTML(n.title)} <button class="icon-btn" style="width:20px;height:20px;font-size:12px;color:var(--coral);" data-del-notice="${n.id}">×</button></div>
-            <span class="patch-date">${escapeHTML(n.source)} • ${new Date(n.createdAt).toLocaleDateString('en-US')}</span>
-            <p class="patch-desc" style="margin-top:5px;">${escapeHTML(n.body)}</p>
-          </div>
-        `).join('');
-      }
-      if($('#noticeForm')) $('#noticeForm').addEventListener('submit', e => {
-        e.preventDefault(); const title = $('#noticeTitle').value, body = $('#noticeBody').value;
-        if (!title || !body) return;
-        state.announcements.push({ id:id(), title, body, source:$('#noticeSource').value || 'User', createdAt:Date.now() });
-        save(); renderAnnouncements(); e.target.reset(); $('#noticeDialog').close(); toast('Notice saved');
-      });
-      if($('#announcementList')) $('#announcementList').addEventListener('click', e => { const b = e.target.closest('[data-del-notice]'); if(!b) return; state.announcements = state.announcements.filter(n => n.id !== b.dataset.delNotice); save(); renderAnnouncements(); });
-
-      // 9. PRAYER TIMES (Selangor)
+      // 8. PRAYER TIMES (Selangor)
       async function checkPrayerTimes() {
         try {
           const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=Klang&country=Malaysia&method=11`);
@@ -645,7 +647,7 @@
       }
       setInterval(checkPrayerTimes, 60000);
 
-      // 10. TIMETABLE
+      // 9. TIMETABLE
       function renderTimetable() {
         const grid = $('#weekGrid'); if(!grid) return;
         const days = ['Mon','Tue','Wed','Thu','Fri'];
@@ -672,7 +674,7 @@
       });
       if($('#weekGrid')) $('#weekGrid').addEventListener('click', e => { const b = e.target.closest('[data-del-class]'); if(!b) return; state.classes = state.classes.filter(c => c.id !== b.dataset.delClass); save(); renderTimetable(); });
 
-      // 11. TASK TRACKER
+      // 10. TASK TRACKER
       function renderUpcoming() {
         const list = $('#upcomingList'); if(!list) return;
         const sorted = [...state.assignments].sort((a,b) => a.due.localeCompare(b.due));
@@ -695,7 +697,7 @@
       });
       if($('#upcomingList')) $('#upcomingList').addEventListener('click', e => { const b = e.target.closest('[data-del-ass]'); if(!b) return; state.assignments = state.assignments.filter(a => a.id !== b.dataset.delAss); save(); renderUpcoming(); });
 
-      // 12. EXAM GEN PRO
+      // 11. EXAM GEN PRO
       if ($('#generateExamBtn')) {
         $('#generateExamBtn').addEventListener('click', () => {
           const lang = $('#examLang')?.value || 'EN';
@@ -785,8 +787,7 @@
       }
 
       // INITIALIZE
-      renderApps(); renderAnnouncements(); renderTimetable(); renderUpcoming();
-      document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => document.getElementById(b.dataset.close)?.close()));
+      renderApps(); renderTimetable(); renderUpcoming();
     })();
   </script>
 </body>
