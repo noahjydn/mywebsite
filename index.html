@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Space</title>
+  <title>Student Space Pro</title>
   <style>
     /* VARIABLES & RESET */
     :root {
@@ -34,6 +34,7 @@
 
     /* SIDEBAR */
     .sidebar { width: 250px; background: #0f172a; color: #f8fafc; display: flex; flex-direction: column; padding: 25px 20px; position: sticky; top: 0; height: 100vh; flex-shrink: 0; z-index: 90; transition: var(--transition); }
+    .sidebar.closed-desktop { margin-left: -250px; }
     .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; font-weight: 800; font-size: 18px; }
     .brand-mark { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #818cf8, #c7d2fe); color: #0f172a; display: grid; place-items: center; font-size: 18px; }
     .nav-label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
@@ -44,14 +45,17 @@
     .sidebar-footer { margin-top: auto; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; font-size: 12px; color: #94a3b8; line-height: 1.6; }
 
     /* MAIN CONTENT */
-    main { flex: 1; padding: 35px 40px 60px; max-width: 1400px; margin: 0 auto; width: 100%; }
+    main { flex: 1; padding: 35px 40px 60px; max-width: 1400px; margin: 0 auto; width: 100%; transition: var(--transition); }
     
+    .desktop-menu-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--ink); margin-right: 15px; padding: 5px; transition: transform 0.2s; }
+    .desktop-menu-btn:hover { transform: scale(1.1); }
+
     .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 30px; }
     .topbar h1 { margin: 0 0 5px; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
     .topbar p { margin: 0; color: var(--muted); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
     
     .widgets { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; }
-    .quote-box { background: var(--panel); padding: 12px 20px; border-radius: 12px; box-shadow: var(--shadow); border-left: 4px solid var(--teal); font-size: 13px; font-style: italic; color: var(--muted); max-width: 400px; line-height: 1.5; }
+    .quote-box { background: var(--panel); padding: 12px 20px; border-radius: 12px; box-shadow: var(--shadow); border-left: 4px solid var(--teal); font-size: 13px; font-style: italic; color: var(--muted); min-width: 250px; line-height: 1.5; }
     .tasbih-btn { background: var(--panel); color: var(--indigo); border: 2px solid var(--indigo); border-radius: 20px; padding: 8px 20px; font-weight: 700; font-size: 14px; box-shadow: var(--shadow); transition: var(--transition); }
     .tasbih-btn:active { animation: pulse 0.2s; background: var(--indigo-soft); }
 
@@ -94,6 +98,7 @@
     .app-name { font-size: 12px; font-weight: 600; color: #334155; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .app-del { position: absolute; top: -8px; right: 5px; background: var(--coral); color: white; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; opacity: 0; transition: var(--transition); transform: scale(0.8); }
     .app-card:hover .app-del { opacity: 1; transform: scale(1); }
+    .empty-apps { grid-column: 1 / -1; padding: 30px; text-align: center; color: var(--muted); font-size: 14px; }
 
     /* DASHBOARD COLUMNS (Patch Notes & Tasks) */
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
@@ -146,6 +151,7 @@
       .two-col { grid-template-columns: 1fr; }
     }
     @media (max-width: 768px) {
+      .desktop-menu-btn { display: none; }
       .mobile-header { display: flex; }
       .sidebar { position: fixed; left: -260px; height: 100%; box-shadow: 10px 0 25px rgba(0,0,0,0.5); }
       .sidebar.open { left: 0; }
@@ -153,7 +159,7 @@
       .topbar { flex-direction: column; align-items: flex-start; }
       .countdown-banner { flex-direction: column; align-items: flex-start; }
       .form-grid { grid-template-columns: 1fr; }
-      .brand { display: none; } /* Hide duplicate brand in mobile sidebar */
+      .brand { display: none; }
     }
 
     /* PRINT STYLES (EXAM GEN) */
@@ -218,13 +224,18 @@
       
       <!-- TOPBAR -->
       <header class="topbar">
-        <div>
-          <p>Personal Learning Hub</p>
-          <h1>Welcome back! 👋</h1>
+        <div style="display: flex; align-items: center;">
+          <button class="desktop-menu-btn" id="desktopMenuToggle">☰</button>
+          <div>
+            <p>Personal Learning Hub</p>
+            <h1>Welcome back! 👋</h1>
+          </div>
         </div>
         <div class="widgets">
           <button id="tasbihBtn" class="tasbih-btn">📿 Dhikr: 0</button>
-          <div class="quote-box" id="dailyQuote">Loading wisdom...</div>
+          <div class="quote-box" id="digitalClock" title="Klik untuk menukar format 12/24 Jam" style="cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; letter-spacing: 1px; color: var(--ink);">
+            Memuat masa...
+          </div>
         </div>
       </header>
 
@@ -259,7 +270,7 @@
         <!-- DASHBOARD (Patch Notes & Tasks) -->
         <div id="dashboard" class="two-col section">
           
-          <!-- Patch Notes (Hardcoded) -->
+          <!-- Patch Notes -->
           <div>
             <div class="section-head">
               <div><h2>Developer Updates</h2><p>Latest system patch notes.</p></div>
@@ -267,7 +278,11 @@
             <div class="panel">
               <div class="patch-list">
                 <div class="patch-item">
-                  <div class="patch-version">v2.0 (Latest) <span class="patch-date">Just Now</span></div>
+                  <div class="patch-version">v2.1 (Latest) <span class="patch-date">Just Now</span></div>
+                  <p class="patch-desc">Added desktop sidebar toggle, welcome announcement overlay, interactive digital clock (12/24h toggle), and emptied default learning space for total customization.</p>
+                </div>
+                <div class="patch-item">
+                  <div class="patch-version">v2.0 <span class="patch-date">Previous</span></div>
                   <p class="patch-desc">Complete UI/UX revamp. Fully responsive for mobile devices. Pristine PDF rendering for Exam Gen Pro. Universal English system language.</p>
                 </div>
                 <div class="patch-item">
@@ -277,10 +292,6 @@
                 <div class="patch-item">
                   <div class="patch-version">v1.2 <span class="patch-date">Previous</span></div>
                   <p class="patch-desc">Integrated advanced Exam Generator algorithm with dynamic mark distribution.</p>
-                </div>
-                <div class="patch-item">
-                  <div class="patch-version">v1.0 <span class="patch-date">Launch</span></div>
-                  <p class="patch-desc">Initial release of personal learning dashboard with local storage capabilities.</p>
                 </div>
               </div>
             </div>
@@ -375,6 +386,15 @@
   <div id="examOutput"><div id="examPaper"></div></div>
 
   <!-- MODALS / DIALOGS -->
+  <dialog id="welcomeDialog">
+    <div class="dialog-content" style="text-align: center; padding: 40px 30px;">
+      <h1 style="font-size: 50px; margin: 0 0 15px; animation: pulse 2s infinite;">🚀</h1>
+      <h2 style="margin: 0 0 10px; font-size: 24px; color: var(--ink);">Welcome to Student Space Beta!</h2>
+      <p style="color: var(--muted); font-size: 14px; margin-bottom: 30px; line-height: 1.6;">Sistem ini masih dalam fasa pengujian (Beta). Sila tambah aplikasi kegemaran anda di Ruang Pembelajaran dan terokai pelbagai ciri baharu yang disediakan.</p>
+      <button class="btn" onclick="document.getElementById('welcomeDialog').close()" style="width: 100%; font-size: 15px; padding: 12px;">Teruskan</button>
+    </div>
+  </dialog>
+
   <dialog id="addAppDialog">
     <div class="dialog-content">
       <div class="dialog-header">
@@ -457,11 +477,9 @@
       const dateFromKey = (key) => new Date(key + 'T12:00:00');
       const toast = (msg) => { const el = $('#toast'); if(!el) return; el.textContent = msg; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => el.classList.remove('show'), 2500); };
 
-      // 2. MOBILE MENU TOGGLE
-      $('#menuToggle').addEventListener('click', () => {
-        $('#sidebar').classList.toggle('open');
-      });
-      // Close sidebar when clicking a link (mobile)
+      // 2. TOGGLE MENUS (Mobile & Desktop)
+      $('#menuToggle')?.addEventListener('click', () => $('#sidebar').classList.toggle('open'));
+      $('#desktopMenuToggle')?.addEventListener('click', () => $('#sidebar').classList.toggle('closed-desktop'));
       document.querySelectorAll('.nav a').forEach(link => {
         link.addEventListener('click', () => $('#sidebar').classList.remove('open'));
       });
@@ -469,20 +487,19 @@
       // 3. STATE & STORAGE
       const KEY = 'studentSpace.v2'; 
       const defaultState = { 
-        settings: { countdownTarget: '' }, 
+        settings: { countdownTarget: '', is24Hour: true }, 
         classes: [], assignments: [], 
-        customApps: [
-          { id: '1', name: 'MyStudent', icon: '🎓', url: 'https://mystudent.unisel.edu.my' },
-          { id: '2', name: 'E-Learning', icon: '📚', url: 'https://elearning.unisel.edu.my' },
-          { id: '3', name: 'MyPTPTN', icon: '💰', url: 'https://myptptn.ptptn.gov.my' },
-          { id: '4', name: 'Canva', icon: '🎨', url: 'https://canva.com' }
-        ],
+        customApps: [], // Empty default learning space
         tasbihCount: 0 
       };
       let state;
       try { state = { ...defaultState, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { state = defaultState; }
-      state.settings ||= {}; state.classes ||= []; state.assignments ||= []; state.customApps ||= defaultState.customApps;
+      state.settings ||= {}; state.classes ||= []; state.assignments ||= []; state.customApps ||= [];
+      if (state.settings.is24Hour === undefined) state.settings.is24Hour = true;
       const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} };
+
+      // Welcome Beta Announcement (On load)
+      if($('#welcomeDialog')) $('#welcomeDialog').showModal();
 
       // 4. GOAL COUNTDOWN
       function updateCountdown() {
@@ -512,15 +529,28 @@
       }
       setInterval(updateCountdown, 1000); updateCountdown();
 
-      // 5. QUOTES & DHIKR
-      const quotes = [
-        "“Call upon Me; I will respond to you.” (Ghafir: 60)",
-        "“For indeed, with hardship [will be] ease.” (Al-Inshirah: 5)",
-        "“Sufficient for us is Allah, and [He is] the best Disposer of affairs.” (Ali Imran: 173)",
-        "“So do not weaken and do not grieve.” (Ali Imran: 139)",
-        "“So which of the favors of your Lord would you deny?” (Ar-Rahman: 13)"
-      ];
-      if($('#dailyQuote')) $('#dailyQuote').textContent = quotes[new Date().getDay() % quotes.length];
+      // 5. DIGITAL CLOCK & DHIKR
+      function updateClock() {
+        const clockEl = $('#digitalClock');
+        if(!clockEl) return;
+        const now = new Date();
+        const days = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+        let h = now.getHours(), m = now.getMinutes(), s = now.getSeconds(), ampm = '';
+        
+        if (!state.settings.is24Hour) {
+          ampm = h >= 12 ? ' PM' : ' AM';
+          h = h % 12 || 12;
+        }
+        
+        clockEl.textContent = `${days[now.getDay()]}, ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}${ampm}`;
+      }
+      if($('#digitalClock')) {
+        $('#digitalClock').addEventListener('click', () => {
+          state.settings.is24Hour = !state.settings.is24Hour;
+          save(); updateClock(); toast(state.settings.is24Hour ? 'Format 24 Jam' : 'Format 12 Jam');
+        });
+        setInterval(updateClock, 1000); updateClock();
+      }
 
       const tasbihBtn = $('#tasbihBtn');
       if(tasbihBtn) {
@@ -536,6 +566,7 @@
       // 6. CUSTOM APPS
       function renderApps() {
         const grid = $('#appsGrid'); if(!grid) return;
+        if (!state.customApps.length) { grid.innerHTML = '<div class="empty-apps">No apps added yet. Click "+ Add App" to customize your space.</div>'; return; }
         grid.innerHTML = state.customApps.map(app => `
           <a href="${app.url}" target="_blank" class="app-card">
             <div class="app-icon">${app.icon.length <= 2 ? app.icon : `<img src="${app.icon}" width="36" height="36" style="border-radius:8px">`}</div>
@@ -729,6 +760,7 @@
 
       // INITIALIZE
       renderApps(); renderTimetable(); renderUpcoming();
+      document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => document.getElementById(b.dataset.close)?.close()));
     })();
   </script>
 </body>
